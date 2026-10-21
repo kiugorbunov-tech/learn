@@ -1,0 +1,849 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest-english.json">
+<link rel="apple-touch-icon" href="icon-english-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Английский">
+<meta name="theme-color" content="#0f6e63">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+</head><body><title>Технический английский</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@500;700&family=Charis+SIL:wght@400;700&display=swap">
+<style>
+/* Layout: one column "тетрадь" — шапка с прогрессом, вкладки, рабочая область карточек */
+:root {
+  --bg: #f4f6f5; --surface: #ffffff; --surface2: #e9eeec; --line: #d3dcd8;
+  --fg: #16201d; --muted: #5d6b66; --accent: #0f6e63; --accent-ink: #ffffff;
+  --ipa: #8a3b12; --ok: #1f7a3a; --bad: #b42318; --warn: #a15c07;
+  --f-display: "Unbounded", "Segoe UI", sans-serif;
+  --f-body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --f-ipa: "Charis SIL", "Segoe UI", "Lucida Sans Unicode", serif;
+  --f-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1514; --surface: #17201e; --surface2: #1f2a28; --line: #2c3a37;
+  --fg: #e5eeeb; --muted: #93a39e; --accent: #3cc3b0; --accent-ink: #062a25;
+  --ipa: #f0a46b; --ok: #4ccf73; --bad: #ff7b6e; --warn: #f2b84b; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1514; --surface: #17201e; --surface2: #1f2a28; --line: #2c3a37;
+  --fg: #e5eeeb; --muted: #93a39e; --accent: #3cc3b0; --accent-ink: #062a25;
+  --ipa: #f0a46b; --ok: #4ccf73; --bad: #ff7b6e; --warn: #f2b84b; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 16px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px }
+.wrap { max-width: 980px; margin: 0 auto }
+header.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 22px 14px }
+h1 { font: 700 clamp(20px, 4vw, 28px)/1.1 var(--f-display); margin: 0; letter-spacing: -0.01em; text-wrap: balance }
+h1 small { display: block; font: 500 13px var(--f-body); color: var(--muted); letter-spacing: 0; margin-top: 6px }
+.chips { display: flex; gap: 8px; flex-wrap: wrap }
+.chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--surface2); color: var(--muted); font-variant-numeric: tabular-nums }
+.chip b { color: var(--fg) }
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 18px; scrollbar-width: none }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+nav.tabs button { flex: none; border: 0; background: none; color: var(--muted); font: 600 15px var(--f-body); padding: 12px 14px; cursor: pointer; border-bottom: 3px solid transparent }
+nav.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent) }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.panel[hidden] { display: none }
+.lead { color: var(--muted); max-width: 65ch; margin: 0 0 16px }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)) }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0 }
+.word { display: flex; align-items: baseline; justify-content: space-between; gap: 8px }
+.word .en { font: 700 20px var(--f-body) }
+.ipa { font-family: var(--f-ipa); color: var(--ipa); font-size: 17px }
+.ru-approx { color: var(--muted); font-size: 14px }
+.tr { font-weight: 500 }
+.ex { font-size: 14px; color: var(--muted); margin-top: 6px; border-top: 1px dashed var(--line); padding-top: 6px }
+.ex code, code { font-family: var(--f-mono); font-size: 13px; background: var(--surface2); padding: 1px 5px; border-radius: 4px; color: var(--fg) }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 8px 12px; font: 600 14px var(--f-body); cursor: pointer; display: inline-flex; align-items: center; gap: 6px }
+.btn:hover { border-color: var(--accent) }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.btn.small { padding: 5px 9px; font-size: 13px }
+.btn[disabled] { opacity: .45; cursor: default }
+.icon { width: 16px; height: 16px; fill: currentColor; flex: none }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px }
+.filters button { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: 500 14px var(--f-body); cursor: pointer }
+.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+input[type=text], input[type=search], select { font: 16px var(--f-body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); min-width: 0 }
+.big-card { max-width: 560px; margin: 0 auto; text-align: center; padding: 28px 22px }
+.big-card .en { font: 700 clamp(30px, 7vw, 44px)/1.15 var(--f-body); word-break: break-word }
+.big-card .ipa { font-size: 24px }
+.answer { margin-top: 14px }
+.progress { height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden }
+.progress > i { display: block; height: 100%; background: var(--accent) }
+.opts { display: grid; gap: 8px; margin-top: 16px }
+.opts button { text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 12px 14px; font: 500 16px var(--f-body); cursor: pointer }
+.opts button.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, var(--surface)) }
+.opts button.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, var(--surface)) }
+.verdict { margin-top: 12px; font-weight: 600; min-height: 1.5em }
+.verdict.ok { color: var(--ok) } .verdict.bad { color: var(--bad) }
+.sound { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start }
+.sound .sym { font: 700 34px/1 var(--f-ipa); color: var(--ipa); text-align: center; background: var(--surface2); border-radius: 10px; padding: 14px 0 }
+.sound h3 { margin: 0 0 4px; font-size: 16px }
+.sound p { margin: 0 0 8px; font-size: 14px; color: var(--muted) }
+.ex-words { display: flex; flex-wrap: wrap; gap: 6px }
+.err { font-family: var(--f-mono); font-size: 14px; background: var(--surface2); padding: 10px 12px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-word }
+.gloss { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px }
+.gloss span { background: var(--surface2); border-radius: 6px; padding: 3px 8px; font-size: 13px }
+.gloss span b { font-family: var(--f-mono); font-weight: 600 }
+.section-title { font: 700 15px var(--f-display); margin: 26px 0 10px; letter-spacing: .01em }
+.stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); margin-bottom: 16px }
+.stat .n { font: 700 28px var(--f-display); font-variant-numeric: tabular-nums }
+.stat .l { color: var(--muted); font-size: 13px }
+table.hist { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums }
+table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left }
+.note { font-size: 13px; color: var(--muted) }
+.mic-heard { font-size: 14px; margin-top: 8px; min-height: 1.4em }
+.boxes { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 16px }
+.boxes span { font-size: 13px; padding: 4px 9px; border-radius: 6px; background: var(--surface2); font-variant-numeric: tabular-nums }
+.settings { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; font-size: 14px }
+@media (prefers-reduced-motion: no-preference) { .opts button, .btn { transition: border-color .15s, background .15s } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Технический английский<small>Звуки, слова команд и ошибок, тренировка и тесты</small></h1>
+    <div class="chips">
+      <span class="chip" id="chip-learned">Выучено: <b>0</b></span>
+      <span class="chip" id="chip-due">К повтору: <b>0</b></span>
+      <span class="chip" id="chip-sync">Прогресс: этот браузер</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button role="tab" id="tab-train" aria-controls="p-train" aria-selected="true">Тренировка</button>
+    <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Словарь</button>
+    <button role="tab" id="tab-sounds" aria-controls="p-sounds" aria-selected="false">Звуки</button>
+    <button role="tab" id="tab-errors" aria-controls="p-errors" aria-selected="false">Ошибки и сообщения</button>
+    <button role="tab" id="tab-tests" aria-controls="p-tests" aria-selected="false">Тесты</button>
+    <button role="tab" id="tab-stats" aria-controls="p-stats" aria-selected="false">Прогресс</button>
+  </nav>
+
+  <section class="panel" id="p-train" role="tabpanel" aria-labelledby="tab-train"></section>
+  <section class="panel" id="p-words" role="tabpanel" aria-labelledby="tab-words" hidden></section>
+  <section class="panel" id="p-sounds" role="tabpanel" aria-labelledby="tab-sounds" hidden></section>
+  <section class="panel" id="p-errors" role="tabpanel" aria-labelledby="tab-errors" hidden></section>
+  <section class="panel" id="p-tests" role="tabpanel" aria-labelledby="tab-tests" hidden></section>
+  <section class="panel" id="p-stats" role="tabpanel" aria-labelledby="tab-stats" hidden></section>
+</div>
+
+<script>
+/* ======================= ДАННЫЕ ======================= */
+const TOPICS = {
+  cmd: "Глаголы команд", pc: "Компьютер", sys: "Система и файлы", err: "Ошибки",
+  net: "Сеть", code: "Программирование", ai: "Искусственный интеллект", base: "Служебные слова"
+};
+// [слово, IPA (американское), по-русски примерно (ударный слог заглавными), перевод, тема, пример]
+const W = [
+ ["get","ɡet","гет","получить, взять","cmd","Get-Process — получить процессы"],
+ ["set","set","сэт","установить, задать","cmd","Set-Location — перейти в папку"],
+ ["new","nuː","нью","новый, создать","cmd","New-Item — создать файл или папку"],
+ ["remove","rɪˈmuːv","ри-МУВ","удалить","cmd","Remove-Item — удалить (без корзины!)"],
+ ["add","æd","эд (широкое «э»)","добавить","cmd","Add-Content — дописать в файл"],
+ ["start","stɑːrt","стаарт","запустить, начать","cmd","Start-Process — запустить программу"],
+ ["stop","stɑːp","стап","остановить","cmd","Stop-Process — завершить процесс"],
+ ["restart","ˌriːˈstɑːrt","ри-СТААРТ","перезапустить","cmd","Restart-Computer — перезагрузить ПК"],
+ ["test","test","тэст","проверить, тест","cmd","Test-Connection — проверить связь"],
+ ["find","faɪnd","файнд","найти","cmd","find the file — найди файл"],
+ ["search","sɜːrtʃ","сёрч","искать, поиск","cmd","search the web — искать в интернете"],
+ ["select","sɪˈlekt","си-ЛЕКТ","выбрать","cmd","Select-Object — выбрать колонки"],
+ ["sort","sɔːrt","соорт","сортировать","cmd","Sort-Object — отсортировать"],
+ ["measure","ˈmeʒər","МЕ-жэр","измерить, посчитать","cmd","Measure-Object — посчитать сумму"],
+ ["format","ˈfɔːrmæt","ФООР-мэт","формат, оформить","cmd","Format-Table — вывести таблицей"],
+ ["export","ɪkˈspɔːrt","ик-СПООРТ","выгрузить, экспорт","cmd","Export-Csv — сохранить в CSV"],
+ ["import","ɪmˈpɔːrt","им-ПООРТ","загрузить, импорт","cmd","import psutil — подключить модуль"],
+ ["copy","ˈkɑːpi","КАА-пи","копировать","cmd","Copy-Item — скопировать файл"],
+ ["move","muːv","муув","переместить","cmd","Move-Item — переместить файл"],
+ ["rename","ˌriːˈneɪm","ри-НЕЙМ","переименовать","cmd","Rename-Item — переименовать"],
+ ["read","riːd","риид","читать","cmd","read the docs — читай документацию"],
+ ["write","raɪt","райт","писать, записать","cmd","Write-Host — вывести текст"],
+ ["open","ˈoʊpən","ОУ-пэн","открыть","cmd","open the file — открой файл"],
+ ["close","kloʊz","клоуз","закрыть","cmd","close the window — закрой окно"],
+ ["run","rʌn","ран","запустить, выполнить","cmd","run the script — запусти скрипт"],
+ ["install","ɪnˈstɔːl","ин-СТООЛ","установить (программу)","cmd","pip install psutil"],
+ ["update","ˌʌpˈdeɪt","ап-ДЕЙТ","обновить","cmd","Update-Help — обновить справку"],
+ ["download","ˌdaʊnˈloʊd","даун-ЛОУД","скачать","cmd","download the file — скачай файл"],
+ ["upload","ˌʌpˈloʊd","ап-ЛОУД","загрузить (на сервер)","cmd","upload to the server"],
+ ["save","seɪv","сейв","сохранить","cmd","save changes — сохранить изменения"],
+ ["load","loʊd","лоуд","загрузить; нагрузка","cmd","CPU load — нагрузка процессора"],
+ ["check","tʃek","чек","проверить","cmd","check the logs — проверь журнал"],
+ ["show","ʃoʊ","шоу","показать","cmd","show all files — показать все файлы"],
+ ["print","prɪnt","принт","вывести, напечатать","cmd","print(\"hello\") — вывести текст"],
+ ["build","bɪld","билд","собрать, сборка","cmd","build the project — собери проект"],
+ ["deploy","dɪˈplɔɪ","ди-ПЛОЙ","развернуть (на сервере)","cmd","deploy to production"],
+ ["debug","diːˈbʌɡ","ди-БАГ","отлаживать","cmd","debug the code — отладь код"],
+ ["invoke","ɪnˈvoʊk","ин-ВОУК","вызвать","cmd","Invoke-WebRequest — запрос к сайту"],
+ ["count","kaʊnt","каунт","количество, считать","cmd","Threads.Count — число потоков"],
+ ["filter","ˈfɪltər","ФИЛ-тэр","фильтр, отбирать","cmd","filter the results"],
+ ["wait","weɪt","уэйт","ждать","cmd","Wait-Process — ждать завершения"],
+ ["kill","kɪl","кил","убить (процесс)","cmd","kill 1234 — завершить процесс в Linux"],
+ ["create","kriˈeɪt","кри-ЕЙТ","создать","cmd","create a folder — создай папку"],
+ ["delete","dɪˈliːt","ди-ЛИИТ","удалить","cmd","delete the file — удали файл"],
+ ["edit","ˈedɪt","Э-дит","редактировать","cmd","edit the config"],
+ ["enable","ɪˈneɪbl","и-НЕЙБЛ","включить","cmd","Enable-NetAdapter"],
+ ["disable","dɪsˈeɪbl","дис-ЕЙБЛ","отключить","cmd","Disable-NetAdapter"],
+
+ ["computer","kəmˈpjuːtər","кэм-ПЬЮ-тэр","компьютер","pc","computer name — имя компьютера"],
+ ["processor","ˈprɑːsesər","ПРАА-сэ-сэр","процессор","pc","Win32_Processor"],
+ ["core","kɔːr","коор","ядро","pc","16 cores — 16 ядер"],
+ ["thread","θred","срэд (язык между зубами)","поток","pc","32 threads — 32 потока"],
+ ["memory","ˈmeməri","МЭ-мэ-ри","память","pc","out of memory — не хватает памяти"],
+ ["disk","dɪsk","диск","диск","pc","disk usage — заполнение диска"],
+ ["drive","draɪv","драйв","диск, накопитель","pc","drive C: — диск C:"],
+ ["device","dɪˈvaɪs","ди-ВАЙС","устройство","pc","device not ready — устройство не готово"],
+ ["hardware","ˈhɑːrdwer","ХААРД-уэр","железо, аппаратура","pc","hardware error — ошибка железа"],
+ ["software","ˈsɔːftwer","СООФТ-уэр","программы, ПО","pc","software update"],
+ ["server","ˈsɜːrvər","СЁР-вэр","сервер","pc","the server is down — сервер упал"],
+ ["power","ˈpaʊər","ПАУ-эр","питание, мощность","pc","power supply — блок питания"],
+ ["supply","səˈplaɪ","сэ-ПЛАЙ","подача, снабжение","pc","power supply unit (PSU)"],
+ ["temperature","ˈtemprətʃər","ТЭМ-прэ-чэр","температура","pc","CPU temperature"],
+ ["fan","fæn","фэн","вентилятор","pc","fan speed — обороты вентилятора"],
+ ["speed","spiːd","спиид","скорость","pc","download speed"],
+ ["usage","ˈjuːsɪdʒ","ЮЮ-сидж","использование","pc","memory usage"],
+ ["graphics","ˈɡræfɪks","ГРЭ-фикс","графика","pc","graphics card — видеокарта"],
+ ["card","kɑːrd","каард","карта, плата","pc","network card — сетевая карта"],
+ ["screen","skriːn","скриин","экран","pc","screenshot — снимок экрана"],
+ ["keyboard","ˈkiːbɔːrd","КИИ-боорд","клавиатура","pc","keyboard shortcut — сочетание клавиш"],
+
+ ["system","ˈsɪstəm","СИС-тэм","система","sys","operating system — операционная система"],
+ ["process","ˈprɑːses","ПРАА-сэс","процесс","sys","process ID (PID) — номер процесса"],
+ ["service","ˈsɜːrvɪs","СЁР-вис","служба, сервис","sys","Get-Service — список служб"],
+ ["task","tæsk","тэск","задача","sys","Task Scheduler — Планировщик задач"],
+ ["file","faɪl","файл","файл","sys","file not found — файл не найден"],
+ ["folder","ˈfoʊldər","ФОУЛ-дэр","папка","sys","open folder"],
+ ["directory","dəˈrektəri","дэ-РЭК-тэ-ри","каталог, папка","sys","No such file or directory"],
+ ["path","pæθ","пэс (язык между зубами)","путь","sys","Cannot find path"],
+ ["name","neɪm","нейм","имя","sys","file name — имя файла"],
+ ["size","saɪz","сайз","размер","sys","file size"],
+ ["item","ˈaɪtəm","АЙ-тэм","элемент, объект","sys","Get-ChildItem — дочерние элементы"],
+ ["child","tʃaɪld","чайлд","ребёнок, дочерний","sys","child process — дочерний процесс"],
+ ["parent","ˈperənt","ПЭ-рэнт","родитель","sys","ParentProcessId — номер родителя"],
+ ["user","ˈjuːzər","ЮЮ-зэр","пользователь","sys","user name — имя пользователя"],
+ ["administrator","ədˈmɪnɪstreɪtər","эд-МИ-нис-трей-тэр","администратор","sys","Run as administrator"],
+ ["permission","pərˈmɪʃn","пэр-МИ-шн","разрешение, права","sys","Permission denied — нет прав"],
+ ["access","ˈækses","ЭК-сэс","доступ","sys","Access is denied — доступ запрещён"],
+ ["property","ˈprɑːpərti","ПРАА-пэр-ти","свойство","sys","Get-Member -MemberType Property"],
+ ["object","ˈɑːbdʒekt","ААБ-джект","объект","sys","Select-Object"],
+ ["value","ˈvæljuː","ВЭ-лью","значение","sys","invalid value — неверное значение"],
+ ["location","loʊˈkeɪʃn","лоу-КЕЙ-шн","расположение","sys","Get-Location — где я сейчас"],
+ ["content","ˈkɑːntent","КААН-тэнт","содержимое","sys","Get-Content — показать файл"],
+ ["encoding","ɪnˈkoʊdɪŋ","ин-КОУ-динг (без «г» в конце)","кодировка","sys","UTF-8 encoding"],
+ ["character","ˈkærəktər","КЭ-рэк-тэр","символ","sys","invalid character — неверный символ"],
+ ["shell","ʃel","шэл","оболочка (командная)","sys","PowerShell, bash shell"],
+ ["command","kəˈmænd","кэ-МЭНД","команда","sys","command not found — команда не найдена"],
+ ["line","laɪn","лайн","строка","sys","command line — командная строка"],
+ ["window","ˈwɪndoʊ","УИН-доу","окно","sys","close the window"],
+ ["boot","buːt","буут","загрузка (системы)","sys","last boot time — время загрузки"],
+ ["shutdown","ˈʃʌtdaʊn","ШАТ-даун","выключение","sys","unexpected shutdown — внезапное выключение"],
+
+ ["error","ˈerər","Э-рэр","ошибка","err","Error: file not found"],
+ ["warning","ˈwɔːrnɪŋ","УООР-нинг","предупреждение","err","WARNING: low disk space"],
+ ["failed","feɪld","фейлд","не удалось","err","Installation failed — установка не удалась"],
+ ["cannot","ˈkænɑːt","КЭ-нат","не может","err","Cannot find path — не найден путь"],
+ ["denied","dɪˈnaɪd","ди-НАЙД","отказано","err","Access is denied"],
+ ["found","faʊnd","фаунд","найден","err","not found — не найден"],
+ ["invalid","ɪnˈvælɪd","ин-ВЭ-лид","неверный, недопустимый","err","invalid argument — неверный аргумент"],
+ ["missing","ˈmɪsɪŋ","МИ-синг","отсутствует","err","missing file — нет файла"],
+ ["timeout","ˈtaɪmaʊt","ТАЙМ-аут","превышено время ожидания","err","Connection timeout"],
+ ["exception","ɪkˈsepʃn","ик-СЭП-шн","исключение (ошибка в программе)","err","Unhandled exception"],
+ ["expected","ɪkˈspektɪd","ик-СПЭК-тид","ожидалось","err","expected a number — ожидалось число"],
+ ["unexpected","ˌʌnɪkˈspektɪd","ан-ик-СПЭК-тид","неожиданный","err","Unexpected token — неожиданный символ"],
+ ["required","rɪˈkwaɪərd","ри-КУАЙ-эрд","требуется, обязательный","err","parameter is required"],
+ ["allowed","əˈlaʊd","э-ЛАУД","разрешено","err","not allowed — не разрешено"],
+ ["exist","ɪɡˈzɪst","иг-ЗИСТ","существовать","err","does not exist — не существует"],
+ ["already","ɔːlˈredi","оол-РЭ-ди","уже","err","already exists — уже существует"],
+ ["unable","ʌnˈeɪbl","ан-ЕЙБЛ","не в состоянии","err","Unable to connect"],
+ ["crash","kræʃ","крэш","падение, сбой","err","the app crashed — программа упала"],
+ ["bug","bʌɡ","баг","ошибка в программе","err","fix a bug — исправить баг"],
+ ["fix","fɪks","фикс","исправить","err","bug fix — исправление"],
+ ["issue","ˈɪʃuː","И-шуу","проблема, задача","err","known issue — известная проблема"],
+ ["retry","ˌriːˈtraɪ","ри-ТРАЙ","повторить попытку","err","Retry in 5 seconds"],
+
+ ["network","ˈnetwɜːrk","НЭТ-уёрк","сеть","net","network error"],
+ ["internet","ˈɪntərnet","ИН-тэр-нэт","интернет","net","no internet connection"],
+ ["connection","kəˈnekʃn","кэ-НЭК-шн","соединение","net","connection lost — соединение потеряно"],
+ ["address","ˈædres","Э-дрэс","адрес","net","IP address"],
+ ["port","pɔːrt","поорт","порт","net","port 443"],
+ ["request","rɪˈkwest","ри-КУЭСТ","запрос","net","HTTP request"],
+ ["response","rɪˈspɑːns","ри-СПААНС","ответ","net","server response"],
+ ["host","hoʊst","хоуст (лёгкий выдох)","хост, узел сети","net","localhost — этот компьютер"],
+ ["client","ˈklaɪənt","КЛАЙ-энт","клиент","net","client and server"],
+ ["browser","ˈbraʊzər","БРАУ-зэр","браузер","net","open in browser"],
+ ["link","lɪŋk","линк","ссылка","net","download link"],
+ ["bandwidth","ˈbændwɪdθ","БЭНД-уидс","пропускная способность","net","network bandwidth"],
+ ["latency","ˈleɪtənsi","ЛЕЙ-тэн-си","задержка","net","low latency — малая задержка"],
+ ["packet","ˈpækɪt","ПЭ-кит","пакет","net","packet loss — потеря пакетов"],
+ ["loss","lɔːs","лоос","потеря; ошибка обучения","net","packet loss; training loss"],
+ ["secure","səˈkjʊr","сэ-КЬЮР","защищённый","net","secure connection (HTTPS)"],
+ ["password","ˈpæswɜːrd","ПЭС-уёрд","пароль","net","wrong password — неверный пароль"],
+
+ ["code","koʊd","коуд","код","code","source code — исходный код"],
+ ["program","ˈproʊɡræm","ПРОУ-грэм","программа","code","run the program"],
+ ["language","ˈlæŋɡwɪdʒ","ЛЭН-гуидж","язык","code","programming language"],
+ ["variable","ˈveriəbl","ВЭ-ри-эбл","переменная","code","$x = 5 — переменная x"],
+ ["function","ˈfʌŋkʃn","ФАНК-шн","функция","code","def read(): — функция в Python"],
+ ["loop","luːp","лууп","цикл","code","for loop — цикл for"],
+ ["condition","kənˈdɪʃn","кэн-ДИ-шн","условие","code","if condition"],
+ ["string","strɪŋ","стринг","строка (текст)","code","\"hello\" is a string"],
+ ["number","ˈnʌmbər","НАМ-бэр","число","code","a number like 42"],
+ ["list","lɪst","лист","список","code","a list of files"],
+ ["array","əˈreɪ","э-РЕЙ","массив","code","array of numbers"],
+ ["key","kiː","кии","ключ","code","API key — ключ доступа"],
+ ["true","truː","труу","истина","code","true or false"],
+ ["false","fɔːls","фоолс","ложь","code","the result is false"],
+ ["null","nʌl","нал","пусто, ничего","code","value is null — значения нет"],
+ ["return","rɪˈtɜːrn","ри-ТЁРН","вернуть (результат)","code","return x + 1"],
+ ["input","ˈɪnpʊt","ИН-пут","ввод, входные данные","code","user input"],
+ ["output","ˈaʊtpʊt","АУТ-пут","вывод, результат","code","command output"],
+ ["module","ˈmɑːdʒuːl","МАА-джуул","модуль","code","No module named psutil"],
+ ["library","ˈlaɪbreri","ЛАЙ-брэ-ри","библиотека","code","Python library"],
+ ["package","ˈpækɪdʒ","ПЭ-кидж","пакет","code","install a package"],
+ ["script","skrɪpt","скрипт","скрипт","code","run the script"],
+ ["syntax","ˈsɪntæks","СИН-тэкс","синтаксис","code","syntax error — ошибка синтаксиса"],
+ ["version","ˈvɜːrʒn","ВЁР-жн","версия","code","Python version 3.11"],
+ ["repository","rɪˈpɑːzətɔːri","ри-ПАА-зэ-тоо-ри","репозиторий","code","git repository"],
+ ["branch","bræntʃ","брэнч","ветка","code","git branch"],
+ ["commit","kəˈmɪt","кэ-МИТ","фиксация изменений","code","git commit"],
+ ["database","ˈdeɪtəbeɪs","ДЕЙ-тэ-бейс","база данных","code","SQL database"],
+ ["query","ˈkwɪri","КУИ-ри","запрос","code","database query"],
+ ["table","ˈteɪbl","тейбл","таблица","code","Format-Table"],
+ ["row","roʊ","роу","строка (таблицы)","code","rows and columns"],
+ ["column","ˈkɑːləm","КАА-лэм","столбец","code","add a column"],
+
+ ["artificial","ˌɑːrtɪˈfɪʃl","аар-ти-ФИ-шл","искусственный","ai","artificial intelligence (AI)"],
+ ["intelligence","ɪnˈtelɪdʒəns","ин-ТЭ-ли-джэнс","интеллект","ai","AI = artificial intelligence"],
+ ["model","ˈmɑːdl","МААДЛ","модель","ai","language model"],
+ ["neural","ˈnʊrəl","НУ-рэл","нейронный","ai","neural network — нейросеть"],
+ ["train","treɪn","трейн","обучать","ai","train the model"],
+ ["fine-tuning","ˌfaɪnˈtuːnɪŋ","файн-ТУУ-нинг","дообучение","ai","fine-tuning DeepSeek"],
+ ["token","ˈtoʊkən","ТОУ-кэн","токен (кусочек текста)","ai","context of 200k tokens"],
+ ["prompt","prɑːmpt","праампт","запрос к ИИ","ai","write a good prompt"],
+ ["agent","ˈeɪdʒənt","ЕЙ-джэнт","агент","ai","AI agent"],
+ ["context","ˈkɑːntekst","КААН-тэкст","контекст","ai","context window — окно контекста"],
+ ["weight","weɪt","уэйт","вес (параметр сети)","ai","model weights — веса модели"],
+ ["parameter","pəˈræmɪtər","пэ-РЭ-ми-тэр","параметр","ai","70 billion parameters"],
+ ["inference","ˈɪnfərəns","ИН-фэ-рэнс","работа модели (вывод)","ai","inference speed"],
+ ["dataset","ˈdeɪtəset","ДЕЙ-тэ-сэт","набор данных","ai","training dataset"],
+ ["accuracy","ˈækjərəsi","Э-кью-рэ-си","точность","ai","accuracy 95%"],
+ ["gradient","ˈɡreɪdiənt","ГРЕЙ-ди-энт","градиент","ai","gradient descent — градиентный спуск"],
+ ["layer","ˈleɪər","ЛЕЙ-эр","слой","ai","hidden layer — скрытый слой"],
+ ["attention","əˈtenʃn","э-ТЭН-шн","внимание","ai","attention mechanism"],
+ ["embedding","ɪmˈbedɪŋ","им-БЭ-динг","эмбеддинг (вектор смысла)","ai","text embedding"],
+ ["generate","ˈdʒenəreɪt","ДЖЭ-нэ-рейт","генерировать","ai","generate text"],
+ ["reasoning","ˈriːzənɪŋ","РИИ-зэ-нинг","рассуждение","ai","reasoning model"],
+ ["tool","tuːl","туул","инструмент","ai","tool use — работа с инструментами"],
+
+ ["the","ðə","зэ (звонкое, язык между зубами)","определённый артикль","base","the file — этот (конкретный) файл"],
+ ["a","ə","э","неопределённый артикль","base","a file — какой-то файл"],
+ ["is","ɪz","из","есть, является","base","the file is missing"],
+ ["are","ɑːr","аар","есть (мн. ч.)","base","files are missing"],
+ ["not","nɑːt","наат","не","base","not found"],
+ ["to","tuː","туу","к, в; частица","base","unable to connect"],
+ ["of","əv","эв","(родительный падеж)","base","name of the file — имя файла"],
+ ["for","fɔːr","фоор","для","base","waiting for response"],
+ ["with","wɪð","уиз (звонкое th)","с","base","run with admin rights"],
+ ["this","ðɪs","зис (звонкое th)","этот","base","this command"],
+ ["that","ðæt","зэт (звонкое th)","тот, который","base","the file that you need"],
+ ["it","ɪt","ит","оно, это","base","because it does not exist"],
+ ["in","ɪn","ин","в","base","in the folder"],
+ ["on","ɑːn","аан","на","base","on the server"],
+ ["from","frʌm","фрам","из, от","base","download from the internet"],
+ ["by","baɪ","бай","кем, через","base","denied by the system"],
+ ["or","ɔːr","оор","или","base","file or directory"],
+ ["and","ænd","энд","и","base","files and folders"],
+ ["all","ɔːl","оол","все","base","all files"],
+ ["no","noʊ","ноу","нет, никакой","base","no such file"],
+ ["yes","jes","йес","да","base","[Y] Yes [N] No"],
+ ["first","fɜːrst","фёрст","первый","base","Select-Object -First 5"],
+ ["last","læst","лэст","последний","base","last boot time"],
+ ["next","nekst","нэкст","следующий","base","next step"],
+ ["before","bɪˈfɔːr","би-ФООР","до, перед","base","before install"],
+ ["after","ˈæftər","ЭФ-тэр","после","base","after restart"],
+ ["because","bɪˈkɔːz","би-КООЗ","потому что","base","because it does not exist"],
+ ["if","ɪf","иф","если","base","if error then retry"],
+ ["then","ðen","зэн (звонкое th)","тогда, затем","base","if ... then ..."],
+ ["else","els","элс","иначе","base","if ... else ..."],
+ ["where","wer","уэр","где","base","Where-Object — где (фильтр)"],
+ ["what","wʌt","уат","что","base","what happened? — что случилось?"],
+ ["which","wɪtʃ","уич","который","base","which file?"],
+ ["how","haʊ","хау (лёгкий выдох)","как","base","how to install"],
+ ["why","waɪ","уай","почему","base","why it failed"]
+];
+
+// Звуки: [символ, название, на что похоже, как произносить, примеры]
+const SOUNDS = [
+ ["θ","th глухой","нет в русском; ближе всего «с»","Кончик языка между зубами, дуйте воздух. Звучит как шепелявое «с». Не говорите «с» или «ф».",["thread","think","path","bandwidth"]],
+ ["ð","th звонкий","нет в русском; ближе всего «з»","То же положение, что у θ, но с голосом. Слова the, this, that, with — самые частые в языке.",["the","this","that","with"]],
+ ["w","w","не «в»!","Губы вытянуты трубочкой, как для «у», и быстро раскрываются. Зубы губ не касаются.",["window","wait","what","network"]],
+ ["æ","a в закрытом слоге","между «а» и «э»","Широко откройте рот, как для «а», и скажите «э». Различает слова: bad (плохой) и bed (кровать).",["add","path","task","access"]],
+ ["ŋ","ng","«н» без «г»","Задняя часть языка прижата к нёбу, звук идёт через нос. На конце слов -ing не произносите «г».",["string","encoding","thing","warning"]],
+ ["h","h","не «х»","Лёгкий выдох, как будто дышите на очки. Русское «х» слишком грубое.",["host","how","hardware","help"]],
+ ["r","r","не раскатистое «р»","Кончик языка загнут назад и ничего не касается. Язык не вибрирует.",["run","error","read","request"]],
+ ["iː / ɪ","долгое и краткое «и»","«ии» и короткое «ы-и»","Долгое iː тянется (read, key), краткое ɪ — короткое и расслабленное (it, kill). Меняет смысл: sheep / ship.",["read","key","it","kill"]],
+ ["uː / ʊ","долгое и краткое «у»","«уу» и короткое «у»","uː долгое, губы вытянуты (tool, move). ʊ короткое, губы расслаблены (input, put).",["tool","move","input","book"]],
+ ["ɜːr","ur, er, ir","нет в русском; «ё» без «й»","Губы нейтральны, язык посередине, конец с загнутым языком. Похоже на «ё» в «мёд», но без «й».",["server","first","search","version"]],
+ ["ə","шва","безударное «э»","Самый частый звук английского: короткий, ленивый, в безударных слогах. Не выговаривайте гласные чётко.",["a","about","memory","computer"]],
+ ["eɪ","a в открытом слоге","«эй»","Скольжение от «э» к «й». Буква a в открытом слоге читается так: name, save, table.",["name","save","table","data"]],
+ ["aɪ","i в открытом слоге","«ай»","Буква i в открытом слоге и сочетание igh: file, size, high.",["file","size","find","right"]],
+ ["oʊ","o в открытом слоге","«оу»","Начинается с «о» и скользит к «у». Не говорите просто «о»: code — «коуд», не «код».",["code","load","open","show"]],
+ ["aʊ","ou, ow","«ау»","Как в слове «Пау-ер». download, found, power.",["download","found","power","how"]],
+ ["ɔɪ","oi, oy","«ой»","deploy, point, void.",["deploy","point","void","join"]],
+ ["dʒ / tʃ","j, g / ch","мягкие «дж» / «ч»","dʒ — как «дж» слитно (language, object). tʃ — как «ч», но твёрже (check, branch).",["language","object","check","branch"]],
+ ["ʃ / ʒ","sh, tion / s","«ш» / «ж», мягче","tion читается ʃn: function, connection. s между гласными иногда ʒ: version, usage (dʒ).",["shell","function","version","measure"]],
+ ["p t k","p, t, k","с придыханием","В начале ударного слога после p, t, k идёт лёгкий выдох: «т-х-эст». Поднесите ладонь ко рту — должно дуть.",["test","key","port","copy"]],
+ ["d z b","звонкие на конце","не оглушать!","В русском конечные согласные оглушаются (код → «кот»). В английском нет: load — «лоуд», size — «сайз».",["load","size","build","found"]]
+];
+const READING = [
+ ["Немая e на конце","a, i, o, u перед согласной + e читаются как в алфавите","name, file, code, use"],
+ ["tion, sion","читается «шн»","function, version, connection"],
+ ["th","θ или ð (язык между зубами)","thread, the, path"],
+ ["sh / ch / ck","«ш» / «ч» / «к»","shell, check, stack"],
+ ["ph","«ф»","graphics, phone"],
+ ["igh","«ай», gh не читается","high, right"],
+ ["ee / ea","«ии»","speed, read"],
+ ["oo","«уу»","tool, boot, loop"],
+ ["ou / ow","часто «ау»","found, download"],
+ ["-ing","«инг» без звука «г» на конце (ŋ)","string, warning"],
+ ["Ударение","в двусложных словах чаще на первом слоге, глаголы с приставкой — на втором","ˈfolder, reˈmove, inˈstall"]
+];
+
+// Ошибки и сообщения: [текст, перевод, разбор [[слово, перевод]], заметка]
+const ERRORS = [
+ ["Access is denied.","Доступ запрещён.",[["access","доступ"],["is","есть"],["denied","отказан"]],"Нужны права администратора или файл занят."],
+ ["Cannot find path 'C:\\temp\\a.txt' because it does not exist.","Не удаётся найти путь, потому что он не существует.",[["cannot","не может"],["find","найти"],["path","путь"],["because","потому что"],["it does not exist","он не существует"]],"Проверьте путь и опечатки."],
+ ["The term 'dotnet' is not recognized as the name of a cmdlet, function, script file, or operable program.","Слово «dotnet» не распознано как имя командлета, функции, скрипта или программы.",[["term","термин, слово"],["recognized","распознан"],["name","имя"],["function","функция"],["operable program","исполняемая программа"]],"Программа не установлена или не прописана в PATH."],
+ ["ModuleNotFoundError: No module named 'psutil'","Ошибка «модуль не найден»: нет модуля с именем psutil.",[["module","модуль"],["not found","не найден"],["no module named","нет модуля с именем"]],"Лечится: pip install psutil."],
+ ["UnicodeEncodeError: 'charmap' codec can't encode character '\\u2264'","Ошибка кодировки: кодек charmap не может закодировать символ ≤.",[["encode","закодировать"],["codec","кодек (кодировщик)"],["can't","не может"],["character","символ"]],"Причина — не UTF-8. Python: флаг -X utf8."],
+ ["Permission denied","Нет разрешения (отказано в доступе).",[["permission","разрешение"],["denied","отказано"]],"Linux-вариант «Access is denied»."],
+ ["No such file or directory","Нет такого файла или каталога.",[["no such","нет такого"],["file","файл"],["or","или"],["directory","каталог"]],"Самая частая ошибка Linux и Python."],
+ ["command not found","Команда не найдена.",[["command","команда"],["not found","не найдена"]],"Программа не установлена или опечатка в имени."],
+ ["Connection timed out","Время ожидания соединения истекло.",[["connection","соединение"],["timed out","время вышло"]],"Сервер не ответил: нет сети, закрыт порт или сервер выключен."],
+ ["Unexpected token '}' in expression or statement.","Неожиданный символ «}» в выражении или инструкции.",[["unexpected","неожиданный"],["token","элемент (символ)"],["expression","выражение"],["statement","инструкция"]],"Синтаксическая ошибка: лишняя или пропущенная скобка."],
+ ["CUDA out of memory. Tried to allocate 2.00 GiB","Видеокарте не хватает памяти. Пытались выделить 2 ГиБ.",[["out of memory","память закончилась"],["tried","пытались"],["allocate","выделить"]],"Модель или батч не помещаются в видеопамять."],
+ ["Invalid argument","Неверный аргумент.",[["invalid","неверный"],["argument","аргумент (параметр)"]],"Команде передали неподходящее значение."],
+ ["The operation was canceled by the user.","Операция была отменена пользователем.",[["operation","операция"],["was canceled","была отменена"],["by the user","пользователем"]],"Например, нажали «Нет» в окне Windows."],
+ ["Are you sure you want to continue? [Y] Yes [N] No","Вы уверены, что хотите продолжить? [Y] Да [N] Нет",[["are you sure","вы уверены"],["want","хотите"],["continue","продолжить"]],"Читайте внимательно, прежде чем нажать Y."],
+ ["Successfully installed psutil-7.0.0","Успешно установлен psutil 7.0.0.",[["successfully","успешно"],["installed","установлен"]],"Всё хорошо."],
+ ["Process exited with code 1","Процесс завершился с кодом 1.",[["process","процесс"],["exited","завершился"],["with code","с кодом"]],"Код 0 — успех, любой другой — ошибка."],
+ ["DeprecationWarning: this function is deprecated and will be removed","Предупреждение: функция устарела и будет удалена.",[["deprecated","устаревший"],["will be removed","будет удалён"]],"Пока работает, но скоро перестанет."],
+ ["File already exists.","Файл уже существует.",[["file","файл"],["already","уже"],["exists","существует"]],"Нужно другое имя или ключ -Force."]
+];
+
+/* ======================= ХРАНЕНИЕ ======================= */
+const APP = "english";
+const KEY = "tech-english-v1";
+const Store = {
+  data: { cards: {}, tests: [], daily: {}, settings: { newPerDay: 12, rate: 0.85 }, updatedAt: 0 },
+  ref: null, mode: "local", _timer: null, _chain: Promise.resolve(),
+  loadLocal() {
+    try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) this.data = Object.assign(this.data, s); } catch (e) {}
+  },
+  server: false,
+  async initServer() {
+    if (!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.hostname)) return false;
+    try {
+      const r = await fetch("api/progress/" + APP, { cache: "no-store" });
+      if (!r.ok) return false;
+      const remote = await r.json();
+      if (remote && (remote.updatedAt || 0) > (this.data.updatedAt || 0)) this.data = Object.assign({}, this.data, remote);
+      this.server = true; this.mode = "server";
+      if ((!remote || !remote.updatedAt) && this.data.updatedAt) this.save();
+      renderAll(); updateChips();
+      return true;
+    } catch (e) { return false; }
+  },
+  pushServer() {
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => {
+      const body = JSON.stringify(this.data);
+      this._chain = this._chain.then(() => fetch("api/progress/" + APP, { method: "PUT", headers: { "Content-Type": "application/json" }, body }))
+        .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); if (this.mode !== "server") { this.mode = "server"; updateChips(); } })
+        .catch(() => { this.mode = "offline"; updateChips(); });
+    }, 1000);
+  },
+  async initCloud() {    try {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      const id = user ? await user.id() : null;
+      if (!db || !id) return;
+      this.ref = db.doc("data/users/" + id + "/english");
+      const snap = await this.ref.get();
+      if (snap.exists) {
+        const remote = snap.data();
+        if ((remote.updatedAt || 0) > (this.data.updatedAt || 0)) this.data = Object.assign({}, this.data, JSON.parse(JSON.stringify(remote)));
+      }
+      this.mode = "cloud";
+      if (!snap.exists && this.data.updatedAt) this.save();
+      renderAll();
+    } catch (e) { this.ref = null; this.mode = "local"; }
+    updateChips();
+  },
+  save() {
+    this.data.updatedAt = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch (e) {}
+    if (this.server) { this.pushServer(); return; }
+    if (!this.ref) return;
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => {
+      const body = JSON.parse(JSON.stringify(this.data));
+      this._chain = this._chain.then(() => this.ref.set(body)).catch(err => {
+        if (err && (err.code === "invalid_argument" || err.code === "revoked" || err.code === "not_granted")) { this.ref = null; this.mode = "local"; updateChips(); }
+      });
+    }, 1500);
+  }
+};
+
+/* ======================= ГОЛОС ======================= */
+let voice = null;
+function pickVoice() {
+  const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+  const en = vs.filter(v => /^en[-_]US/i.test(v.lang));
+  voice = en.find(v => /natural|online/i.test(v.name)) || en.find(v => /aria|jenny|guy|google/i.test(v.name)) || en[0] || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, rate) {
+  if (!window.speechSynthesis) { toast("Озвучка недоступна в этом браузере"); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; if (voice) u.voice = voice;
+  u.rate = rate || Store.data.settings.rate || 0.85;
+  speechSynthesis.speak(u);
+}
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function listen(target, outEl, onResult) {
+  if (!SR) { outEl.textContent = "Проверка произношения работает в Edge или Chrome на компьютере (ярлык «Технический английский»)."; return; }
+  const r = new SR(); r.lang = "en-US"; r.maxAlternatives = 5; r.interimResults = false;
+  outEl.textContent = "Говорите…";
+  r.onresult = ev => {
+    const alts = Array.from(ev.results[0]).map(a => a.transcript.trim().toLowerCase().replace(/[.!?,]/g, ""));
+    const goal = target.toLowerCase().replace(/[-.!?,]/g, " ").replace(/\s+/g, " ").trim();
+    const ok = alts.some(a => a.replace(/-/g, " ") === goal);
+    outEl.innerHTML = "";
+    const b = document.createElement("span");
+    b.textContent = ok ? "Отлично, понятно: «" + alts[0] + "»" : "Услышано: «" + alts[0] + "». Попробуйте ещё раз — послушайте образец.";
+    b.style.color = ok ? "var(--ok)" : "var(--bad)";
+    outEl.appendChild(b);
+    if (onResult) onResult(ok);
+  };
+  r.onerror = ev => {
+    outEl.textContent = (ev.error === "not-allowed" || ev.error === "service-not-allowed")
+      ? "Нет доступа к микрофону. На claude.ai он закрыт: проверяйте произношение в версии на компьютере."
+      : "Не расслышал (" + ev.error + "). Попробуйте ещё раз.";
+  };
+  try { r.start(); } catch (e) { outEl.textContent = "Не удалось включить микрофон."; }
+}
+
+/* ======================= УТИЛИТЫ ======================= */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const today = () => new Date().toISOString().slice(0, 10);
+const DAY = 86400000;
+const BOX_DAYS = [0, 1, 3, 7, 16, 35];
+const SPK = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+const MIC = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>';
+let toastTimer;
+function toast(msg) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.setAttribute("role", "status");
+    t.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:90vw"; document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600);
+}
+const wordByEn = Object.fromEntries(W.map(w => [w[0], w]));
+function card(en) { return Store.data.cards[en]; }
+function learnedCount() { return Object.values(Store.data.cards).filter(c => c.b >= 3).length; }
+function dueList() { const now = Date.now(); return W.filter(w => { const c = card(w[0]); return c && c.d <= now; }); }
+function updateChips() {
+  $("#chip-learned b").textContent = learnedCount() + " из " + W.length;
+  $("#chip-due b").textContent = dueList().length;
+  $("#chip-sync").textContent = ({ cloud: "Прогресс: в облаке", server: "Прогресс: на сервере", offline: "Сервер недоступен, сохраняю в браузере" }[Store.mode] || "Прогресс: этот браузер");
+}
+
+/* ======================= ВКЛАДКИ ======================= */
+const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+function openTab(id) {
+  tabs.forEach(t => { const on = t.id === id; t.setAttribute("aria-selected", on); $("#" + t.getAttribute("aria-controls")).hidden = !on; });
+  try { localStorage.setItem(KEY + "-tab", id); } catch (e) {}
+  if (id === "tab-stats") renderStats();
+  if (id === "tab-train") renderTrain();
+}
+tabs.forEach(t => t.addEventListener("click", () => openTab(t.id)));
+
+/* ======================= ТРЕНИРОВКА (карточки) ======================= */
+let session = null;
+function buildSession() {
+  const due = shuffle(dueList()).slice(0, 40);
+  const d = Store.data.daily[today()] || { newDone: 0, reviews: 0 };
+  const newLeft = Math.max(0, (Store.data.settings.newPerDay || 12) - d.newDone);
+  const fresh = W.filter(w => !card(w[0])).slice(0, newLeft);
+  return { queue: [...due, ...fresh], i: 0, flipped: false, right: 0, total: 0 };
+}
+function renderTrain() {
+  const p = $("#p-train");
+  if (!session || session.i >= session.queue.length) session = buildSession();
+  const boxes = [0, 0, 0, 0, 0, 0];
+  Object.values(Store.data.cards).forEach(c => boxes[Math.min(5, c.b)]++);
+  const intro = `<p class="lead">Карточка показывает английское слово. Вспомните перевод, послушайте, повторите вслух и откройте ответ. Слова, которые вы знаете, возвращаются всё реже: через 1, 3, 7, 16 и 35 дней.</p>
+    <div class="settings"><label for="set-new">Новых слов в день</label>
+      <select id="set-new">${[5, 8, 12, 20, 30].map(n => `<option ${n == Store.data.settings.newPerDay ? "selected" : ""}>${n}</option>`).join("")}</select>
+      <label for="set-rate">Скорость голоса</label>
+      <select id="set-rate">${[[0.6, "медленно"], [0.85, "обычно"], [1, "быстро"]].map(([v, l]) => `<option value="${v}" ${v == Store.data.settings.rate ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+    <div class="boxes" aria-label="Слова по уровням">${["новые", "уровень 1", "уровень 2", "уровень 3", "уровень 4", "выучено"].map((l, i) => `<span>${l}: <b>${boxes[i]}</b></span>`).join("")}</div>`;
+  if (!session.queue.length) {
+    p.innerHTML = intro + `<div class="card big-card"><div class="en">На сегодня всё</div><p class="note">Новые слова закончились на сегодня, повторять пока нечего. Загляните завтра, пройдите тест или поднимите число новых слов в день.</p><button class="btn primary" id="go-tests">Пройти тест</button></div>`;
+    $("#go-tests").onclick = () => openTab("tab-tests");
+  } else {
+    const w = session.queue[session.i];
+    const isNew = !card(w[0]);
+    p.innerHTML = intro + `
+      <div class="progress" aria-hidden="true"><i style="width:${(session.i / session.queue.length) * 100}%"></i></div>
+      <p class="note" style="margin:6px 0 12px">Карточка ${session.i + 1} из ${session.queue.length}${isNew ? " · новое слово" : " · повторение"} · тема: ${TOPICS[w[4]]}</p>
+      <div class="card big-card">
+        <div class="en">${esc(w[0])}</div>
+        <div class="ipa">/${esc(w[1])}/</div>
+        <div class="row" style="justify-content:center;margin-top:12px">
+          <button class="btn" id="t-say">${SPK} Послушать</button>
+          <button class="btn" id="t-slow">${SPK} Медленно</button>
+          <button class="btn" id="t-mic">${MIC} Сказать</button>
+        </div>
+        <div class="mic-heard" id="t-heard" aria-live="polite"></div>
+        <div class="answer" id="t-ans" ${session.flipped ? "" : "hidden"}>
+          <div class="tr" style="font-size:22px">${esc(w[3])}</div>
+          <div class="ru-approx">по-русски примерно: ${esc(w[2])}</div>
+          <div class="ex">${esc(w[5])}</div>
+          <div class="row" style="justify-content:center;margin-top:16px">
+            <button class="btn" id="t-bad">Не вспомнил</button>
+            <button class="btn" id="t-hard">С трудом</button>
+            <button class="btn primary" id="t-good">Знаю</button>
+          </div>
+        </div>
+        <div class="row" style="justify-content:center;margin-top:14px" ${session.flipped ? "hidden" : ""} id="t-flip-row">
+          <button class="btn primary" id="t-flip">Показать перевод</button>
+        </div>
+      </div>`;
+    $("#t-say").onclick = () => speak(w[0]);
+    $("#t-slow").onclick = () => speak(w[0], 0.5);
+    $("#t-mic").onclick = () => listen(w[0], $("#t-heard"));
+    $("#t-flip").onclick = () => { session.flipped = true; $("#t-ans").hidden = false; $("#t-flip-row").hidden = true; speak(w[0]); };
+    const grade = g => {
+      const c = card(w[0]) || { b: 0, d: 0, ok: 0, bad: 0 };
+      const d = Store.data.daily[today()] || (Store.data.daily[today()] = { newDone: 0, reviews: 0 });
+      if (!card(w[0])) d.newDone++; else d.reviews++;
+      if (g === "good") { c.b = Math.min(5, c.b + 1); c.ok++; session.right++; }
+      else if (g === "hard") { c.b = Math.max(1, c.b); c.ok++; }
+      else { c.b = 1; c.bad++; }
+      c.d = Date.now() + (g === "bad" ? 10 * 60000 : BOX_DAYS[c.b] * DAY);
+      Store.data.cards[w[0]] = c; session.total++; session.i++; session.flipped = false;
+      Store.save(); updateChips(); renderTrain();
+    };
+    $("#t-bad").onclick = () => grade("bad"); $("#t-hard").onclick = () => grade("hard"); $("#t-good").onclick = () => grade("good");
+  }
+  $("#set-new").onchange = e => { Store.data.settings.newPerDay = +e.target.value; Store.save(); session = null; renderTrain(); };
+  $("#set-rate").onchange = e => { Store.data.settings.rate = +e.target.value; Store.save(); };
+}
+
+/* ======================= СЛОВАРЬ ======================= */
+let wordTopic = "all", wordQuery = "";
+function renderWords() {
+  const p = $("#p-words");
+  p.innerHTML = `<p class="lead">${W.length} слов, которые встречаются в командах, ошибках и разговорах об ИИ. Нажмите на динамик, чтобы послушать, на микрофон — чтобы проверить себя.</p>
+    <div class="filters" role="group" aria-label="Темы">
+      <button data-t="all" aria-pressed="${wordTopic === "all"}">Все</button>
+      ${Object.entries(TOPICS).map(([k, v]) => `<button data-t="${k}" aria-pressed="${wordTopic === k}">${v}</button>`).join("")}
+    </div>
+    <div class="row" style="margin-bottom:14px"><input type="search" id="w-q" placeholder="Поиск: слово или перевод" value="${esc(wordQuery)}" style="flex:1"></div>
+    <div class="grid" id="w-grid"></div>`;
+  p.querySelectorAll(".filters button").forEach(b => b.onclick = () => { wordTopic = b.dataset.t; renderWords(); });
+  $("#w-q").oninput = e => { wordQuery = e.target.value; fillWords(); };
+  fillWords();
+}
+function fillWords() {
+  const q = wordQuery.trim().toLowerCase();
+  const list = W.filter(w => (wordTopic === "all" || w[4] === wordTopic) && (!q || w[0].includes(q) || w[3].toLowerCase().includes(q)));
+  const g = $("#w-grid");
+  g.innerHTML = list.map((w, i) => {
+    const c = card(w[0]);
+    const lvl = !c ? "новое" : c.b >= 3 ? "выучено" : "учу";
+    return `<div class="card">
+      <div class="word"><span class="en">${esc(w[0])}</span><span class="chip">${lvl}</span></div>
+      <div class="ipa">/${esc(w[1])}/ <span class="ru-approx">${esc(w[2])}</span></div>
+      <div class="tr">${esc(w[3])}</div>
+      <div class="ex">${esc(w[5])}</div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn small" data-say="${esc(w[0])}" aria-label="Послушать ${esc(w[0])}">${SPK} слово</button>
+        <button class="btn small" data-say="${esc(w[5].split(" — ")[0])}" aria-label="Послушать пример">${SPK} пример</button>
+        <button class="btn small" data-mic="${i}" aria-label="Проверить произношение">${MIC}</button>
+      </div>
+      <div class="mic-heard" id="wh-${i}" aria-live="polite"></div>
+    </div>`;
+  }).join("") || `<p class="note">Ничего не найдено.</p>`;
+  g.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say));
+  g.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(list[+b.dataset.mic][0], $("#wh-" + b.dataset.mic)));
+}
+
+/* ======================= ЗВУКИ ======================= */
+function renderSounds() {
+  const p = $("#p-sounds");
+  p.innerHTML = `<p class="lead">В английском 44 звука, и около 20 из них устроены не так, как в русском. Здесь именно они. Транскрипция в словаре записана этими значками (это международный фонетический алфавит, IPA). Нажимайте на слова, слушайте и повторяйте.</p>
+    <div class="grid">${SOUNDS.map(s => `<div class="card sound">
+      <div class="sym">${esc(s[0])}</div>
+      <div><h3>${esc(s[1])} <span class="ru-approx">· ${esc(s[2])}</span></h3><p>${esc(s[3])}</p>
+      <div class="ex-words">${s[4].map(x => `<button class="btn small" data-say="${esc(x)}">${SPK} ${esc(x)}</button>`).join("")}</div></div>
+    </div>`).join("")}</div>
+    <h2 class="section-title">Правила чтения, которые покрывают большинство слов</h2>
+    <div class="grid">${READING.map(r => `<div class="card"><b>${esc(r[0])}</b><div>${esc(r[1])}</div><div class="ex">${esc(r[2])}</div></div>`).join("")}</div>`;
+  p.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say));
+}
+
+/* ======================= ОШИБКИ ======================= */
+function renderErrors() {
+  const p = $("#p-errors");
+  p.innerHTML = `<p class="lead">Настоящие сообщения, которые выдают Windows, PowerShell, Python и видеокарта. Несколько из них мы уже встречали в нашей работе. Учитесь читать их целиком: почти всегда в тексте ошибки уже написано, что не так.</p>
+    <div class="grid" style="grid-template-columns:1fr">${ERRORS.map(e => `<div class="card">
+      <div class="err">${esc(e[0])}</div>
+      <div class="tr" style="margin-top:8px">${esc(e[1])}</div>
+      <div class="gloss">${e[2].map(g => `<span><b>${esc(g[0])}</b> — ${esc(g[1])}</span>`).join("")}</div>
+      <div class="row" style="margin-top:10px;justify-content:space-between"><span class="note">${esc(e[3])}</span>
+      <button class="btn small" data-say="${esc(e[0].replace(/'[^']*'/g, "").replace(/\\u\d+/g, ""))}">${SPK} Послушать</button></div>
+    </div>`).join("")}</div>`;
+  p.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say));
+}
+
+/* ======================= ТЕСТЫ ======================= */
+const MODES = {
+  en2ru: "Английский → русский", ru2en: "Русский → английский", audio: "На слух", spell: "Написать слово", errors: "Понять ошибку"
+};
+let test = null, testMode = "en2ru", testTopic = "all";
+function renderTests() {
+  const p = $("#p-tests");
+  if (!test) {
+    p.innerHTML = `<p class="lead">10 вопросов. Результат сохраняется в «Прогрессе». Слова, в которых вы ошиблись, сразу попадают в тренировку на повтор.</p>
+      <h2 class="section-title">Вид теста</h2>
+      <div class="filters" role="group" aria-label="Вид теста">${Object.entries(MODES).map(([k, v]) => `<button data-m="${k}" aria-pressed="${testMode === k}">${v}</button>`).join("")}</div>
+      <h2 class="section-title">Тема</h2>
+      <div class="filters" role="group" aria-label="Тема теста"><button data-t="all" aria-pressed="${testTopic === "all"}">Все слова</button><button data-t="learned" aria-pressed="${testTopic === "learned"}">Только то, что учу</button>${Object.entries(TOPICS).map(([k, v]) => `<button data-t="${k}" aria-pressed="${testTopic === k}">${v}</button>`).join("")}</div>
+      <button class="btn primary" id="t-start">Начать тест</button>`;
+    p.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { testMode = b.dataset.m; renderTests(); });
+    p.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { testTopic = b.dataset.t; renderTests(); });
+    $("#t-start").onclick = startTest;
+    return;
+  }
+  if (test.i >= test.qs.length) {
+    const pct = Math.round(test.right / test.qs.length * 100);
+    p.innerHTML = `<div class="card big-card"><div class="en">${test.right} из ${test.qs.length}</div>
+      <p>${pct >= 90 ? "Отлично!" : pct >= 70 ? "Хорошо. Ошибки ушли в тренировку." : "Нужно повторить. Ошибки ушли в тренировку."}</p>
+      ${test.wrong.length ? `<div class="gloss" style="justify-content:center">${test.wrong.map(x => `<span><b>${esc(x[0])}</b> — ${esc(x[1])}</span>`).join("")}</div>` : ""}
+      <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" id="t-menu">Другой тест</button><button class="btn primary" id="t-again">Ещё раз</button></div></div>`;
+    $("#t-menu").onclick = () => { test = null; renderTests(); };
+    $("#t-again").onclick = startTest;
+    return;
+  }
+  const q = test.qs[test.i];
+  p.innerHTML = `<div class="progress" aria-hidden="true"><i style="width:${(test.i / test.qs.length) * 100}%"></i></div>
+    <p class="note" style="margin:6px 0 12px">${MODES[test.mode]} · вопрос ${test.i + 1} из ${test.qs.length} · верно: ${test.right}</p>
+    <div class="card big-card">
+      <div class="${q.promptClass || "en"}">${q.prompt}</div>
+      ${q.sub ? `<div class="ipa">${q.sub}</div>` : ""}
+      ${q.audio ? `<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" id="q-play">${SPK} Ещё раз</button></div>` : ""}
+      ${q.opts ? `<div class="opts">${q.opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`
+        : `<div class="row" style="justify-content:center;margin-top:14px"><input type="text" id="q-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="напишите по-английски" style="max-width:280px;flex:1"><button class="btn primary" id="q-ok">Проверить</button></div>`}
+      <div class="verdict" id="q-v" aria-live="polite"></div>
+      <div class="row" style="justify-content:center"><button class="btn primary" id="q-next" hidden>Дальше</button></div>
+    </div>`;
+  if (q.audio) { $("#q-play").onclick = () => speak(q.audio); speak(q.audio); }
+  const finish = ok => {
+    const v = $("#q-v");
+    v.className = "verdict " + (ok ? "ok" : "bad");
+    v.textContent = ok ? "Верно" : "Правильно: " + q.answerText;
+    if (q.word) {
+      speak(q.word[0]);
+      if (!ok) { test.wrong.push([q.word[0], q.word[3]]); const c = card(q.word[0]) || { b: 1, ok: 0, bad: 0 }; c.b = 1; c.bad = (c.bad || 0) + 1; c.d = Date.now(); Store.data.cards[q.word[0]] = c; }
+    } else if (!ok) test.wrong.push([q.answerText.slice(0, 40), "ошибка"]);
+    if (ok) test.right++;
+    $("#q-next").hidden = false; $("#q-next").focus();
+  };
+  $("#q-next").onclick = () => { test.i++; if (test.i >= test.qs.length) saveTest(); renderTests(); };
+  if (q.opts) {
+    p.querySelectorAll(".opts button").forEach(b => b.onclick = () => {
+      if (!$("#q-next").hidden) return;
+      const i = +b.dataset.i;
+      p.querySelectorAll(".opts button").forEach(x => { x.disabled = true; if (+x.dataset.i === q.correct) x.classList.add("right"); });
+      if (i !== q.correct) b.classList.add("wrong");
+      finish(i === q.correct);
+    });
+  } else {
+    const inp = $("#q-in"); inp.focus();
+    const check = () => { if (!$("#q-next").hidden) return; inp.disabled = true; finish(inp.value.trim().toLowerCase() === q.answerText.toLowerCase()); };
+    $("#q-ok").onclick = check; inp.onkeydown = e => { if (e.key === "Enter") check(); };
+  }
+}
+function pool() {
+  if (testTopic === "learned") { const l = W.filter(w => card(w[0])); return l.length >= 4 ? l : W; }
+  return testTopic === "all" ? W : W.filter(w => w[4] === testTopic);
+}
+function startTest() {
+  const mode = testMode;
+  let qs;
+  if (mode === "errors") {
+    qs = shuffle(ERRORS).slice(0, 10).map(e => {
+      const others = shuffle(ERRORS.filter(x => x !== e)).slice(0, 3).map(x => x[1]);
+      const opts = shuffle([e[1], ...others]);
+      return { prompt: `<span class="err" style="display:block;text-align:left">${esc(e[0])}</span>`, promptClass: "", opts, correct: opts.indexOf(e[1]), answerText: e[1] };
+    });
+  } else {
+    const base = pool();
+    qs = shuffle(base).slice(0, 10).map(w => {
+      const same = shuffle(W.filter(x => x !== w && x[4] === w[4]));
+      const dis = (same.length >= 3 ? same : shuffle(W.filter(x => x !== w))).slice(0, 3);
+      if (mode === "en2ru") { const opts = shuffle([w[3], ...dis.map(x => x[3])]); return { word: w, prompt: esc(w[0]), sub: "/" + esc(w[1]) + "/", opts, correct: opts.indexOf(w[3]), answerText: w[3] }; }
+      if (mode === "ru2en") { const opts = shuffle([w[0], ...dis.map(x => x[0])]); return { word: w, prompt: esc(w[3]), promptClass: "tr", opts, correct: opts.indexOf(w[0]), answerText: w[0] }; }
+      if (mode === "audio") { const opts = shuffle([w[3], ...dis.map(x => x[3])]); return { word: w, prompt: "Что прозвучало?", promptClass: "tr", audio: w[0], opts, correct: opts.indexOf(w[3]), answerText: w[0] + " — " + w[3] }; }
+      return { word: w, prompt: esc(w[3]), promptClass: "tr", sub: "/" + esc(w[1]) + "/", answerText: w[0] };
+    });
+  }
+  test = { mode, qs, i: 0, right: 0, wrong: [] };
+  renderTests();
+}
+function saveTest() {
+  Store.data.tests.unshift({ t: Date.now(), mode: test.mode, right: test.right, total: test.qs.length });
+  Store.data.tests = Store.data.tests.slice(0, 60);
+  Store.save(); updateChips();
+}
+
+/* ======================= ПРОГРЕСС ======================= */
+function streak() {
+  let n = 0; const d = new Date();
+  for (;;) { const k = d.toISOString().slice(0, 10); const x = Store.data.daily[k]; if (x && (x.newDone || x.reviews)) { n++; d.setDate(d.getDate() - 1); } else break; }
+  return n;
+}
+function renderStats() {
+  const p = $("#p-stats");
+  const studied = Object.keys(Store.data.cards).length;
+  const tests = Store.data.tests;
+  const avg = tests.length ? Math.round(tests.slice(0, 10).reduce((s, t) => s + t.right / t.total, 0) / Math.min(10, tests.length) * 100) : null;
+  p.innerHTML = `<div class="stats">
+      <div class="card stat"><div class="n">${learnedCount()}</div><div class="l">слов выучено (уровень 3+)</div></div>
+      <div class="card stat"><div class="n">${studied}</div><div class="l">слов в работе из ${W.length}</div></div>
+      <div class="card stat"><div class="n">${streak()}</div><div class="l">дней подряд</div></div>
+      <div class="card stat"><div class="n">${avg == null ? "—" : avg + "%"}</div><div class="l">средний результат последних 10 тестов</div></div>
+    </div>
+    <h2 class="section-title">По темам</h2>
+    <div class="grid">${Object.entries(TOPICS).map(([k, v]) => { const all = W.filter(w => w[4] === k); const l = all.filter(w => (card(w[0]) || {}).b >= 3).length;
+      return `<div class="card"><div class="word"><b>${v}</b><span class="note">${l} / ${all.length}</span></div><div class="progress" style="margin-top:8px"><i style="width:${l / all.length * 100}%"></i></div></div>`; }).join("")}</div>
+    <h2 class="section-title">Последние тесты</h2>
+    ${tests.length ? `<div style="overflow-x:auto"><table class="hist"><thead><tr><th>Когда</th><th>Тест</th><th>Результат</th></tr></thead><tbody>${tests.slice(0, 15).map(t => `<tr><td>${new Date(t.t).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</td><td>${MODES[t.mode] || t.mode}</td><td>${t.right} / ${t.total}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Тестов пока не было. Начните с вкладки «Тесты».</p>`}
+    <p class="note" style="margin-top:16px">${({ cloud: "Прогресс хранится в облаке claude.ai.", server: "Прогресс хранится на сервере и одинаков на телефоне и компьютере." }[Store.mode] || "Прогресс хранится в этом браузере.")}</p>`;
+}
+
+/* ======================= ЗАПУСК ======================= */
+function renderAll() { renderTrain(); renderWords(); renderSounds(); renderErrors(); renderTests(); updateChips(); if (!$("#p-stats").hidden) renderStats(); }
+Store.loadLocal();
+renderAll();
+try { const t = localStorage.getItem(KEY + "-tab"); if (t && document.getElementById(t)) openTab(t); } catch (e) {}
+Store.initServer().then(ok => { if (!ok) Store.initCloud(); });
+</script>
+</body></html>

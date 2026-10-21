@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Обучение</title>
+<link rel="apple-touch-icon" href="icon-course-180.png">
+<meta name="theme-color" content="#3446d6">
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+<style>
+:root { --bg: #f3f4f8; --card: #ffffff; --line: #d2d6e3; --fg: #141827; --muted: #5a6178; --accent: #3446d6 }
+@media (prefers-color-scheme: dark) { :root { --bg: #0e1018; --card: #161a26; --line: #2b3145; --fg: #e6e9f2; --muted: #98a0b8; --accent: #8c9bff; color-scheme: dark } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+  padding: max(32px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px)) }
+.wrap { max-width: 640px; margin: 0 auto; display: grid; gap: 14px }
+h1 { margin: 0 0 6px; font-size: 26px }
+p { margin: 0; color: var(--muted) }
+a.app { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; color: var(--fg); text-decoration: none }
+a.app:hover, a.app:focus-visible { border-color: var(--accent); outline: none }
+a.app img { width: 56px; height: 56px; border-radius: 13px }
+a.app b { display: block; font-size: 18px }
+a.app span { color: var(--muted); font-size: 14px }
+ol { margin: 0; padding-left: 20px; color: var(--muted) } li { margin-bottom: 4px }
+.how { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px }
+.how b { display: block; margin-bottom: 6px }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div><h1>Обучение</h1><p>Два приложения. Работают без интернета после первого открытия, прогресс хранится в телефоне.</p></div>
+  <a class="app" href="english.html"><img src="icon-english-180.png" alt=""><div><b>Технический английский</b><span>Звуки, 226 слов, карточки, тесты, озвучка</span></div></a>
+  <a class="app" href="course.html"><img src="icon-course-180.png" alt=""><div><b>Курс: техника и ИИ</b><span>Уроки, тесты и тренажёр ввода команд</span></div></a>
+  <div class="how"><b>Как поставить на iPhone</b>
+    <ol><li>Откройте нужное приложение в Safari.</li><li>Нажмите «Поделиться» (квадрат со стрелкой вверх).</li><li>Выберите «На экран Домой» и нажмите «Добавить».</li></ol>
+    <p style="margin-top:6px">Повторите для второго приложения: у каждого своя иконка.</p></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest-course.json">
+<link rel="apple-touch-icon" href="icon-course-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Курс ИИ">
+<meta name="theme-color" content="#3446d6">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+</head><body><title>Курс: техника и ИИ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Onest:wght@600;800&display=swap">
+<style>
+/* Layout: учебник слева направо — шапка, список уроков, урок = теория → тест → практика в терминале */
+:root {
+  --bg: #f3f4f8; --surface: #ffffff; --surface2: #e8eaf2; --line: #d2d6e3;
+  --fg: #141827; --muted: #5a6178; --accent: #3446d6; --accent-ink: #ffffff;
+  --term-bg: #0d1117; --term-fg: #d6dde8; --term-dim: #7d8799; --term-prompt: #6fd38a; --term-cmd: #f2f5fb;
+  --ok: #1d7a3e; --bad: #b42318; --warn: #9a5b00;
+  --f-display: "Onest", "Segoe UI", sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1018; --surface: #161a26; --surface2: #1e2332; --line: #2b3145;
+  --fg: #e6e9f2; --muted: #98a0b8; --accent: #8c9bff; --accent-ink: #0b0f2a;
+  --term-bg: #07090e; --ok: #55cf7d; --bad: #ff7b6e; --warn: #f0b44c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e1018; --surface: #161a26; --surface2: #1e2332; --line: #2b3145;
+  --fg: #e6e9f2; --muted: #98a0b8; --accent: #8c9bff; --accent-ink: #0b0f2a;
+  --term-bg: #07090e; --ok: #55cf7d; --bad: #ff7b6e; --warn: #f0b44c; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 56px }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+.wrap { max-width: 980px; margin: 0 auto }
+header.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; padding-block: 22px 14px }
+h1 { font: 800 clamp(22px, 4.4vw, 30px)/1.1 var(--f-display); margin: 0; text-wrap: balance }
+h1 small { display: block; font: 400 14px var(--f-body); color: var(--muted); margin-top: 6px }
+h2 { font: 800 22px/1.2 var(--f-display); margin: 0 0 6px; text-wrap: balance }
+h3 { font: 600 17px var(--f-body); margin: 22px 0 8px }
+.chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--surface2); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap }
+.chip b { color: var(--fg) }
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 18px; scrollbar-width: none }
+nav.tabs button { flex: none; border: 0; background: none; color: var(--muted); font: 600 15px var(--f-body); padding: 12px 14px; cursor: pointer; border-bottom: 3px solid transparent }
+nav.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent) }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.lead { color: var(--muted); max-width: 68ch; margin: 0 0 16px }
+.block { margin-bottom: 26px }
+.blocktitle { font: 600 12px var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px }
+.lessons { display: grid; gap: 10px }
+.lesson { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; text-align: left; color: var(--fg); font: inherit; width: 100% }
+.lesson:hover { border-color: var(--accent) }
+.lesson[disabled] { cursor: default; opacity: .55 }
+.lesson[disabled]:hover { border-color: var(--line) }
+.lesson .num { font: 800 18px var(--f-display); color: var(--accent); text-align: center; font-variant-numeric: tabular-nums }
+.lesson .t { font-weight: 600 } .lesson .d { color: var(--muted); font-size: 14px }
+.ring { width: 40px; height: 40px }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0 }
+.theory p { margin: 0 0 12px; max-width: 70ch }
+.theory ul { margin: 0 0 12px; padding-left: 20px; max-width: 70ch } .theory li { margin-bottom: 6px }
+.theory .ex { border-left: 3px solid var(--accent); background: var(--surface2); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 0 0 12px; max-width: 70ch }
+.tbl { overflow-x: auto; margin: 0 0 14px }
+table { border-collapse: collapse; font-size: 14px; min-width: 100% }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { background: var(--surface2); font-weight: 600 }
+code { font-family: var(--f-mono); font-size: .9em; background: var(--surface2); padding: 1px 5px; border-radius: 4px }
+pre.code { font-family: var(--f-mono); font-size: 13.5px; background: var(--term-bg); color: var(--term-fg); padding: 12px 14px; border-radius: 10px; overflow-x: auto; margin: 0 0 12px }
+.subnav { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 18px }
+.subnav button { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 7px 14px; font: 600 14px var(--f-body); cursor: pointer }
+.subnav button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 8px 14px; font: 600 14px var(--f-body); cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.q { font-weight: 600; font-size: 17px; margin-bottom: 4px }
+.opts { display: grid; gap: 8px; margin-top: 12px }
+.opts button { text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 11px 14px; font: 500 15px var(--f-body); cursor: pointer }
+.opts button.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, var(--surface)) }
+.opts button.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, var(--surface)) }
+.explain { margin-top: 12px; font-size: 15px; padding: 10px 12px; border-radius: 8px; background: var(--surface2) }
+.explain b.ok { color: var(--ok) } .explain b.bad { color: var(--bad) }
+.progress { height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden }
+.progress > i { display: block; height: 100%; background: var(--accent) }
+.term { background: var(--term-bg); color: var(--term-fg); border-radius: 12px; font: 14px/1.5 var(--f-mono); overflow: hidden }
+.term .bar { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: color-mix(in srgb, var(--term-bg) 80%, #ffffff); color: var(--term-dim); font-size: 12px }
+.term .out { padding: 12px 14px; max-height: 360px; overflow: auto; white-space: pre; }
+.term .out .p { color: var(--term-prompt) } .term .out .c { color: var(--term-cmd) } .term .out .e { color: #ff8a80 } .term .out .dim { color: var(--term-dim) }
+.term .in { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-top: 1px solid #ffffff1a }
+.term .in span { color: var(--term-prompt); white-space: nowrap }
+.term .in input { flex: 1; min-width: 0; background: transparent; border: 0; color: var(--term-cmd); font: 15px var(--f-mono); outline: none }
+.task { margin-bottom: 14px }
+.task .goal { font-weight: 600; margin-bottom: 6px }
+.task .hint { font-size: 14px; color: var(--muted); margin-top: 8px }
+.done-mark { color: var(--ok); font-weight: 700 }
+.ref-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)) }
+.ref-grid .card h4 { margin: 0 0 8px; font-size: 15px }
+.ref-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; font-size: 14px; padding: 5px 0; border-bottom: 1px dashed var(--line) }
+.ref-row code { word-break: break-word }
+.stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); margin-bottom: 18px }
+.stat .n { font: 800 28px var(--f-display); font-variant-numeric: tabular-nums } .stat .l { color: var(--muted); font-size: 13px }
+.note { font-size: 13px; color: var(--muted) }
+input[type=search] { font: 16px var(--f-body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); width: 100%; margin-bottom: 14px }
+.panel[hidden] { display: none }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Курс: техника и ИИ<small>Компьютер, командная строка, Python, устройство нейросетей</small></h1>
+    <div class="row"><span class="chip" id="chip-done">Пройдено: <b>0%</b></span><span class="chip" id="chip-sync">Прогресс: этот браузер</span></div>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button role="tab" id="tab-course" aria-controls="p-course" aria-selected="true">Уроки</button>
+    <button role="tab" id="tab-lesson" aria-controls="p-lesson" aria-selected="false">Текущий урок</button>
+    <button role="tab" id="tab-ref" aria-controls="p-ref" aria-selected="false">Справочник команд</button>
+    <button role="tab" id="tab-stats" aria-controls="p-stats" aria-selected="false">Прогресс</button>
+  </nav>
+  <section class="panel" id="p-course" role="tabpanel" aria-labelledby="tab-course"></section>
+  <section class="panel" id="p-lesson" role="tabpanel" aria-labelledby="tab-lesson" hidden></section>
+  <section class="panel" id="p-ref" role="tabpanel" aria-labelledby="tab-ref" hidden></section>
+  <section class="panel" id="p-stats" role="tabpanel" aria-labelledby="tab-stats" hidden></section>
+</div>
+
+<script>
+/* ===================== ПРОГРАММА КУРСА ===================== */
+const BLOCKS = [
+  ["Блок 1. Как работает компьютер", [1, 2, 3]],
+  ["Блок 2. Языки, на которых говорит ИИ", [4, 5, 6, 7, 8]],
+  ["Блок 3. Как устроен ИИ технически", [9, 10, 11, 12]],
+  ["Блок 4. ИИ через код", [13, 14, 15]],
+  ["Блок 5. Профессиональный вайбкодинг", [16]]
+];
+const OUTLINE = {
+  1: ["Что внутри компьютера", "Процессор, ядра, потоки, память, видеокарта"],
+  2: ["Операционная система", "Процессы, права, файлы, кодировки, WSL"],
+  3: ["Командная строка", "Как устроены команды, конвейер, поиск команд"],
+  4: ["Python: основы", "Переменные, типы, условия, циклы"],
+  5: ["Python: функции и модули", "Функции, ошибки, файлы; разбор кода монитора"],
+  6: ["Данные: JSON, CSV, SQL", "Форматы данных и базы данных"],
+  7: ["Инструменты разработчика", "Терминал, git, pip, редактор"],
+  8: ["JavaScript и веб", "Как устроены сайты и веб-приложения"],
+  9: ["Токены и нейросеть", "Токены, эмбеддинги, параметры, что внутри DeepSeek"],
+  10: ["Трансформер и внимание", "Почему модель понимает контекст"],
+  11: ["Обучение и дообучение", "Функция потерь, градиент, эпохи, LoRA"],
+  12: ["Видеопамять и скорость", "Квантизация, VRAM, почему нужны 2 × 96 ГБ"],
+  13: ["API: ИИ из своей программы", "Запросы к модели из кода"],
+  14: ["Агенты, инструменты, MCP", "Как устроены Астра и Claude изнутри"],
+  15: ["RAG: ИИ и ваши документы", "Поиск по базе знаний, как в Т3-УГП"],
+  16: ["Спецификации, тесты, ревью", "Переход с 7/10 на 9/10"]
+};
+
+/* ===================== СОДЕРЖАНИЕ УРОКОВ =====================
+   theory: HTML-фрагменты; quiz: [вопрос, [варианты], индекс верного, объяснение];
+   tasks: {goal, accept: [regex], out: "вывод", hints: [..], answer} */
+const LESSONS = {
+1: {
+ theory: `
+<p>Компьютер состоит из четырёх главных частей. Каждая отвечает за своё, и узкое место всегда одна из них.</p>
+<div class="tbl"><table><thead><tr><th>Часть</th><th>Что делает</th><th>У вас на сервере</th></tr></thead><tbody>
+<tr><td>Процессор (CPU)</td><td>выполняет команды программ: сложить, сравнить, перейти</td><td>Ryzen 9 9950X: 16 ядер, 32 потока</td></tr>
+<tr><td>Оперативная память (ОЗУ)</td><td>рабочий стол процессора: быстрая, стирается при выключении</td><td>128 ГБ</td></tr>
+<tr><td>Диск (SSD)</td><td>долгое хранение, примерно в 100 раз медленнее памяти</td><td>2 ТБ + 4 ТБ</td></tr>
+<tr><td>Видеокарта (GPU)</td><td>тысячи простых ядер: одна операция над огромным массивом чисел сразу</td><td>2 × RTX PRO 6000, по 96 ГБ видеопамяти</td></tr>
+</tbody></table></div>
+<h3>Ядра и потоки</h3>
+<ul><li><b>Ядро</b> — физический вычислитель. У вас 16.</li>
+<li><b>Логический процессор</b> — каждое ядро ведёт две задачи сразу (SMT): пока одна ждёт данные из памяти, ядро работает над другой. 16 × 2 = 32.</li>
+<li>Поэтому правило «DeepSeek — 22 из 32 потоков» означает около 70% процессора.</li>
+<li><b>Частота 5 ГГц</b> — 5 миллиардов тактов в секунду.</li></ul>
+<h3>Почему ИИ считают на видеокартах</h3>
+<p>Нейросеть — это в основном умножение огромных таблиц чисел (матриц). Процессор делает такие операции десятками, видеокарта — тысячами одновременно. Модель должна целиком поместиться в видеопамять, иначе считать нельзя.</p>
+<h3>Процесс и поток</h3>
+<ul><li><b>Процесс</b> — запущенная программа: отдельная «комната» со своей памятью.</li>
+<li><b>Поток</b> — исполнитель внутри процесса, последовательность команд для процессора.</li>
+<li><b>Планировщик</b> Windows раздаёт ядра активным потокам по 15–30 мс по очереди.</li></ul>
+<div class="ex"><b>С вашего сервера:</b> 406 процессов и 8663 потока работают на 32 логических процессорах. Почти все потоки спят и ждут события, процессор им не нужен. Загрузка 100% значит, что активных потоков больше 32 и они стоят в очереди.</div>
+<h3>Ловушки команды Get-Process</h3>
+<ul><li>Колонка <code>CPU</code> — <b>секунды</b> процессорного времени с момента запуска, а не проценты. Секунды ÷ время работы = сколько потоков процесс держал в среднем.</li>
+<li>Колонка <code>Threads</code> — список номеров потоков. Их количество — <code>.Threads.Count</code>.</li></ul>`,
+ quiz: [
+  ["Сколько логических процессоров видит Windows на Ryzen 9 9950X?", ["16", "32", "64", "8"], 1, "16 физических ядер × 2 потока на ядро (SMT) = 32."],
+  ["Что показывает колонка CPU в Get-Process?", ["Процент загрузки сейчас", "Секунды процессорного времени с момента запуска", "Номер ядра", "Частоту процессора"], 1, "Это накопленные секунды. Чтобы получить среднюю нагрузку, делите их на время работы процесса."],
+  ["Процесс работает 1 час (3600 с) и набрал CPU = 7200 с. Сколько потоков он держал в среднем?", ["0,5", "1", "2", "7200"], 2, "7200 ÷ 3600 = 2. Он всё время занимал два потока на 100%."],
+  ["Почему ИИ считают на видеокартах?", ["Видеокарты дешевле", "Нейросеть — это умножение огромных матриц, а у видеокарты тысячи ядер для параллельных операций", "Процессор не умеет считать дробные числа", "Так требует Windows"], 1, "Матричное умножение идеально делится на тысячи одинаковых операций."],
+  ["Что произойдёт, если модель не помещается в видеопамять?", ["Будет работать, но медленнее", "Запустить её на этой видеокарте нельзя (ошибка out of memory)", "Видеокарта возьмёт память с диска автоматически", "Ничего"], 1, "Отсюда ошибка CUDA out of memory. Решения — квантизация, меньшая модель или несколько видеокарт."],
+  ["Почему 8663 потока работают на 32 логических процессорах?", ["Windows их сжимает", "Почти все потоки спят и ждут событий, а активные получают ядро по очереди на миллисекунды", "Остальные потоки работают на видеокарте", "Это ошибка подсчёта"], 1, "Спящий поток процессор не тратит. Планировщик переключает активные."],
+  ["Чем процесс отличается от потока?", ["Ничем", "Процесс — программа со своей памятью, поток — исполнитель команд внутри неё", "Поток — это программа, процесс — её часть", "Процесс работает на видеокарте"], 1, "У одного процесса может быть много потоков; память процесса общая для его потоков."],
+  ["Что значит загрузка процессора 100%?", ["Процессор сломан", "Все логические процессоры заняты, активные потоки ждут очереди", "Занята вся оперативная память", "Перегрев"], 1, "Компьютер начинает «тормозить», потому что новые задачи ждут свободного ядра."]
+ ],
+ tasks: [
+  { goal: "Покажите модель процессора, число ядер и логических процессоров.",
+    accept: [/^get-ciminstance\s+(-classname\s+)?win32_processor\b/i, /^gcim\s+win32_processor\b/i, /^get-wmiobject\s+win32_processor\b/i],
+    out: "Name                              NumberOfCores NumberOfLogicalProcessors\n----                              ------------- -------------------------\nAMD Ryzen 9 9950X 16-Core Processor            16                        32",
+    hints: ["Сведения о железе даёт команда Get-CimInstance и класс Win32_Processor.", "Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors"] },
+  { goal: "Покажите 5 процессов, которые потратили больше всего процессорного времени.",
+    accept: [/^(get-process|gps|ps)\s*\|\s*(sort-object|sort)\s+(-property\s+)?cpu\s+-desc(ending)?\s*\|\s*(select-object|select)\s+-first\s+5\b/i],
+    out: "Name                     Id        CPU\n----                     --        ---\npython                43040   1717,20\nclaude                30952    408,77\nclaude                29960    325,59\nLibreHardwareMonitor   6328    311,84\nexplorer               5120    122,10",
+    hints: ["Нужен конвейер: Get-Process | сортировка | выбор первых.", "Сортировка: Sort-Object CPU -Descending. Выбор: Select-Object -First 5.", "Get-Process | Sort-Object CPU -Descending | Select-Object -First 5 Name, Id, CPU"] },
+  { goal: "Посчитайте, сколько процессов запущено.",
+    accept: [/^\(\s*(get-process|gps|ps)\s*\)\.count$/i, /^(get-process|gps|ps)\s*\|\s*(measure-object|measure)\s*(\|.*)?$/i, /^@\(\s*(get-process|gps|ps)\s*\)\.count$/i],
+    out: "406",
+    hints: ["У списка есть свойство .Count. Команду можно взять в скобки.", "(Get-Process).Count"] }
+ ]
+},
+2: {
+ theory: `
+<p><b>Операционная система</b> — главная программа, которая делит между остальными процессор, память, диски и сеть. Ни одна программа не трогает железо напрямую.</p>
+<h3>Паспорт процесса</h3>
+<ul><li><b>PID</b> — номер процесса, уникален, пока процесс жив.</li>
+<li><b>Родитель (ParentProcessId)</b> — кто его запустил. Процессы образуют дерево.</li>
+<li><b>Командная строка (CommandLine)</b> — точная команда запуска. По ней почти всегда понятно, что это.</li>
+<li><b>Время запуска (CreationDate)</b>.</li></ul>
+<div class="ex"><b>Расследование:</b> powershell с 1997 секундами CPU. Родитель — claude.exe, запущен в 10:18:40, в командной строке make_docx. Вывод: зависший скрипт Claude. Схема для любого подозрительного процесса: PID → родитель → командная строка → время.</div>
+<pre class="code">Get-CimInstance Win32_Process -Filter "ProcessId=6328" |
+  Select-Object ProcessId, ParentProcessId, CreationDate, CommandLine</pre>
+<h3>Права</h3>
+<ul><li>Обычный пользователь не видит подробностей процессов администратора: поле CommandLine приходит пустым.</li>
+<li>Пустое поле часто значит «нет прав посмотреть», а не «ничего нет».</li>
+<li>LibreHardwareMonitor нужны права администратора, чтобы читать датчики процессора.</li></ul>
+<h3>Службы и svchost</h3>
+<p><code>svchost.exe</code> — контейнер для служб Windows. Какая служба в нём, показывает <code>Get-CimInstance Win32_Service</code>. Пример: родитель LibreHardwareMonitor — svchost со службой «Планировщик задач», потому что автозапуск сделан задачей Планировщика.</p>
+<h3>Файлы и пути</h3>
+<ul><li><b>Путь</b> — адрес файла: <code>C:\\Users\\user\\Desktop\\file.txt</code>.</li>
+<li><b>Расширение</b> — подсказка Windows, какой программой открывать.</li>
+<li><b>Текстовые</b> файлы (.py, .txt, .csv, .json) открываются Блокнотом. <b>Двоичные</b> (.exe, .png, .docx) понятны только своей программе. .docx — это zip-архив с XML внутри.</li></ul>
+<h3>Кодировки</h3>
+<div class="tbl"><table><thead><tr><th>Кодировка</th><th>Что умеет</th><th>Байт на русскую букву</th></tr></thead><tbody>
+<tr><td>ASCII</td><td>128 символов, только латиница</td><td>нет русских</td></tr>
+<tr><td>Windows-1251</td><td>256 символов, русский + латиница</td><td>1</td></tr>
+<tr><td>UTF-8</td><td>все языки мира, математика, эмодзи</td><td>2</td></tr></tbody></table></div>
+<p>Записали в одной кодировке, прочитали в другой — получились «кракозябры». Правило: всегда UTF-8. Пример из нашей работы: ошибка <code>'charmap' codec can't encode character '\\u2264'</code> исчезла после флага <code>python -X utf8</code>.</p>
+<h3>WSL</h3>
+<p><b>WSL</b> — настоящий Linux внутри Windows в лёгкой виртуальной машине. Почти весь ИИ делается под Linux, и дообучение DeepSeek идёт именно там. Лимит «22 из 32 потоков» задан в файле <code>.wslconfig</code>. Для Windows вся WSL — один процесс <code>vmmem</code>.</p>`,
+ quiz: [
+  ["Что такое PID?", ["Пароль процесса", "Уникальный номер процесса", "Приоритет", "Путь к программе"], 1, "Process ID — номер, по которому процесс можно найти и завершить."],
+  ["Как узнать, кто запустил процесс?", ["Посмотреть ParentProcessId и найти процесс с этим номером", "По цвету окна", "Через диспетчер устройств", "Никак"], 0, "Номер родителя есть в Win32_Process, имя — вторым запросом по этому номеру."],
+  ["Почему у процесса администратора пустое поле CommandLine?", ["Он сломан", "Обычному пользователю Windows не показывает подробности процессов администратора", "У служб нет командной строки", "Так выглядит вирус"], 1, "Это защита: менее привилегированная программа не подглядывает за более привилегированной."],
+  ["Сколько байт занимает «Привет» в UTF-8?", ["6", "12", "24", "3"], 1, "6 русских букв × 2 байта = 12. В Windows-1251 было бы 6."],
+  ["Откуда «кракозябры» вида РџСЂРёРІРµС‚?", ["Вирус", "Текст записан в одной кодировке, а прочитан в другой", "Сломан шрифт", "Нет интернета"], 1, "Здесь UTF-8 прочитан как Windows-1251."],
+  ["Что такое WSL?", ["Антивирус", "Linux, работающий внутри Windows", "Язык программирования", "Видеодрайвер"], 1, "Windows Subsystem for Linux. Там идёт дообучение DeepSeek."],
+  ["Что такое svchost.exe?", ["Вирус", "Контейнер для служб Windows", "Браузер", "Программа Claude"], 1, "Внутри одного svchost может работать одна или несколько служб."],
+  ["Файл .docx — это…", ["Текстовый файл", "Zip-архив с XML-файлами внутри", "Картинка", "Программа"], 1, "Поэтому его нельзя читать Блокнотом, но можно распаковать архиватором."]
+ ],
+ tasks: [
+  { goal: "Покажите паспорт процесса LibreHardwareMonitor: номер, родителя, время запуска и командную строку.",
+    accept: [/^get-ciminstance\s+(-classname\s+)?win32_process\s+-filter\s+["']name\s*=\s*'librehardwaremonitor\.exe'["']/i],
+    out: "ProcessId ParentProcessId CreationDate        CommandLine\n--------- --------------- ------------        -----------\n     6328            3100 21.10.2026 9:14:38",
+    hints: ["Класс Win32_Process и параметр -Filter с условием по имени Name='...'.", "Get-CimInstance Win32_Process -Filter \"Name='LibreHardwareMonitor.exe'\" | Select-Object ProcessId, ParentProcessId, CreationDate, CommandLine"] },
+  { goal: "Узнайте, что за процесс с номером 3100 (родитель LibreHardwareMonitor).",
+    accept: [/^get-ciminstance\s+(-classname\s+)?win32_process\s+-filter\s+["']processid\s*=\s*3100["']/i, /^(get-process|gps|ps)\s+-id\s+3100\b/i],
+    out: "ProcessId Name        CreationDate\n--------- ----        ------------\n     3100 svchost.exe 21.10.2026 8:58:25",
+    hints: ["Тот же класс Win32_Process, но фильтр по ProcessId. Или Get-Process с параметром -Id.", "Get-Process -Id 3100"] },
+  { goal: "Найдите, какая служба работает внутри процесса 3100.",
+    accept: [/^get-ciminstance\s+(-classname\s+)?win32_service\s*\|\s*(where-object|where|\?)\s*(\{\s*\$_\.processid\s+-eq\s+3100\s*\}|processid\s+-eq\s+3100)/i, /^get-ciminstance\s+(-classname\s+)?win32_service\s+-filter\s+["']processid\s*=\s*3100["']/i],
+    out: "Name     DisplayName\n----     -----------\nSchedule Планировщик задач",
+    hints: ["Службы — класс Win32_Service. Отфильтруйте по полю ProcessId.", "Get-CimInstance Win32_Service | Where-Object ProcessId -eq 3100"] },
+  { goal: "Покажите байты слова «Привет» в кодировке UTF-8.",
+    accept: [/^\[(system\.)?text\.encoding\]::utf8\.getbytes\(\s*["']привет["']\s*\)/i],
+    out: "208\n159\n209\n128\n208\n184\n208\n178\n208\n181\n209\n130",
+    hints: ["Класс [Text.Encoding], у него есть UTF8 и метод GetBytes(\"текст\").", "[Text.Encoding]::UTF8.GetBytes(\"Привет\")"] }
+ ]
+},
+3: {
+ theory: `
+<h3>Три языка командной строки</h3>
+<div class="tbl"><table><thead><tr><th>Оболочка</th><th>Где</th><th>Пример</th></tr></thead><tbody>
+<tr><td>cmd</td><td>старая командная строка Windows</td><td><code>dir</code>, <code>copy</code></td></tr>
+<tr><td>PowerShell</td><td>современная оболочка Windows</td><td><code>Get-Process</code></td></tr>
+<tr><td>bash</td><td>Linux, WSL, серверы, почти весь ИИ</td><td><code>ls</code>, <code>grep</code></td></tr></tbody></table></div>
+<h3>Глагол-Существительное</h3>
+<p>Команды PowerShell строятся как <code>Глагол-Существительное</code>: <code>Get-Process</code>, <code>Stop-Process</code>, <code>Remove-Item</code>. Глаголов несколько десятков, и они везде одинаковые.</p>
+<div class="tbl"><table><thead><tr><th>Глагол</th><th>Значение</th><th>Опасность</th></tr></thead><tbody>
+<tr><td>Get-</td><td>получить, показать</td><td>безопасно</td></tr><tr><td>Test-</td><td>проверить</td><td>безопасно</td></tr>
+<tr><td>Set-</td><td>изменить</td><td>меняет</td></tr><tr><td>New-</td><td>создать</td><td>создаёт</td></tr>
+<tr><td>Start- / Stop-</td><td>запустить / остановить</td><td>меняет</td></tr><tr><td>Remove-</td><td>удалить</td><td><b>без корзины</b></td></tr></tbody></table></div>
+<p><b>Параметры</b> начинаются с дефиса: <code>Get-Process -Name python</code>. Регистр букв в PowerShell не важен.</p>
+<h3>Три команды, которые находят всё остальное</h3>
+<ul><li><code>Get-Command *process*</code> — найти команду по слову.</li>
+<li><code>Get-Help Get-Process -Examples</code> — инструкция с примерами.</li>
+<li><code>... | Get-Member</code> — какие поля есть у результата.</li></ul>
+<h3>Конвейер</h3>
+<p>Знак <code>|</code> передаёт результат одной команды в следующую.</p>
+<pre class="code">Get-Process | Sort-Object CPU -Descending | Select-Object -First 5 Name, CPU</pre>
+<div class="tbl"><table><thead><tr><th>Звено</th><th>Что делает</th></tr></thead><tbody>
+<tr><td><code>Where-Object</code></td><td>фильтр: <code>Where-Object CPU -gt 100</code></td></tr>
+<tr><td><code>Sort-Object</code></td><td>сортировка</td></tr><tr><td><code>Select-Object</code></td><td>колонки или первые N</td></tr>
+<tr><td><code>Measure-Object</code></td><td>количество, сумма</td></tr><tr><td><code>Export-Csv</code></td><td>сохранить в файл для Excel</td></tr></tbody></table></div>
+<p>Сравнения: <code>-eq</code> равно, <code>-ne</code> не равно, <code>-gt</code> больше, <code>-lt</code> меньше, <code>-like</code> по шаблону.</p>
+<p>Внутри фигурных скобок <code>$_</code> означает «текущий объект на конвейере»: <code>Where-Object { $_.Threads.Count -gt 100 }</code>.</p>
+<h3>PowerShell и bash</h3>
+<div class="tbl"><table><thead><tr><th>Задача</th><th>PowerShell</th><th>bash</th></tr></thead><tbody>
+<tr><td>файлы</td><td><code>Get-ChildItem</code></td><td><code>ls -la</code></td></tr><tr><td>файл</td><td><code>Get-Content f.txt</code></td><td><code>cat f.txt</code></td></tr>
+<tr><td>поиск текста</td><td><code>Select-String</code></td><td><code>grep</code></td></tr><tr><td>процессы</td><td><code>Get-Process</code></td><td><code>ps aux</code></td></tr>
+<tr><td>завершить</td><td><code>Stop-Process -Id 123</code></td><td><code>kill 123</code></td></tr><tr><td>справка</td><td><code>Get-Help</code></td><td><code>man</code></td></tr></tbody></table></div>
+<p>Главное отличие: bash передаёт по конвейеру <b>текст</b>, PowerShell — <b>объекты с полями</b>.</p>
+<h3>Безопасность</h3>
+<ul><li>Не запускайте команду, которую не понимаете, особенно присланную в сообщении.</li>
+<li>Перед <code>Remove-Item</code> запустите <code>Get-ChildItem</code> с тем же путём.</li>
+<li>Параметр <code>-WhatIf</code> показывает, что произошло бы, ничего не делая.</li></ul>`,
+ quiz: [
+  ["Какие команды точно безопасны для изучения?", ["Remove- и Stop-", "Get- и Test-", "Set- и New-", "Любые"], 1, "Get- и Test- только читают и ничего не меняют."],
+  ["Как найти все команды, связанные со службами?", ["Get-Help service", "Get-Command *service*", "Find-Service", "Search service"], 1, "Get-Command ищет по шаблону, * означает «любые символы»."],
+  ["Что делает знак | ?", ["Делит числа", "Передаёт результат одной команды в следующую", "Комментарий", "Запускает от администратора"], 1, "Это конвейер (pipeline)."],
+  ["Что значит -gt?", ["get", "больше (greater than)", "равно", "группа"], 1, "-gt больше, -lt меньше, -eq равно, -ne не равно."],
+  ["Что означает $_ внутри Where-Object { ... }?", ["Последняя ошибка", "Текущий объект на конвейере", "Имя пользователя", "Пустое значение"], 1, "Например, $_.CPU — поле CPU текущего процесса."],
+  ["Как безопасно проверить, что удалит Remove-Item *.tmp?", ["Запустить и посмотреть", "Добавить -WhatIf", "Добавить -Force", "Никак"], 1, "-WhatIf показывает действие, не выполняя его. -Force наоборот снимает защиту."],
+  ["Аналог Get-Process в bash:", ["ls", "ps aux", "cat", "grep"], 1, "ps aux — список процессов в Linux."],
+  ["Чем конвейер PowerShell отличается от bash?", ["Ничем", "PowerShell передаёт объекты с полями, bash — текст", "bash быстрее", "В PowerShell нет конвейера"], 1, "Поэтому в PowerShell можно сортировать по полю: Sort-Object CPU."],
+  ["Remove-Item удаляет…", ["В корзину", "Сразу и без корзины", "Только пустые папки", "Только после перезагрузки"], 1, "Удалённое Remove-Item в корзине не найти."],
+  ["Как посмотреть примеры использования команды?", ["Get-Help команда -Examples", "Get-Examples команда", "команда --examples", "Show-Help"], 0, "Get-Help с параметром -Examples."]
+ ],
+ tasks: [
+  { goal: "Найдите все команды, в названии которых есть слово service.",
+    accept: [/^(get-command|gcm)\s+(-name\s+)?\*?service\*?$/i, /^(get-command|gcm)\s+-noun\s+\*?service\*?$/i],
+    out: "CommandType Name             Source\n----------- ----             ------\nCmdlet      Get-Service      Microsoft.PowerShell.Management\nCmdlet      New-Service      Microsoft.PowerShell.Management\nCmdlet      Restart-Service  Microsoft.PowerShell.Management\nCmdlet      Start-Service    Microsoft.PowerShell.Management\nCmdlet      Stop-Service     Microsoft.PowerShell.Management\n...",
+    hints: ["Команда для поиска команд — Get-Command. Шаблон пишется со звёздочками.", "Get-Command *service*"] },
+  { goal: "Покажите примеры использования Get-ChildItem.",
+    accept: [/^(get-help|help|man)\s+(get-childitem|ls|dir|gci)\s+-examples?$/i],
+    out: "NAME\n    Get-ChildItem\n\n    -------- Example 1: Get child items from a file system directory --------\n    Get-ChildItem -Path C:\\Test\n...",
+    hints: ["Справка — Get-Help, параметр для примеров — -Examples.", "Get-Help Get-ChildItem -Examples"] },
+  { goal: "Покажите только процессы, у которых больше 100 потоков.",
+    accept: [/^(get-process|gps|ps)\s*\|\s*(where-object|where|\?)\s*\{\s*\$_\.threads\.count\s*-gt\s*100\s*\}/i],
+    out: "Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id ProcessName\n-------  ------    -----      -----     ------     -- -----------\n   5210     312   410220     380112   1717,20  43040 python\n   3902     118   215400     190220    408,77  30952 claude\n   6120      52    88200     110300     40,12      4 System\n...",
+    hints: ["Нужен фильтр Where-Object с фигурными скобками и $_.", "Количество потоков — $_.Threads.Count, сравнение «больше» — -gt.", "Get-Process | Where-Object { $_.Threads.Count -gt 100 }"] },
+  { goal: "Покажите только запущенные службы (Status = Running).",
+    accept: [/^(get-service|gsv)\s*\|\s*(where-object|where|\?)\s*(\{\s*\$_\.status\s+-eq\s+["']?running["']?\s*\}|status\s+-eq\s+["']?running["']?)$/i],
+    out: "Status   Name               DisplayName\n------   ----               -----------\nRunning  Appinfo            Сведения о приложении\nRunning  AudioSrv           Windows Audio\nRunning  Schedule           Планировщик задач\n...",
+    hints: ["Get-Service и фильтр Where-Object по полю Status.", "Get-Service | Where-Object Status -eq Running"] },
+  { goal: "Проверьте, открыт ли порт 443 у сайта ya.ru.",
+    accept: [/^(test-netconnection|tnc)\s+(-computername\s+)?ya\.ru\s+-port\s+443$/i],
+    out: "ComputerName     : ya.ru\nRemoteAddress    : 77.88.55.242\nRemotePort       : 443\nTcpTestSucceeded : True",
+    hints: ["Команда проверки соединения с портом — Test-NetConnection.", "Test-NetConnection ya.ru -Port 443"] },
+  { goal: "Посмотрите, что удалила бы команда удаления всех .tmp файлов в текущей папке, ничего не удаляя.",
+    accept: [/^(remove-item|rm|del|ri)\s+(-path\s+)?\.?[\\/]?\*\.tmp\s+-whatif$/i],
+    out: "What if: Performing the operation \"Remove File\" on target \"C:\\Users\\user\\a.tmp\".\nWhat if: Performing the operation \"Remove File\" on target \"C:\\Users\\user\\b.tmp\".",
+    hints: ["Remove-Item с шаблоном *.tmp и параметром безопасной проверки.", "Remove-Item *.tmp -WhatIf"] }
+ ]
+}
+};
+
+/* ===================== СПРАВОЧНИК ===================== */
+const REF = [
+ ["Найти и понять команду", [["Get-Command *слово*", "найти команду"], ["Get-Help команда -Examples", "примеры"], ["команда | Get-Member", "поля результата"], ["Get-Alias", "сокращения"]]],
+ ["Файлы и папки", [["Get-Location (pwd)", "где я"], ["Set-Location путь (cd)", "перейти"], ["Get-ChildItem (ls, dir)", "что в папке"], ["Get-Content файл (cat)", "показать файл"], ["Copy-Item / Move-Item", "копировать / переместить"], ["New-Item -ItemType Directory", "создать папку"], ["Remove-Item (rm)", "удалить без корзины"]]],
+ ["Процессы и система", [["Get-Process", "процессы"], ["Stop-Process -Id N", "завершить"], ["Get-Service", "службы"], ["Get-CimInstance Win32_Processor", "процессор"], ["Get-CimInstance Win32_Process", "паспорт процессов"], ["Get-ScheduledTask", "задачи Планировщика"]]],
+ ["Конвейер", [["Where-Object Поле -gt 5", "фильтр"], ["Where-Object { $_.Поле -eq 'x' }", "фильтр с $_"], ["Sort-Object Поле -Descending", "сортировка"], ["Select-Object -First 5 A, B", "первые N, колонки"], ["Measure-Object -Sum", "сумма, количество"], ["Export-Csv файл.csv", "в Excel"]]],
+ ["Сеть", [["Test-Connection ya.ru", "пинг"], ["Test-NetConnection хост -Port 443", "открыт ли порт"], ["Get-NetIPAddress", "IP-адреса"], ["Invoke-WebRequest адрес", "скачать страницу"]]],
+ ["Сравнения", [["-eq / -ne", "равно / не равно"], ["-gt / -lt", "больше / меньше"], ["-ge / -le", "больше или равно / меньше или равно"], ["-like 'abc*'", "по шаблону"], ["-match 'regex'", "по регулярному выражению"]]],
+ ["PowerShell → bash", [["Get-ChildItem", "ls -la"], ["Get-Content", "cat"], ["Select-String", "grep"], ["Get-Process", "ps aux, top"], ["Stop-Process", "kill"], ["Get-Help", "man"]]],
+ ["Безопасность", [["-WhatIf", "показать, ничего не делая"], ["-Confirm", "спросить перед действием"], ["Get- / Test-", "только читают"], ["Remove- / Stop- / Set-", "меняют систему"]]]
+];
+
+/* ===================== ХРАНЕНИЕ ===================== */
+const APP = "course";
+const KEY = "it-course-v1";
+const Store = {
+  data: { lessons: {}, current: 1, updatedAt: 0 }, ref: null, mode: "local", _timer: null, _chain: Promise.resolve(),
+  loadLocal() { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) this.data = Object.assign(this.data, s); } catch (e) {} },
+  server: false,
+  async initServer() {
+    if (!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.hostname)) return false;
+    try {
+      const r = await fetch("api/progress/" + APP, { cache: "no-store" });
+      if (!r.ok) return false;
+      const remote = await r.json();
+      if (remote && (remote.updatedAt || 0) > (this.data.updatedAt || 0)) this.data = Object.assign({}, this.data, remote);
+      this.server = true; this.mode = "server";
+      if ((!remote || !remote.updatedAt) && this.data.updatedAt) this.save();
+      renderAll(); updateChips();
+      return true;
+    } catch (e) { return false; }
+  },
+  pushServer() {
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => {
+      const body = JSON.stringify(this.data);
+      this._chain = this._chain.then(() => fetch("api/progress/" + APP, { method: "PUT", headers: { "Content-Type": "application/json" }, body }))
+        .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); if (this.mode !== "server") { this.mode = "server"; updateChips(); } })
+        .catch(() => { this.mode = "offline"; updateChips(); });
+    }, 1000);
+  },
+  async initCloud() {    try {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      const id = user ? await user.id() : null;
+      if (!db || !id) return;
+      this.ref = db.doc("data/users/" + id + "/course");
+      const snap = await this.ref.get();
+      if (snap.exists) { const r = snap.data(); if ((r.updatedAt || 0) > (this.data.updatedAt || 0)) this.data = Object.assign({}, this.data, JSON.parse(JSON.stringify(r))); }
+      this.mode = "cloud";
+      if (!snap.exists && this.data.updatedAt) this.save();
+      renderAll();
+    } catch (e) { this.ref = null; this.mode = "local"; }
+    updateChips();
+  },
+  save() {
+    this.data.updatedAt = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch (e) {}
+    if (this.server) { this.pushServer(); return; }
+    if (!this.ref) return;
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => {
+      const body = JSON.parse(JSON.stringify(this.data));
+      this._chain = this._chain.then(() => this.ref.set(body)).catch(err => {
+        if (err && ["invalid_argument", "revoked", "not_granted"].includes(err.code)) { this.ref = null; this.mode = "local"; updateChips(); }
+      });
+    }, 1200);
+  }
+};
+function L(n) { return Store.data.lessons[n] || (Store.data.lessons[n] = { read: false, quizBest: 0, quizTotal: 0, tasks: [] }); }
+function lessonPct(n) {
+  const c = LESSONS[n]; if (!c) return 0;
+  const s = Store.data.lessons[n]; if (!s) return 0;
+  const parts = [s.read ? 1 : 0, c.quiz.length ? s.quizBest / c.quiz.length : 0, c.tasks.length ? s.tasks.length / c.tasks.length : 0];
+  return Math.round((parts[0] * 0.2 + parts[1] * 0.4 + parts[2] * 0.4) * 100);
+}
+function totalPct() {
+  const ns = Object.keys(LESSONS);
+  return Math.round(ns.reduce((a, n) => a + lessonPct(n), 0) / (Object.keys(OUTLINE).length));
+}
+
+/* ===================== УТИЛИТЫ ===================== */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const shuffleIdx = n => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function ring(p) {
+  const r = 16, c = 2 * Math.PI * r;
+  return `<svg class="ring" viewBox="0 0 40 40" role="img" aria-label="${p}%"><circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="5"/><circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c * p / 100} ${c}" transform="rotate(-90 20 20)"/><text x="20" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fg)">${p}</text></svg>`;
+}
+function updateChips() {
+  $("#chip-done b").textContent = totalPct() + "%";
+  $("#chip-sync").textContent = ({ cloud: "Прогресс: в облаке", server: "Прогресс: на сервере", offline: "Сервер недоступен, сохраняю в браузере" }[Store.mode] || "Прогресс: этот браузер");
+}
+const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+function openTab(id) {
+  tabs.forEach(t => { const on = t.id === id; t.setAttribute("aria-selected", on); $("#" + t.getAttribute("aria-controls")).hidden = !on; });
+  if (id === "tab-stats") renderStats();
+  if (id === "tab-course") renderCourse();
+  window.scrollTo(0, 0);
+}
+tabs.forEach(t => t.addEventListener("click", () => openTab(t.id)));
+
+/* ===================== СПИСОК УРОКОВ ===================== */
+function renderCourse() {
+  const p = $("#p-course");
+  p.innerHTML = `<p class="lead">16 уроков в 5 блоках. В каждом уроке теория, тест и практика: вы вводите команды руками в тренажёр терминала, он проверяет и показывает, что вывел бы компьютер. Новые уроки открываются по мере того, как мы их проходим.</p>` +
+    BLOCKS.map(([title, ns]) => `<div class="block"><p class="blocktitle">${esc(title)}</p><div class="lessons">${ns.map(n => {
+      const ready = !!LESSONS[n], pct = lessonPct(n);
+      return `<button class="lesson" data-n="${n}" ${ready ? "" : "disabled"}><span class="num">${n}</span><span><span class="t">${esc(OUTLINE[n][0])}</span><br><span class="d">${esc(OUTLINE[n][1])}${ready ? "" : " · скоро"}</span></span>${ready ? ring(pct) : '<span class="chip">скоро</span>'}</button>`;
+    }).join("")}</div></div>`).join("");
+  p.querySelectorAll(".lesson[data-n]:not([disabled])").forEach(b => b.onclick = () => { Store.data.current = +b.dataset.n; lessonView = "theory"; Store.save(); renderLesson(); openTab("tab-lesson"); });
+}
+
+/* ===================== УРОК ===================== */
+let lessonView = "theory", quiz = null;
+function renderLesson() {
+  const n = Store.data.current || 1, c = LESSONS[n], s = L(n), p = $("#p-lesson");
+  if (!c) { p.innerHTML = `<p class="lead">Этот урок ещё не готов.</p>`; return; }
+  p.innerHTML = `<p class="blocktitle">Урок ${n} из 16</p><h2>${esc(OUTLINE[n][0])}</h2><p class="lead">${esc(OUTLINE[n][1])}</p>
+    <div class="progress"><i style="width:${lessonPct(n)}%"></i></div>
+    <div class="subnav" role="group" aria-label="Часть урока">
+      <button data-v="theory" aria-pressed="${lessonView === "theory"}">Теория ${s.read ? "✓" : ""}</button>
+      <button data-v="quiz" aria-pressed="${lessonView === "quiz"}">Тест ${s.quizTotal ? s.quizBest + "/" + c.quiz.length : ""}</button>
+      <button data-v="tasks" aria-pressed="${lessonView === "tasks"}">Практика ${s.tasks.length}/${c.tasks.length}</button>
+    </div><div id="lv"></div>`;
+  p.querySelectorAll(".subnav button").forEach(b => b.onclick = () => { lessonView = b.dataset.v; quiz = null; renderLesson(); });
+  const lv = $("#lv");
+  if (lessonView === "theory") {
+    lv.innerHTML = `<div class="card theory">${c.theory}</div><div class="row" style="margin-top:14px"><button class="btn primary" id="read-ok">${s.read ? "Прочитано · к тесту" : "Прочитал, перейти к тесту"}</button></div>`;
+    $("#read-ok").onclick = () => { s.read = true; Store.save(); updateChips(); lessonView = "quiz"; renderLesson(); window.scrollTo(0, 0); };
+  } else if (lessonView === "quiz") renderQuiz(n, lv);
+  else renderTasks(n, lv);
+}
+function renderQuiz(n, lv) {
+  const c = LESSONS[n], s = L(n);
+  if (!quiz) quiz = { order: shuffleIdx(c.quiz.length), i: 0, right: 0, answered: false };
+  if (quiz.i >= c.quiz.length) {
+    s.quizBest = Math.max(s.quizBest, quiz.right); s.quizTotal = c.quiz.length; Store.save(); updateChips();
+    lv.innerHTML = `<div class="card"><h2>${quiz.right} из ${c.quiz.length}</h2><p>${quiz.right === c.quiz.length ? "Безупречно. Переходите к практике." : quiz.right >= c.quiz.length * 0.7 ? "Хорошо. Перечитайте вопросы, где ошиблись, и переходите к практике." : "Стоит перечитать теорию и пройти тест ещё раз."}</p>
+      <div class="row"><button class="btn" id="qz-again">Пройти ещё раз</button><button class="btn primary" id="qz-tasks">К практике</button></div></div>`;
+    $("#qz-again").onclick = () => { quiz = null; renderLesson(); };
+    $("#qz-tasks").onclick = () => { lessonView = "tasks"; quiz = null; renderLesson(); };
+    return;
+  }
+  const [q, opts, right, why] = c.quiz[quiz.order[quiz.i]];
+  const oi = shuffleIdx(opts.length);
+  lv.innerHTML = `<p class="note">Вопрос ${quiz.i + 1} из ${c.quiz.length} · верно: ${quiz.right}</p><div class="card"><div class="q">${esc(q)}</div>
+    <div class="opts">${oi.map(i => `<button data-i="${i}">${esc(opts[i])}</button>`).join("")}</div><div id="qz-ex" aria-live="polite"></div></div>`;
+  lv.querySelectorAll(".opts button").forEach(b => b.onclick = () => {
+    if (quiz.answered) return; quiz.answered = true;
+    const i = +b.dataset.i, ok = i === right;
+    lv.querySelectorAll(".opts button").forEach(x => { x.disabled = true; if (+x.dataset.i === right) x.classList.add("right"); });
+    if (!ok) b.classList.add("wrong"); else quiz.right++;
+    $("#qz-ex").innerHTML = `<div class="explain"><b class="${ok ? "ok" : "bad"}">${ok ? "Верно." : "Неверно."}</b> ${esc(why)}</div><div class="row" style="margin-top:12px"><button class="btn primary" id="qz-next">Дальше</button></div>`;
+    const nx = $("#qz-next"); nx.focus();
+    nx.onclick = () => { quiz.i++; quiz.answered = false; renderQuiz(n, lv); };
+  });
+}
+function normalize(cmd) { return cmd.trim().replace(/\s+/g, " ").replace(/\s*\|\s*/g, " | ").replace(/^ps>\s*/i, ""); }
+function renderTasks(n, lv) {
+  const c = LESSONS[n], s = L(n);
+  lv.innerHTML = `<p class="lead">Введите команду и нажмите Enter. Регистр букв не важен, сокращения (ls, gps, sort, select, where) тоже принимаются. Подсказки открываются по одной.</p>` +
+    c.tasks.map((t, i) => `<div class="task card"><div class="goal">${s.tasks.includes(i) ? '<span class="done-mark">✓</span> ' : ""}Задание ${i + 1}. ${esc(t.goal)}</div>
+      <div class="term"><div class="bar"><span>Windows PowerShell — тренажёр</span><span>${s.tasks.includes(i) ? "выполнено" : "ожидает"}</span></div>
+        <div class="out" id="out-${i}"><span class="dim">Здесь появится результат.</span></div>
+        <div class="in"><span>PS C:\\Users\\user&gt;</span><input id="in-${i}" aria-label="Команда для задания ${i + 1}" autocomplete="off" autocapitalize="off" spellcheck="false"></div></div>
+      <div class="row" style="margin-top:10px"><button class="btn" data-hint="${i}">Подсказка</button><button class="btn" data-ans="${i}">Показать ответ</button></div>
+      <div class="hint" id="hint-${i}" aria-live="polite"></div></div>`).join("");
+  c.tasks.forEach((t, i) => {
+    const inp = $("#in-" + i), out = $("#out-" + i);
+    let hintN = 0, history = [];
+    inp.onkeydown = e => {
+      if (e.key !== "Enter") return;
+      const raw = inp.value; if (!raw.trim()) return;
+      const cmd = normalize(raw);
+      const ok = t.accept.some(r => r.test(cmd));
+      history.push(`<span class="p">PS C:\\Users\\user&gt;</span> <span class="c">${esc(raw)}</span>`);
+      if (ok) {
+        history.push(esc(t.out), `<span class="p">✓ Верно.</span>`);
+        if (!s.tasks.includes(i)) { s.tasks.push(i); Store.save(); updateChips(); }
+      } else {
+        history.push(`<span class="e">Тренажёр: команда не та, что нужна для этого задания. Проверьте имя команды, параметры и знак |.</span>`);
+      }
+      out.innerHTML = history.slice(-12).join("\n");
+      out.scrollTop = out.scrollHeight;
+      inp.value = "";
+      if (ok) setTimeout(() => renderLessonKeepScroll(), 900);
+    };
+    // последняя подсказка — это ответ, её показывает отдельная кнопка
+    const soft = t.hints.length > 1 ? t.hints.slice(0, -1) : t.hints;
+    lv.querySelector(`[data-hint="${i}"]`).onclick = () => { hintN = Math.min(hintN + 1, soft.length); $("#hint-" + i).innerHTML = soft.slice(0, hintN).map(h => "Подсказка: " + esc(h)).join("<br>"); };
+    lv.querySelector(`[data-ans="${i}"]`).onclick = () => { $("#hint-" + i).innerHTML = "Ответ: <code>" + esc(t.hints[t.hints.length - 1]) + "</code>. Наберите его сами, чтобы засчитать задание."; };
+  });
+}
+function renderLessonKeepScroll() { const y = window.scrollY; renderLesson(); window.scrollTo(0, y); }
+
+/* ===================== СПРАВОЧНИК ===================== */
+function renderRef() {
+  const p = $("#p-ref");
+  p.innerHTML = `<p class="lead">Шпаргалка по командам из уроков. Ищите по названию или по смыслу.</p><input type="search" id="ref-q" placeholder="Например: процесс, удалить, порт" aria-label="Поиск по справочнику"><div class="ref-grid" id="ref-grid"></div>`;
+  const fill = () => {
+    const q = $("#ref-q").value.trim().toLowerCase();
+    $("#ref-grid").innerHTML = REF.map(([t, rows]) => {
+      const r = rows.filter(([a, b]) => !q || (a + " " + b + " " + t).toLowerCase().includes(q));
+      return r.length ? `<div class="card"><h4>${esc(t)}</h4>${r.map(([a, b]) => `<div class="ref-row"><code>${esc(a)}</code><span>${esc(b)}</span></div>`).join("")}</div>` : "";
+    }).join("") || `<p class="note">Ничего не найдено.</p>`;
+  };
+  $("#ref-q").oninput = fill; fill();
+}
+
+/* ===================== ПРОГРЕСС ===================== */
+function renderStats() {
+  const ready = Object.keys(LESSONS);
+  const tasksDone = ready.reduce((a, n) => a + ((Store.data.lessons[n] || {}).tasks || []).length, 0);
+  const tasksAll = ready.reduce((a, n) => a + LESSONS[n].tasks.length, 0);
+  const quizR = ready.reduce((a, n) => a + ((Store.data.lessons[n] || {}).quizBest || 0), 0);
+  const quizAll = ready.reduce((a, n) => a + LESSONS[n].quiz.length, 0);
+  $("#p-stats").innerHTML = `<div class="stats">
+    <div class="card stat"><div class="n">${totalPct()}%</div><div class="l">всего курса</div></div>
+    <div class="card stat"><div class="n">${ready.filter(n => lessonPct(n) === 100).length} / 16</div><div class="l">уроков пройдено полностью</div></div>
+    <div class="card stat"><div class="n">${quizR} / ${quizAll}</div><div class="l">верных ответов в тестах (лучшие)</div></div>
+    <div class="card stat"><div class="n">${tasksDone} / ${tasksAll}</div><div class="l">команд введено верно</div></div></div>
+    <div class="lessons">${ready.map(n => `<div class="lesson" style="cursor:default"><span class="num">${n}</span><span><span class="t">${esc(OUTLINE[n][0])}</span><br><span class="d">теория ${(Store.data.lessons[n] || {}).read ? "✓" : "—"} · тест ${(Store.data.lessons[n] || {}).quizBest || 0}/${LESSONS[n].quiz.length} · практика ${((Store.data.lessons[n] || {}).tasks || []).length}/${LESSONS[n].tasks.length}</span></span>${ring(lessonPct(n))}</div>`).join("")}</div>
+    <p class="note" style="margin-top:16px">${({ cloud: "Прогресс хранится в облаке claude.ai.", server: "Прогресс хранится на сервере и одинаков на телефоне и компьютере." }[Store.mode] || "Прогресс хранится в этом браузере.")}</p>`;
+}
+
+/* ===================== ЗАПУСК ===================== */
+function renderAll() { renderCourse(); renderLesson(); renderRef(); if (!$("#p-stats").hidden) renderStats(); updateChips(); }
+Store.loadLocal();
+renderAll();
+Store.initServer().then(ok => { if (!ok) Store.initCloud(); });
+</script>
+</body></html>
