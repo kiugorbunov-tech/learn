@@ -1,0 +1,20 @@
+[Unit]
+Description=Обучающие приложения (английский и курс ИИ): сайт и общий прогресс
+After=network.target
+
+[Service]
+Environment=LEARN_SITE=/opt/learn
+Environment=LEARN_DATA=/var/lib/learn
+Environment=LEARN_HOST=127.0.0.1
+Environment=LEARN_PORT=8090
+ExecStart=/usr/bin/python3 /opt/learn/deploy/server.py
+Restart=always
+RestartSec=3
+DynamicUser=yes
+StateDirectory=learn
+ProtectSystem=strict
+ProtectHome=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
