@@ -105,6 +105,11 @@ pre.code { font-family: var(--f-mono); font-size: 13.5px; background: var(--term
 .note { font-size: 13px; color: var(--muted) }
 input[type=search] { font: 16px var(--f-body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); width: 100%; margin-bottom: 14px }
 .panel[hidden] { display: none }
+.why { border-color: var(--accent); margin-bottom: 12px } .why h3 { margin: 0 0 6px } .why p { margin: 0; max-width: 70ch }
+.editor { width: 100%; min-height: 130px; resize: vertical; font: 14px/1.5 var(--f-mono); background: var(--term-bg); color: var(--term-cmd); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; tab-size: 4; white-space: pre; overflow-x: auto }
+.editor.tall { min-height: 220px }
+pre.code.out { background: var(--surface2); color: var(--fg); white-space: pre-wrap; word-break: break-word; margin: 8px 0 0 } pre.code.out .e { color: var(--bad) } pre.code.out .dim { color: var(--muted) }
+.ref-grid pre.code { max-height: 260px; overflow: auto; font-size: 12.5px }
 </style>
 
 <div class="wrap">
@@ -115,11 +120,13 @@ input[type=search] { font: 16px var(--f-body); padding: 9px 12px; border-radius:
   <nav class="tabs" role="tablist" aria-label="Разделы">
     <button role="tab" id="tab-course" aria-controls="p-course" aria-selected="true">Уроки</button>
     <button role="tab" id="tab-lesson" aria-controls="p-lesson" aria-selected="false">Текущий урок</button>
+    <button role="tab" id="tab-code" aria-controls="p-code" aria-selected="false">Код</button>
     <button role="tab" id="tab-ref" aria-controls="p-ref" aria-selected="false">Справочник команд</button>
     <button role="tab" id="tab-stats" aria-controls="p-stats" aria-selected="false">Прогресс</button>
   </nav>
   <section class="panel" id="p-course" role="tabpanel" aria-labelledby="tab-course"></section>
   <section class="panel" id="p-lesson" role="tabpanel" aria-labelledby="tab-lesson" hidden></section>
+  <section class="panel" id="p-code" role="tabpanel" aria-labelledby="tab-code" hidden></section>
   <section class="panel" id="p-ref" role="tabpanel" aria-labelledby="tab-ref" hidden></section>
   <section class="panel" id="p-stats" role="tabpanel" aria-labelledby="tab-stats" hidden></section>
 </div>
@@ -338,7 +345,157 @@ const LESSONS = {
     out: "What if: Performing the operation \"Remove File\" on target \"C:\\Users\\user\\a.tmp\".\nWhat if: Performing the operation \"Remove File\" on target \"C:\\Users\\user\\b.tmp\".",
     hints: ["Remove-Item с шаблоном *.tmp и параметром безопасной проверки.", "Remove-Item *.tmp -WhatIf"] }
  ]
+},
+4: {
+ theory: `
+<h3>Зачем Python</h3>
+<p>Python — главный язык искусственного интеллекта. На нём обучают модели (библиотека PyTorch, на которой дообучается ваш DeepSeek), анализируют данные и автоматизируют рутину. Наш монитор железа тоже написан на Python. Синтаксис простой и читается почти как английский текст.</p>
+<h3>Как компьютер выполняет программу</h3>
+<p>Программа — это текст. Интерпретатор Python читает его <b>сверху вниз, строку за строкой</b> и выполняет каждую. Если в пятой строке ошибка, программа остановится на пятой строке, а первые четыре успеют выполниться.</p>
+<h3>print — вывести на экран</h3>
+<pre class="code run">print("Привет, ИИ!")
+print(2 + 3)</pre>
+<p>Текст в кавычках называется <b>строкой</b> (str). Без кавычек Python считает это кодом: <code>print(2 + 3)</code> выведет 5.</p>
+<h3>Переменные — коробки с наклейками</h3>
+<p><code>cpu = 63</code> значит: положить число 63 в коробку с наклейкой cpu. Знак <code>=</code> здесь не «равно», а «положить» (присваивание). Дальше можно использовать имя вместо значения.</p>
+<pre class="code run">cpu = 63
+gpu = 21
+total = cpu + gpu
+print(total)</pre>
+<p>Имена пишут латиницей, без пробелов, маленькими буквами через подчёркивание: <code>cpu_load</code>, <code>psu_watts</code>.</p>
+<h3>Типы данных</h3>
+<div class="tbl"><table><thead><tr><th>Тип</th><th>Что это</th><th>Пример</th></tr></thead><tbody>
+<tr><td>int</td><td>целое число</td><td><code>42</code></td></tr><tr><td>float</td><td>дробное число</td><td><code>3.14</code> (через точку!)</td></tr>
+<tr><td>str</td><td>текст</td><td><code>"RTX PRO 6000"</code></td></tr><tr><td>bool</td><td>да / нет</td><td><code>True</code>, <code>False</code></td></tr>
+<tr><td>list</td><td>список</td><td><code>[34, 29]</code></td></tr><tr><td>dict</td><td>словарь «ключ → значение»</td><td><code>{"cpu": 91}</code></td></tr></tbody></table></div>
+<p>Тип важен: <code>"5" + 5</code> — ошибка, потому что нельзя сложить текст и число. Нужно превратить: <code>int("5") + 5</code>.</p>
+<h3>Арифметика</h3>
+<p><code>+ - * /</code> как обычно; <code>//</code> — деление нацело, <code>%</code> — остаток, <code>**</code> — степень. <code>7 // 2</code> = 3, <code>7 % 2</code> = 1, <code>2 ** 10</code> = 1024.</p>
+<h3>f-строки — подставить значение в текст</h3>
+<pre class="code run">load = 63
+print(f"Загрузка CPU: {load}%")</pre>
+<h3>Условия: if, elif, else</h3>
+<pre class="code run">temp = 91
+if temp > 90:
+    print("Перегрев!")
+elif temp > 75:
+    print("Горячо")
+else:
+    print("Норма")</pre>
+<p>Две вещи обязательны: <b>двоеточие</b> в конце строки с if и <b>отступ в 4 пробела</b> у строк внутри. Отступ в Python — не украшение, а часть языка: всё, что сдвинуто, выполняется только при выполненном условии. Сравнения: <code>==</code> равно (два знака!), <code>!=</code> не равно, <code>&gt; &lt; &gt;= &lt;=</code>; связки <code>and</code>, <code>or</code>, <code>not</code>.</p>
+<h3>Циклы: повторить много раз</h3>
+<pre class="code run">gpus = [34, 29]
+for t in gpus:
+    print(f"Температура: {t} °C")
+
+for i in range(3):
+    print("Шаг", i)</pre>
+<p><code>for x in список</code> — по очереди берёт каждый элемент. <code>range(3)</code> даёт 0, 1, 2 (до трёх, не включая). <code>while условие:</code> повторяет, пока условие верно.</p>
+<div class="ex"><b>Как учиться дальше:</b> меняйте числа в примерах и запускайте снова. Сломайте код специально (уберите двоеточие) и посмотрите на ошибку — так вы научитесь их узнавать.</div>`,
+ quiz: [
+  ["Что делает строка cpu = 63?", ["Проверяет, равно ли cpu 63", "Кладёт 63 в переменную cpu", "Выводит 63", "Ошибка"], 1, "= — присваивание. Сравнение — это ==."],
+  ["Что выведет print(7 // 2)?", ["3.5", "3", "1", "4"], 1, "// — деление нацело."],
+  ["Почему \"5\" + 5 — ошибка?", ["Нельзя складывать числа", "Нельзя сложить текст и число", "Нужны одинарные кавычки", "Это не ошибка"], 1, "TypeError: сначала int(\"5\")."],
+  ["Что обязательно после if temp > 90 ?", ["Точка с запятой", "Двоеточие и отступ у следующих строк", "Фигурные скобки", "Ничего"], 1, "В Python блоки задаются двоеточием и отступом."],
+  ["Сколько раз выполнится for i in range(5)?", ["4", "5", "6", "бесконечно"], 1, "range(5) — это 0, 1, 2, 3, 4."],
+  ["Как правильно записать дробь?", ["3,14", "3.14", "3_14", "«3.14»"], 1, "Дробная часть — через точку. В кавычках это уже текст."],
+  ["Что выведет print(f\"CPU: {50 + 13}%\")?", ["CPU: {50 + 13}%", "CPU: 63%", "Ошибка", "CPU: 5013%"], 1, "В фигурных скобках f-строки вычисляется выражение."],
+  ["Почему Python так популярен в ИИ?", ["Он самый быстрый", "Простой синтаксис и огромные библиотеки для ИИ и данных", "Только он работает на видеокартах", "Так решил Microsoft"], 1, "Сами вычисления идут на C/CUDA, а Python управляет ими удобно."]
+ ],
+ tasks: [],
+ code: [
+  { goal: "Выведите на экран: Hello, AI!", starter: "# напишите код ниже\n", expect: "Hello, AI!", hints: ["Используйте print и кавычки.", 'print("Hello, AI!")'] },
+  { goal: "Создайте переменные cpu = 63, gpu = 21, other = 80 и выведите их сумму.", starter: "cpu = 63\n", expect: "164", hints: ["Сложите три переменные и передайте результат в print.", "cpu = 63\ngpu = 21\nother = 80\nprint(cpu + gpu + other)"] },
+  { goal: "Есть name = \"Alex\" и age = 30. С помощью f-строки выведите: Alex, 30 лет", starter: 'name = "Alex"\nage = 30\n', expect: "Alex, 30 лет", hints: ["f\"...\" и фигурные скобки вокруг имён переменных.", 'name = "Alex"\nage = 30\nprint(f"{name}, {age} лет")'] },
+  { goal: "temp = 91. Если temp больше 85 — выведите Перегрев, иначе Норма.", starter: "temp = 91\n", expect: "Перегрев", must: ["if"], hints: ["if temp > 85: и отступ у print. Не забудьте else.", 'temp = 91\nif temp > 85:\n    print("Перегрев")\nelse:\n    print("Норма")'] },
+  { goal: "С помощью цикла for выведите квадраты чисел от 1 до 5, по одному в строке.", starter: "", expect: "1\n4\n9\n16\n25", must: ["for"], hints: ["range(1, 6) даёт 1…5. Квадрат — i * i или i ** 2.", "for i in range(1, 6):\n    print(i ** 2)"] },
+  { goal: "gpus = [34, 29]. Выведите самую высокую температуру из списка.", starter: "gpus = [34, 29]\n", expect: "34", hints: ["Есть встроенная функция max().", "gpus = [34, 29]\nprint(max(gpus))"] }
+ ]
+},
+5: {
+ theory: `
+<h3>Функция — это рецепт</h3>
+<p>Функция — кусок кода с именем. Написали один раз — вызываете сколько угодно. Это главный способ не повторять один и тот же код.</p>
+<pre class="code run">def psu_load(watts, capacity):
+    percent = watts / capacity * 100
+    return round(percent, 1)
+
+print(psu_load(640, 2000))
+print(psu_load(1500, 2000))</pre>
+<ul><li><code>def</code> — «определить функцию», дальше имя и <b>параметры</b> в скобках.</li>
+<li>Тело функции — с отступом.</li>
+<li><code>return</code> отдаёт результат тому, кто вызвал. Без return функция вернёт пустое значение <code>None</code>.</li></ul>
+<div class="ex"><b>return и print — разные вещи.</b> print только показывает на экране. return отдаёт значение, которое можно сохранить в переменную, сравнить, передать дальше.</div>
+<h3>Встроенные функции</h3>
+<p>Python уже умеет многое: <code>len()</code> длина, <code>sum()</code> сумма, <code>max()</code> / <code>min()</code>, <code>sorted()</code> сортировка, <code>round()</code> округление, <code>int()</code> / <code>str()</code> / <code>float()</code> перевод между типами.</p>
+<h3>Словари: ключ → значение</h3>
+<pre class="code run">gpu = {"name": "RTX PRO 6000", "temp": 34, "power": 21}
+print(gpu["name"])
+gpu["temp"] = 40
+for key, value in gpu.items():
+    print(key, "=", value)</pre>
+<p>Именно так монитор железа хранит показатели: у каждой видеокарты словарь с полями load, temp, power.</p>
+<h3>Модули: готовые наборы функций</h3>
+<pre class="code run">import math, random, datetime
+print(math.sqrt(16))
+print(random.randint(1, 6))
+print(datetime.date.today())</pre>
+<p><code>import</code> подключает модуль. Свои файлы тоже модули: в мониторе <code>sensors.py</code> читает датчики, <code>network.py</code> меряет интернет, а <code>monitor.py</code> делает <code>from sensors import GpuReader</code>.</p>
+<h3>Как читать ошибку (Traceback)</h3>
+<p>Читайте <b>снизу вверх</b>. Последняя строка — тип и описание ошибки, выше — файл и номер строки, где она случилась.</p>
+<div class="tbl"><table><thead><tr><th>Ошибка</th><th>Что значит</th></tr></thead><tbody>
+<tr><td>SyntaxError</td><td>опечатка в записи: нет двоеточия, скобки, кавычки</td></tr><tr><td>IndentationError</td><td>неправильный отступ</td></tr>
+<tr><td>NameError</td><td>имя не найдено: опечатка или переменную не создали</td></tr><tr><td>TypeError</td><td>не тот тип: текст + число</td></tr>
+<tr><td>ValueError</td><td>тип верный, значение нет: int("abc")</td></tr><tr><td>KeyError</td><td>в словаре нет такого ключа</td></tr>
+<tr><td>IndexError</td><td>в списке нет такого номера</td></tr><tr><td>ModuleNotFoundError</td><td>модуль не установлен (помните psutil?)</td></tr></tbody></table></div>
+<h3>try / except — поймать ошибку</h3>
+<pre class="code run">text = "abc"
+try:
+    number = int(text)
+    print("Число:", number)
+except ValueError:
+    print("Это не число")</pre>
+<p>Так программа не падает, а сообщает понятное. В мониторе так обрабатывается пропажа интернета: ошибка соединения ловится, и в журнал пишется «Соединение потеряно».</p>
+<h3>Разбор настоящего кода: расчёт блока питания из монитора</h3>
+<pre class="code run">def psu(cpu_load, gpu_watts, other=80, capacity=2000, eff=0.92):
+    cpu_power = 35 + (200 - 35) * cpu_load / 100   # оценка CPU по загрузке
+    dc = cpu_power + sum(gpu_watts) + other        # всё, что берёт система
+    return {"dc": round(dc), "wall": round(dc / eff), "pct": round(dc / capacity * 100, 1)}
+
+print(psu(100, [25, 340]))</pre>
+<p>Здесь всё из урока: функция с параметрами, значения по умолчанию (<code>other=80</code>), встроенная <code>sum()</code>, словарь в ответе. Это упрощённая копия функции <code>psu()</code> из <code>monitor.py</code>.</p>`,
+ quiz: [
+  ["Чем return отличается от print?", ["Ничем", "return отдаёт значение вызвавшему коду, print только показывает на экране", "print работает быстрее", "return выводит в файл"], 1, "Результат return можно сохранить и использовать дальше."],
+  ["Что вернёт функция без return?", ["0", "None", "Ошибку", "Пустую строку"], 1, "None — «ничего»."],
+  ["Как получить значение по ключу из gpu = {\"temp\": 34}?", ["gpu.temp", "gpu[\"temp\"]", "gpu(temp)", "gpu[0]"], 1, "Ключ в квадратных скобках."],
+  ["Traceback читают…", ["Сверху вниз", "Снизу вверх: последняя строка — тип ошибки", "Только первую строку", "Не читают"], 1, "Внизу — что случилось, выше — где."],
+  ["int(\"abc\") даст ошибку…", ["TypeError", "ValueError", "NameError", "KeyError"], 1, "Тип верный (строка), но значение не число."],
+  ["Что делает import json?", ["Скачивает интернет", "Подключает модуль для работы с JSON", "Создаёт файл json", "Ничего"], 1, "После этого доступны json.dumps и json.loads."],
+  ["Зачем try / except?", ["Ускорить код", "Перехватить ошибку и обработать её, не роняя программу", "Повторять код", "Для комментариев"], 1, "Например, при потере интернета."],
+  ["ModuleNotFoundError: No module named 'psutil' лечится…", ["Перезагрузкой", "pip install psutil", "Удалением Python", "Ничем"], 1, "Модуль просто не установлен."]
+ ],
+ tasks: [],
+ code: [
+  { goal: "Напишите функцию square(x), которая возвращает квадрат числа, и выведите square(7).", starter: "def square(x):\n    \n", expect: "49", must: ["def", "return"], hints: ["Внутри функции: return x * x.", "def square(x):\n    return x * x\n\nprint(square(7))"] },
+  { goal: "Напишите функцию psu_load(watts, capacity), которая возвращает процент нагрузки, округлённый до 1 знака. Выведите psu_load(640, 2000).", starter: "", expect: "32.0", must: ["def", "return"], hints: ["Процент = watts / capacity * 100, округление — round(число, 1).", "def psu_load(watts, capacity):\n    return round(watts / capacity * 100, 1)\n\nprint(psu_load(640, 2000))"] },
+  { goal: "temps = {\"GPU 0\": 34, \"GPU 1\": 29, \"CPU\": 91}. Выведите имя самого горячего устройства и его температуру через пробел: CPU 91", starter: 'temps = {"GPU 0": 34, "GPU 1": 29, "CPU": 91}\n', expect: "CPU 91", hints: ["Переберите temps.items() и запоминайте максимум. Или max(temps, key=temps.get).", 'temps = {"GPU 0": 34, "GPU 1": 29, "CPU": 91}\nhot = max(temps, key=temps.get)\nprint(hot, temps[hot])'] },
+  { goal: "Попробуйте превратить text = \"abc\" в число. Если не получится, выведите: Это не число", starter: 'text = "abc"\n', expect: "Это не число", must: ["try", "except"], hints: ["Оберните int(text) в try, а print — в except ValueError.", 'text = "abc"\ntry:\n    print(int(text))\nexcept ValueError:\n    print("Это не число")'] },
+  { goal: "Подключите модуль json и выведите словарь {\"cpu\": 63, \"online\": True} в формате JSON.", starter: 'data = {"cpu": 63, "online": True}\n', expect: '{"cpu": 63, "online": true}', must: ["import json"], hints: ["json.dumps(словарь) превращает его в JSON-текст.", 'import json\ndata = {"cpu": 63, "online": True}\nprint(json.dumps(data))'] }
+ ]
 }
+};
+// Учительские добавки к урокам: зачем это вам и частые ошибки
+const TEACH = {
+ 1: { why: "Чтобы понимать, что происходит с вашим сервером: почему он тормозит, что занимает процессор, хватит ли видеопамяти для модели. На этом держится весь остальной курс.",
+  mistakes: [["Путать ядра и потоки", "16 ядер = 32 логических процессора", "SMT: по два потока на ядро."], ["Читать CPU в Get-Process как проценты", "Это секунды процессорного времени", "Делите на время работы процесса."], ["Думать, что 100% CPU — поломка", "Это очередь задач", "Ищите, кто занял процессор."], ["Надеяться, что модель «как-нибудь» влезет", "Она должна целиком влезть в видеопамять", "Иначе out of memory."]] },
+ 2: { why: "Когда что-то тормозит или ведёт себя странно, нужно найти виновника: какой процесс, кто его запустил, хватает ли прав. Кодировки — причина половины «сломанных» файлов и ошибок в Python.",
+  mistakes: [["Пустое поле CommandLine = ничего нет", "Нет прав посмотреть", "Откройте PowerShell от администратора."], ["Сохранять файлы в cp1251", "Всегда UTF-8", "Иначе кракозябры у других программ."], ["Сразу завершать незнакомый процесс", "Сначала паспорт: родитель, команда, время", "Можно убить нужную службу."]] },
+ 3: { why: "Командная строка — пульт управления компьютером и сервером. ИИ-агенты, и я тоже, работают именно через неё. Понимая команды, вы контролируете, что ИИ делает на вашей машине.",
+  mistakes: [["Remove-Item без проверки", "Сначала Get-ChildItem или -WhatIf", "Удаление идёт без корзины."], ["Where-Object Threads -gt 100", "Where-Object { $_.Threads.Count -gt 100 }", "Threads — список, нужно .Count."], ["Запускать команды из чужих сообщений", "Сначала понять каждую часть", "Так крадут доступ к компьютеру."]] },
+ 4: { why: "Python — язык, на котором ИИ обучают и запускают. Зная основы, вы будете понимать код, который пишет ИИ, замечать в нём ошибки и править его сами.",
+  mistakes: [["if temp > 90 (без двоеточия)", "if temp > 90:", "SyntaxError: двоеточие обязательно."], ["print внутри if без отступа", "4 пробела перед print", "IndentationError."], ["if x = 5:", "if x == 5:", "= кладёт значение, == сравнивает."], ["\"5\" + 5", "int(\"5\") + 5", "TypeError: текст и число не складываются."], ["3,14", "3.14", "Дроби — через точку."]] },
+ 5: { why: "Настоящие программы состоят из функций и модулей, а работа программиста наполовину — чтение ошибок. Научитесь читать Traceback, и большинство проблем будете решать сами.",
+  mistakes: [["Функция без return", "return результат", "Иначе вернётся None."], ["Вызов без скобок: square", "square(7)", "Без скобок функция не выполняется."], ["gpu[\"Temp\"] при ключе \"temp\"", "Точное имя ключа", "KeyError: регистр важен."], ["Читать Traceback сверху", "Снизу вверх", "Внизу — тип и причина."]] }
 };
 
 /* ===================== СПРАВОЧНИК ===================== */
@@ -410,11 +567,13 @@ const Store = {
     }, 1200);
   }
 };
-function L(n) { return Store.data.lessons[n] || (Store.data.lessons[n] = { read: false, quizBest: 0, quizTotal: 0, tasks: [] }); }
+function L(n) { const s = Store.data.lessons[n] || (Store.data.lessons[n] = { read: false, quizBest: 0, quizTotal: 0, tasks: [] }); if (!s.code) s.code = []; return s; }
+function practiceAll(n) { const c = LESSONS[n]; return c.tasks.length + (c.code || []).length; }
+function practiceDone(n) { const s = Store.data.lessons[n] || {}; return (s.tasks || []).length + (s.code || []).length; }
 function lessonPct(n) {
   const c = LESSONS[n]; if (!c) return 0;
   const s = Store.data.lessons[n]; if (!s) return 0;
-  const parts = [s.read ? 1 : 0, c.quiz.length ? s.quizBest / c.quiz.length : 0, c.tasks.length ? s.tasks.length / c.tasks.length : 0];
+  const parts = [s.read ? 1 : 0, c.quiz.length ? s.quizBest / c.quiz.length : 0, practiceAll(n) ? practiceDone(n) / practiceAll(n) : 0];
   return Math.round((parts[0] * 0.2 + parts[1] * 0.4 + parts[2] * 0.4) * 100);
 }
 function totalPct() {
@@ -439,6 +598,7 @@ function openTab(id) {
   tabs.forEach(t => { const on = t.id === id; t.setAttribute("aria-selected", on); $("#" + t.getAttribute("aria-controls")).hidden = !on; });
   if (id === "tab-stats") renderStats();
   if (id === "tab-course") renderCourse();
+  if (id === "tab-code") renderCode();
   window.scrollTo(0, 0);
 }
 tabs.forEach(t => t.addEventListener("click", () => openTab(t.id)));
@@ -446,7 +606,7 @@ tabs.forEach(t => t.addEventListener("click", () => openTab(t.id)));
 /* ===================== СПИСОК УРОКОВ ===================== */
 function renderCourse() {
   const p = $("#p-course");
-  p.innerHTML = `<p class="lead">16 уроков в 5 блоках. В каждом уроке теория, тест и практика: вы вводите команды руками в тренажёр терминала, он проверяет и показывает, что вывел бы компьютер. Новые уроки открываются по мере того, как мы их проходим.</p>` +
+  p.innerHTML = `<p class="lead">16 уроков в 5 блоках. Каждый урок как занятие с преподавателем: зачем это нужно, объяснение с примерами, частые ошибки, тест с разбором ответов и практика. В уроках по командной строке вы вводите команды в тренажёр терминала, в уроках по Python пишете и запускаете настоящий код. Новые уроки появляются по мере прохождения.</p>` +
     BLOCKS.map(([title, ns]) => `<div class="block"><p class="blocktitle">${esc(title)}</p><div class="lessons">${ns.map(n => {
       const ready = !!LESSONS[n], pct = lessonPct(n);
       return `<button class="lesson" data-n="${n}" ${ready ? "" : "disabled"}><span class="num">${n}</span><span><span class="t">${esc(OUTLINE[n][0])}</span><br><span class="d">${esc(OUTLINE[n][1])}${ready ? "" : " · скоро"}</span></span>${ready ? ring(pct) : '<span class="chip">скоро</span>'}</button>`;
@@ -464,12 +624,17 @@ function renderLesson() {
     <div class="subnav" role="group" aria-label="Часть урока">
       <button data-v="theory" aria-pressed="${lessonView === "theory"}">Теория ${s.read ? "✓" : ""}</button>
       <button data-v="quiz" aria-pressed="${lessonView === "quiz"}">Тест ${s.quizTotal ? s.quizBest + "/" + c.quiz.length : ""}</button>
-      <button data-v="tasks" aria-pressed="${lessonView === "tasks"}">Практика ${s.tasks.length}/${c.tasks.length}</button>
+      <button data-v="tasks" aria-pressed="${lessonView === "tasks"}">Практика ${practiceDone(n)}/${practiceAll(n)}</button>
     </div><div id="lv"></div>`;
   p.querySelectorAll(".subnav button").forEach(b => b.onclick = () => { lessonView = b.dataset.v; quiz = null; renderLesson(); });
   const lv = $("#lv");
   if (lessonView === "theory") {
-    lv.innerHTML = `<div class="card theory">${c.theory}</div><div class="row" style="margin-top:14px"><button class="btn primary" id="read-ok">${s.read ? "Прочитано · к тесту" : "Прочитал, перейти к тесту"}</button></div>`;
+    const t = TEACH[n];
+    lv.innerHTML = (t ? `<div class="card why"><h3>Зачем это вам</h3><p>${esc(t.why)}</p></div>` : "") +
+      `<div class="card theory">${c.theory}</div>` +
+      (t ? `<div class="card theory" style="margin-top:12px"><h3 style="margin-top:0">Частые ошибки</h3><div class="tbl"><table><thead><tr><th>Так делают</th><th>Как правильно</th><th>Почему</th></tr></thead><tbody>${t.mistakes.map(m => `<tr><td><s>${esc(m[0])}</s></td><td><b>${esc(m[1])}</b></td><td>${esc(m[2])}</td></tr>`).join("")}</tbody></table></div></div>` : "") +
+      `<div class="row" style="margin-top:14px"><button class="btn primary" id="read-ok">${s.read ? "Прочитано · к тесту" : "Прочитал, перейти к тесту"}</button></div>`;
+    attachRunners(lv);
     $("#read-ok").onclick = () => { s.read = true; Store.save(); updateChips(); lessonView = "quiz"; renderLesson(); window.scrollTo(0, 0); };
   } else if (lessonView === "quiz") renderQuiz(n, lv);
   else renderTasks(n, lv);
@@ -502,6 +667,7 @@ function renderQuiz(n, lv) {
 function normalize(cmd) { return cmd.trim().replace(/\s+/g, " ").replace(/\s*\|\s*/g, " | ").replace(/^ps>\s*/i, ""); }
 function renderTasks(n, lv) {
   const c = LESSONS[n], s = L(n);
+  if (!c.tasks.length) { renderCodeTasks(n, lv); return; }
   lv.innerHTML = `<p class="lead">Введите команду и нажмите Enter. Регистр букв не важен, сокращения (ls, gps, sort, select, where) тоже принимаются. Подсказки открываются по одной.</p>` +
     c.tasks.map((t, i) => `<div class="task card"><div class="goal">${s.tasks.includes(i) ? '<span class="done-mark">✓</span> ' : ""}Задание ${i + 1}. ${esc(t.goal)}</div>
       <div class="term"><div class="bar"><span>Windows PowerShell — тренажёр</span><span>${s.tasks.includes(i) ? "выполнено" : "ожидает"}</span></div>
@@ -537,6 +703,138 @@ function renderTasks(n, lv) {
 }
 function renderLessonKeepScroll() { const y = window.scrollY; renderLesson(); window.scrollTo(0, y); }
 
+/* ===================== PYTHON В БРАУЗЕРЕ (Pyodide) ===================== */
+const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+let pyReady = null;
+function loadPy(status) {
+  if (pyReady) return pyReady;
+  if (status) status.textContent = "Загружаю Python (около 10 МБ, только в первый раз)…";
+  pyReady = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = PYODIDE + "pyodide.js";
+    s.onload = () => loadPyodide({ indexURL: PYODIDE }).then(resolve, e => { pyReady = null; reject(e); });
+    s.onerror = () => { pyReady = null; s.remove(); reject(new Error("Python не загрузился: нужен интернет при первом запуске.")); };
+    document.head.appendChild(s);
+  });
+  return pyReady;
+}
+// Оставляем от Traceback только строки про код пользователя (без внутренностей Pyodide)
+function cleanTraceback(msg) {
+  const lines = String(msg).split("\n");
+  const start = lines.findIndex(l => l.includes('File "<exec>"'));
+  const body = (start >= 0 ? lines.slice(start) : lines.slice(-2)).filter(l => !/_pyodide|\/lib\/python|pyodide\.asm/.test(l));
+  return ("Ошибка в вашем коде:\n" + body.join("\n").replace(/File "<exec>"/g, "Строка")).trim();
+}
+async function runPy(code, status) {
+  const py = await loadPy(status);
+  let out = "";
+  py.setStdout({ batched: t => { out += t + "\n"; } });
+  py.setStderr({ batched: t => { out += t + "\n"; } });
+  const scope = py.globals.get("dict")();
+  try { await py.runPythonAsync(code, { globals: scope }); return { out: out.replace(/\n$/, ""), err: null }; }
+  catch (e) { return { out: out.replace(/\n$/, ""), err: cleanTraceback(e.message || e) }; }
+  finally { scope.destroy(); }
+}
+function showRun(box, res) {
+  box.innerHTML = (res.out ? `<span>${esc(res.out)}</span>` : "") + (res.err ? `${res.out ? "\n" : ""}<span class="e">${esc(res.err)}</span>` : "") + (!res.out && !res.err ? '<span class="dim">(программа ничего не вывела)</span>' : "");
+}
+// Кнопки «Запустить» у примеров кода в теории
+function attachRunners(root) {
+  root.querySelectorAll("pre.code.run").forEach(pre => {
+    const row = document.createElement("div"); row.className = "row"; row.style.margin = "-4px 0 12px";
+    const b = document.createElement("button"); b.className = "btn small"; b.textContent = "▶ Запустить";
+    const c = document.createElement("button"); c.className = "btn small"; c.textContent = "В песочницу";
+    const out = document.createElement("pre"); out.className = "code out"; out.hidden = true;
+    b.onclick = async () => { out.hidden = false; out.textContent = "Выполняю…"; try { showRun(out, await runPy(pre.textContent, out)); } catch (e) { out.textContent = e.message; } };
+    c.onclick = () => { sandboxCode = pre.textContent; openTab("tab-code"); };
+    row.append(b, c); pre.after(row); row.after(out);
+  });
+}
+function outputMatches(got, want) { const n = s => s.replace(/\r/g, "").split("\n").map(l => l.trimEnd()).join("\n").trim(); return n(got) === n(want); }
+function renderCodeTasks(n, lv) {
+  const c = LESSONS[n], s = L(n);
+  lv.innerHTML = `<p class="lead">Пишите код прямо здесь и нажимайте «Запустить». Python работает в самом телефоне или компьютере. «Проверить» запускает код и сравнивает результат с нужным. Подсказки открываются по одной.</p>` +
+    c.code.map((t, i) => `<div class="task card"><div class="goal">${s.code.includes(i) ? '<span class="done-mark">✓</span> ' : ""}Задание ${i + 1}. ${esc(t.goal)}</div>
+      <textarea class="editor" id="ed-${i}" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Код задания ${i + 1}">${esc(t.starter)}</textarea>
+      <div class="row" style="margin-top:8px"><button class="btn" data-run="${i}">▶ Запустить</button><button class="btn primary" data-check="${i}">Проверить</button><button class="btn" data-hint="${i}">Подсказка</button><button class="btn" data-ans="${i}">Показать решение</button></div>
+      <pre class="code out" id="cout-${i}" hidden></pre><div class="hint" id="hint-${i}" aria-live="polite"></div></div>`).join("");
+  c.code.forEach((t, i) => {
+    const ed = $("#ed-" + i), out = $("#cout-" + i);
+    ed.onkeydown = e => { if (e.key === "Tab") { e.preventDefault(); const p = ed.selectionStart; ed.value = ed.value.slice(0, p) + "    " + ed.value.slice(ed.selectionEnd); ed.selectionStart = ed.selectionEnd = p + 4; } };
+    const run = async () => { out.hidden = false; out.textContent = "Выполняю…"; try { const r = await runPy(ed.value, out); showRun(out, r); return r; } catch (e) { out.textContent = e.message; return null; } };
+    lv.querySelector(`[data-run="${i}"]`).onclick = run;
+    lv.querySelector(`[data-check="${i}"]`).onclick = async () => {
+      const r = await run(); if (!r) return;
+      const missing = (t.must || []).filter(m => !ed.value.includes(m));
+      const ok = !r.err && outputMatches(r.out, t.expect) && !missing.length;
+      const h = $("#hint-" + i);
+      if (ok) { h.innerHTML = '<span class="done-mark">✓ Верно!</span> Задание засчитано.'; if (!s.code.includes(i)) { s.code.push(i); Store.save(); updateChips(); } }
+      else if (r.err) h.innerHTML = "Код упал с ошибкой. Прочитайте последнюю строку ошибки — там причина.";
+      else if (missing.length) h.innerHTML = "Результат верный, но в задании нужно использовать: <code>" + missing.map(esc).join("</code>, <code>") + "</code>.";
+      else h.innerHTML = "Результат не совпадает. Нужно вывести:<pre class=\"code out\">" + esc(t.expect) + "</pre>";
+    };
+    let hintN = 0; const soft = t.hints.slice(0, -1);
+    lv.querySelector(`[data-hint="${i}"]`).onclick = () => { hintN = Math.min(hintN + 1, soft.length); $("#hint-" + i).innerHTML = soft.slice(0, hintN).map(x => "Подсказка: " + esc(x)).join("<br>"); };
+    lv.querySelector(`[data-ans="${i}"]`).onclick = () => { $("#hint-" + i).innerHTML = "Решение:<pre class=\"code\">" + esc(t.hints[t.hints.length - 1]) + "</pre>Наберите или исправьте код сами и нажмите «Проверить»."; };
+  });
+}
+
+/* ===================== КОД: ПЕСОЧНИЦА И ГОТОВЫЕ РЕШЕНИЯ ===================== */
+// where: "here" — запускается прямо в приложении; "pc" — для компьютера (нужен доступ к файлам, сети или датчикам)
+const SNIPPETS = [
+ { t: "Нагрузка на блок питания", where: "here", d: "Функция считает ватты системы и процент от мощности БП, как в мониторе железа.",
+   code: 'def psu(cpu_watts, gpu_watts, other=80, capacity=2000):\n    total = cpu_watts + sum(gpu_watts) + other\n    return total, round(total / capacity * 100, 1)\n\nwatts, pct = psu(200, [340, 25])\nprint(f"Система берёт {watts} Вт — это {pct}% блока питания")' },
+ { t: "Самое горячее устройство", where: "here", d: "Найти максимум в словаре и вывести предупреждение.",
+   code: 'temps = {"CPU": 91, "GPU 0": 34, "GPU 1": 29}\nhot = max(temps, key=temps.get)\nprint("Самое горячее:", hot, temps[hot], "°C")\nfor name, t in temps.items():\n    if t > 85:\n        print("ВНИМАНИЕ: перегрев", name)' },
+ { t: "Сколько дней до Нового года", where: "here", d: "Работа с датами: модуль datetime.",
+   code: 'from datetime import date\ntoday = date.today()\nny = date(today.year + 1, 1, 1)\nprint("До Нового года осталось", (ny - today).days, "дней")' },
+ { t: "Средние показатели из CSV", where: "here", d: "Разобрать таблицу (как журнал монитора) и посчитать среднее. На компьютере вместо текста читайте файл: open(\"metrics.csv\", encoding=\"utf-8-sig\").",
+   code: 'import csv, io\ndata = """Время;CPU %;БП Вт\n00:58;100;632\n01:00;100;619\n01:02;100;549"""\nrows = list(csv.DictReader(io.StringIO(data), delimiter=";"))\nwatts = [float(r["БП Вт"]) for r in rows]\nprint("Записей:", len(rows))\nprint("Средняя мощность:", round(sum(watts) / len(watts)), "Вт")\nprint("Максимум:", max(watts), "Вт")' },
+ { t: "Сохранить и прочитать JSON", where: "here", d: "Так программы хранят настройки (как config.json монитора).",
+   code: 'import json\nconfig = {"psu_capacity_w": 2000, "warn": {"cpu_temp": 90}}\nwith open("config.json", "w", encoding="utf-8") as f:\n    json.dump(config, f, ensure_ascii=False, indent=2)\nwith open("config.json", encoding="utf-8") as f:\n    loaded = json.load(f)\nprint(loaded["warn"]["cpu_temp"])\nprint(open("config.json", encoding="utf-8").read())' },
+ { t: "Надёжный пароль", where: "here", d: "Модуль secrets — для паролей и ключей (random для этого не годится).",
+   code: 'import secrets, string\nalphabet = string.ascii_letters + string.digits + "!@#$%"\npassword = "".join(secrets.choice(alphabet) for _ in range(16))\nprint(password)' },
+ { t: "Проверить ввод: число или нет", where: "here", d: "try / except для безопасного преобразования.",
+   code: 'def to_number(text):\n    try:\n        return float(text.replace(",", "."))\n    except ValueError:\n        return None\n\nfor s in ["42", "3,14", "abc"]:\n    print(s, "→", to_number(s))' },
+ { t: "Список: отсортировать и отфильтровать", where: "here", d: "sorted, генератор списка, срезы.",
+   code: 'procs = [("python", 1717), ("claude", 408), ("LibreHardwareMonitor", 311), ("explorer", 122)]\nby_cpu = sorted(procs, key=lambda p: p[1], reverse=True)\nprint("Топ-2:", by_cpu[:2])\nheavy = [name for name, cpu in procs if cpu > 300]\nprint("Больше 300 с:", heavy)' },
+ { t: "Загрузка процессора и памяти", where: "pc", d: "Нужен модуль psutil: pip install psutil. Это то, с чего начинается монитор железа.",
+   code: 'import psutil\nprint("CPU:", psutil.cpu_percent(interval=1), "%")\nmem = psutil.virtual_memory()\nprint("Память:", mem.percent, "% занято,", round(mem.available / 1024**3, 1), "ГБ свободно")\nfor p in psutil.disk_partitions():\n    u = psutil.disk_usage(p.mountpoint)\n    print(p.mountpoint, u.percent, "%")' },
+ { t: "Переименовать файлы в папке", where: "pc", d: "Добавить дату в начало имени всех .pdf. Сначала запустите с DRY_RUN = True: увидите, что будет, ничего не меняя.",
+   code: 'from pathlib import Path\nfrom datetime import date\n\nFOLDER = Path(r"C:\\Users\\user\\Desktop\\Документы")\nDRY_RUN = True   # поставьте False, чтобы реально переименовать\n\nfor f in FOLDER.glob("*.pdf"):\n    new = f.with_name(f"{date.today()}_{f.name}")\n    print(f.name, "→", new.name)\n    if not DRY_RUN:\n        f.rename(new)' },
+ { t: "Найти самые большие файлы", where: "pc", d: "Обойти папку со всеми подпапками и показать 10 самых тяжёлых файлов.",
+   code: 'from pathlib import Path\nroot = Path(r"C:\\Users\\user\\Downloads")\nfiles = [(f.stat().st_size, f) for f in root.rglob("*") if f.is_file()]\nfor size, f in sorted(files, reverse=True)[:10]:\n    print(f"{size / 1024**2:8.1f} МБ  {f}")' },
+ { t: "Проверить, работает ли сайт", where: "pc", d: "Запрос к сайту и время ответа — как проверка интернета в мониторе.",
+   code: 'import time, urllib.request\nfor url in ["https://ya.ru", "https://github.com"]:\n    t = time.time()\n    try:\n        with urllib.request.urlopen(url, timeout=5) as r:\n            print(url, r.status, round((time.time() - t) * 1000), "мс")\n    except Exception as e:\n        print(url, "НЕ ОТВЕЧАЕТ:", e)' },
+ { t: "Делать что-то каждые N секунд", where: "pc", d: "Простейший «сторож»: проверка раз в 10 секунд с записью в файл. Остановить — Ctrl+C.",
+   code: 'import time\nfrom datetime import datetime\nimport psutil\n\nwhile True:\n    load = psutil.cpu_percent(interval=1)\n    line = f"{datetime.now():%H:%M:%S}  CPU {load}%"\n    print(line)\n    with open("cpu_log.txt", "a", encoding="utf-8") as f:\n        f.write(line + "\\n")\n    time.sleep(10)' }
+];
+let sandboxCode = 'print("Привет! Это песочница Python.")\nfor i in range(3):\n    print("Строка", i + 1)';
+function copyText(text, btn) {
+  const done = () => { const l = btn.textContent; btn.textContent = "Скопировано"; setTimeout(() => btn.textContent = l, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done)); else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e) {} ta.remove(); }
+function renderCode() {
+  const p = $("#p-code");
+  p.innerHTML = `<h3 style="margin-top:0">Песочница</h3><p class="lead">Пишите и запускайте Python прямо здесь. Можно вставить код, который я пришлю в чате, и посмотреть, как он работает.</p>
+    <div class="card"><textarea class="editor tall" id="sb-ed" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Код песочницы">${esc(sandboxCode)}</textarea>
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="sb-run">▶ Запустить</button><button class="btn" id="sb-copy">Копировать</button><button class="btn" id="sb-clear">Очистить</button></div>
+      <pre class="code out" id="sb-out" hidden></pre></div>
+    <h3>Готовые решения</h3><p class="lead">Рабочие программы для частых задач, с объяснением. Отмеченные «в приложении» запускаются прямо здесь. Отмеченные «на компьютере» работают с файлами, сетью или датчиками: скопируйте, сохраните как <code>имя.py</code> и запустите командой <code>python имя.py</code>.</p>
+    <div class="ref-grid">${SNIPPETS.map((s, i) => `<div class="card"><div class="row" style="justify-content:space-between"><h4 style="margin:0">${esc(s.t)}</h4><span class="chip">${s.where === "here" ? "в приложении" : "на компьютере"}</span></div>
+      <p class="note" style="margin:6px 0 8px">${esc(s.d)}</p><pre class="code">${esc(s.code)}</pre>
+      <div class="row"><button class="btn small" data-copy="${i}">Копировать</button><button class="btn small" data-open="${i}">В песочницу</button></div></div>`).join("")}</div>`;
+  const ed = $("#sb-ed"), out = $("#sb-out");
+  ed.oninput = () => { sandboxCode = ed.value; };
+  ed.onkeydown = e => { if (e.key === "Tab") { e.preventDefault(); const pos = ed.selectionStart; ed.value = ed.value.slice(0, pos) + "    " + ed.value.slice(ed.selectionEnd); ed.selectionStart = ed.selectionEnd = pos + 4; sandboxCode = ed.value; } };
+  $("#sb-run").onclick = async () => { out.hidden = false; out.textContent = "Выполняю…"; try { showRun(out, await runPy(ed.value, out)); } catch (e) { out.textContent = e.message; } };
+  $("#sb-copy").onclick = e => copyText(ed.value, e.currentTarget);
+  $("#sb-clear").onclick = () => { ed.value = ""; sandboxCode = ""; out.hidden = true; ed.focus(); };
+  p.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => copyText(SNIPPETS[+b.dataset.copy].code, b));
+  p.querySelectorAll("[data-open]").forEach(b => b.onclick = () => { sandboxCode = SNIPPETS[+b.dataset.open].code; renderCode(); window.scrollTo(0, 0); });
+}
+
 /* ===================== СПРАВОЧНИК ===================== */
 function renderRef() {
   const p = $("#p-ref");
@@ -554,16 +852,16 @@ function renderRef() {
 /* ===================== ПРОГРЕСС ===================== */
 function renderStats() {
   const ready = Object.keys(LESSONS);
-  const tasksDone = ready.reduce((a, n) => a + ((Store.data.lessons[n] || {}).tasks || []).length, 0);
-  const tasksAll = ready.reduce((a, n) => a + LESSONS[n].tasks.length, 0);
+  const tasksDone = ready.reduce((a, n) => a + practiceDone(n), 0);
+  const tasksAll = ready.reduce((a, n) => a + practiceAll(n), 0);
   const quizR = ready.reduce((a, n) => a + ((Store.data.lessons[n] || {}).quizBest || 0), 0);
   const quizAll = ready.reduce((a, n) => a + LESSONS[n].quiz.length, 0);
   $("#p-stats").innerHTML = `<div class="stats">
     <div class="card stat"><div class="n">${totalPct()}%</div><div class="l">всего курса</div></div>
     <div class="card stat"><div class="n">${ready.filter(n => lessonPct(n) === 100).length} / 16</div><div class="l">уроков пройдено полностью</div></div>
     <div class="card stat"><div class="n">${quizR} / ${quizAll}</div><div class="l">верных ответов в тестах (лучшие)</div></div>
-    <div class="card stat"><div class="n">${tasksDone} / ${tasksAll}</div><div class="l">команд введено верно</div></div></div>
-    <div class="lessons">${ready.map(n => `<div class="lesson" style="cursor:default"><span class="num">${n}</span><span><span class="t">${esc(OUTLINE[n][0])}</span><br><span class="d">теория ${(Store.data.lessons[n] || {}).read ? "✓" : "—"} · тест ${(Store.data.lessons[n] || {}).quizBest || 0}/${LESSONS[n].quiz.length} · практика ${((Store.data.lessons[n] || {}).tasks || []).length}/${LESSONS[n].tasks.length}</span></span>${ring(lessonPct(n))}</div>`).join("")}</div>
+    <div class="card stat"><div class="n">${tasksDone} / ${tasksAll}</div><div class="l">заданий практики выполнено</div></div></div>
+    <div class="lessons">${ready.map(n => `<div class="lesson" style="cursor:default"><span class="num">${n}</span><span><span class="t">${esc(OUTLINE[n][0])}</span><br><span class="d">теория ${(Store.data.lessons[n] || {}).read ? "✓" : "—"} · тест ${(Store.data.lessons[n] || {}).quizBest || 0}/${LESSONS[n].quiz.length} · практика ${practiceDone(n)}/${practiceAll(n)}</span></span>${ring(lessonPct(n))}</div>`).join("")}</div>
     <p class="note" style="margin-top:16px">${({ cloud: "Прогресс хранится в облаке claude.ai.", server: "Прогресс хранится на сервере и одинаков на телефоне и компьютере." }[Store.mode] || "Прогресс хранится в этом браузере.")}</p>`;
 }
 
