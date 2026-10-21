@@ -119,6 +119,7 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
 .chip-w { border: 1px solid var(--line); background: var(--surface2); color: var(--fg); border-radius: 8px; padding: 8px 12px; font: 600 16px var(--f-body); cursor: pointer }
 .chip-w.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
 .week.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset } .now-chip { background: var(--accent); color: var(--accent-ink) }
+.tr-area { width: 100%; min-height: 110px; resize: vertical; font: 17px/1.5 var(--f-body); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg) }
 </style>
 
 <div class="wrap">
@@ -138,6 +139,7 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
     <button role="tab" id="tab-phrases" aria-controls="p-phrases" aria-selected="false">Фразы</button>
     <button role="tab" id="tab-grammar" aria-controls="p-grammar" aria-selected="false">Грамматика</button>
     <button role="tab" id="tab-dialogs" aria-controls="p-dialogs" aria-selected="false">Диалоги</button>
+    <button role="tab" id="tab-tr" aria-controls="p-tr" aria-selected="false">Переводчик</button>
     <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Тех. слова</button>
     <button role="tab" id="tab-sounds" aria-controls="p-sounds" aria-selected="false">Звуки</button>
     <button role="tab" id="tab-errors" aria-controls="p-errors" aria-selected="false">Ошибки и сообщения</button>
@@ -150,6 +152,7 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
   <section class="panel" id="p-phrases" role="tabpanel" aria-labelledby="tab-phrases" hidden></section>
   <section class="panel" id="p-grammar" role="tabpanel" aria-labelledby="tab-grammar" hidden></section>
   <section class="panel" id="p-dialogs" role="tabpanel" aria-labelledby="tab-dialogs" hidden></section>
+  <section class="panel" id="p-tr" role="tabpanel" aria-labelledby="tab-tr" hidden></section>
   <section class="panel" id="p-words" role="tabpanel" aria-labelledby="tab-words" hidden></section>
   <section class="panel" id="p-sounds" role="tabpanel" aria-labelledby="tab-sounds" hidden></section>
   <section class="panel" id="p-errors" role="tabpanel" aria-labelledby="tab-errors" hidden></section>
@@ -612,12 +615,13 @@ function card(key) { return Store.data.cards[key]; }
 function deckItems(deck) {
   return deck === "words"
     ? W.map(w => ({ key: w[0], front: w[0], ipa: w[1], back: w[3], approx: w[2], ex: w[5], topic: TOPICS[w[4]] }))
-    : PHRASES.map(p => ({ key: "p:" + p[0], front: p[0], ipa: "", back: p[1], approx: "", ex: "", topic: PTOPICS[p[2]] }));
+    : PHRASES.map(p => ({ key: "p:" + p[0], front: p[0], ipa: "", back: p[1], approx: "", ex: "", topic: PTOPICS[p[2]] }))
+        .concat((Store.data.myPhrases || []).map(p => ({ key: "p:" + p[0], front: p[0], ipa: "", back: p[1], approx: "", ex: "", topic: "Мои фразы" })));
 }
 function learnedCount(deck = "words") { return deckItems(deck).filter(i => (card(i.key) || {}).b >= 3).length; }
 function dueList(deck = "words") { const now = Date.now(); return deckItems(deck).filter(i => { const c = card(i.key); return c && c.d <= now; }); }
 function updateChips() {
-  $("#chip-phrases b").textContent = learnedCount("phrases") + " из " + PHRASES.length;
+  $("#chip-phrases b").textContent = learnedCount("phrases") + " из " + deckItems("phrases").length;
   $("#chip-learned b").textContent = learnedCount("words") + " из " + W.length;
   $("#chip-due b").textContent = dueList("phrases").length + dueList("words").length;
   $("#chip-sync").textContent = ({ cloud: "Прогресс: в облаке", server: "Прогресс: на сервере", offline: "Сервер недоступен, сохраняю в браузере" }[Store.mode] || "Прогресс: этот браузер");
@@ -1394,7 +1398,82 @@ function renderPlan() {
 }
 
 /* ======================= ЗАПУСК ======================= */
-function renderAll() { renderPlan(); renderTrain(); renderPhrases(); renderGrammar(); renderDialogs(); renderWords(); renderSounds(); renderErrors(); renderTests(); updateChips(); if (!$("#p-stats").hidden) renderStats(); }
+/* ======================= ПЕРЕВОДЧИК (нейросеть прямо в телефоне) =======================
+   Модели Opus-MT (Helsinki-NLP, сжатые ONNX-версии Xenova) лежат в папке models рядом с приложением.
+   Библиотека Transformers.js выполняет их в браузере; после первой загрузки всё работает без интернета. */
+const TJS = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+const MT = { ru: "Xenova/opus-mt-ru-en", en: "Xenova/opus-mt-en-ru" };
+const mtCache = {};
+let trLib = null, trFrom = "auto", trBusy = false;
+async function getTranslator(from, onProgress) {
+  if (mtCache[from]) return mtCache[from];
+  if (!trLib) {
+    trLib = await import(TJS);
+    trLib.env.allowRemoteModels = false;
+    trLib.env.allowLocalModels = true;
+    trLib.env.localModelPath = new URL("models/", location.href).href;
+    trLib.env.useBrowserCache = true;
+  }
+  const files = {};
+  mtCache[from] = trLib.pipeline("translation", MT[from], {
+    quantized: true,
+    progress_callback: p => {
+      if (p.status === "progress" && p.total) { files[p.file] = [p.loaded, p.total]; const v = Object.values(files); onProgress(v.reduce((a, x) => a + x[0], 0), v.reduce((a, x) => a + x[1], 0)); }
+    }
+  }).catch(e => { delete mtCache[from]; throw e; });
+  return mtCache[from];
+}
+function detectLang(text) { const cyr = (text.match(/[а-яё]/gi) || []).length, lat = (text.match(/[a-z]/gi) || []).length; return cyr >= lat ? "ru" : "en"; }
+function splitSentences(text) { return text.replace(/\s+/g, " ").trim().match(/[^.!?…]+[.!?…]*\s*/g) || [text]; }
+function renderTranslator() {
+  const p = $("#p-tr");
+  p.innerHTML = `<p class="lead">Переводчик работает прямо в телефоне: внутри приложения небольшая нейросеть. Текст никуда не отправляется, после первой загрузки перевод работает без интернета.</p>
+    <div class="filters" role="group" aria-label="Направление"><button data-f="auto" aria-pressed="${trFrom === "auto"}">Автоопределение</button><button data-f="ru" aria-pressed="${trFrom === "ru"}">Русский → английский</button><button data-f="en" aria-pressed="${trFrom === "en"}">Английский → русский</button></div>
+    <div class="card"><textarea id="tr-in" class="tr-area" placeholder="Введите текст или фразу" aria-label="Текст для перевода">${esc(Store.data.trDraft || "")}</textarea>
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="tr-go">Перевести</button><button class="btn" id="tr-mic">${MIC} Сказать по-английски</button><button class="btn" id="tr-clear">Очистить</button></div>
+      <div class="mic-heard" id="tr-status" aria-live="polite"></div>
+      <div class="progress" id="tr-prog" hidden><i style="width:0%"></i></div></div>
+    <div class="card" id="tr-res" hidden style="margin-top:12px"><div class="tr" id="tr-out" style="font-size:19px;white-space:pre-wrap"></div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="tr-say">${SPK} Послушать</button><button class="btn" id="tr-copy">Копировать</button><button class="btn" id="tr-save">В мои фразы</button></div></div>
+    <p class="note" style="margin-top:14px">Первый перевод в каждую сторону скачивает модель: около 110 МБ, лучше по Wi-Fi. Дальше она хранится в телефоне. Модели — Opus-MT (Хельсинкский университет). Для учёбы и обычных фраз хороши, на сложных текстах уступают Google и DeepL.</p>`;
+  const inp = $("#tr-in"), st = $("#tr-status"), prog = $("#tr-prog"), res = $("#tr-res"), out = $("#tr-out");
+  let last = null;
+  p.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { trFrom = b.dataset.f; Store.data.trDraft = inp.value; renderTranslator(); });
+  inp.oninput = () => { Store.data.trDraft = inp.value; };
+  $("#tr-clear").onclick = () => { inp.value = ""; Store.data.trDraft = ""; res.hidden = true; st.textContent = ""; inp.focus(); };
+  $("#tr-mic").onclick = e => listenFree(st, e.currentTarget, t => { inp.value = t; Store.data.trDraft = t; });
+  $("#tr-go").onclick = async () => {
+    const text = inp.value.trim(); if (!text || trBusy) return;
+    const from = trFrom === "auto" ? detectLang(text) : trFrom;
+    trBusy = true; $("#tr-go").disabled = true; res.hidden = true;
+    try {
+      st.textContent = mtCache[from] ? "Перевожу…" : "Готовлю переводчик…";
+      const tr = await getTranslator(from, (done, total) => { prog.hidden = false; prog.firstElementChild.style.width = Math.round(done / total * 100) + "%"; st.textContent = `Загружаю модель перевода: ${Math.round(done / 1048576)} из ${Math.round(total / 1048576)} МБ`; });
+      prog.hidden = true; st.textContent = "Перевожу…";
+      await new Promise(r => setTimeout(r, 30));   // дать экрану обновиться
+      const parts = [];
+      for (const s of splitSentences(text)) { const r = await tr(s, { max_new_tokens: 200 }); parts.push(r[0].translation_text); }
+      const result = parts.join(" ");
+      last = from === "ru" ? { en: result, ru: text } : { en: text, ru: result };
+      out.textContent = result; res.hidden = false; st.textContent = from === "ru" ? "Русский → английский" : "Английский → русский";
+      Store.save();
+    } catch (e) {
+      prog.hidden = true;
+      st.textContent = "Не удалось загрузить переводчик. Для первой загрузки нужен интернет. Попробуйте ещё раз.";
+    } finally { trBusy = false; $("#tr-go").disabled = false; }
+  };
+  $("#tr-say").onclick = () => last && speak(last.en);
+  $("#tr-copy").onclick = e => { const b = e.currentTarget, t = out.textContent; const ok = () => { b.textContent = "Скопировано"; setTimeout(() => b.textContent = "Копировать", 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(ok, () => {}); };
+  $("#tr-save").onclick = e => {
+    if (!last) return;
+    const my = Store.data.myPhrases || (Store.data.myPhrases = []);
+    if (!my.some(x => x[0] === last.en)) my.push([last.en, last.ru]);
+    Store.save(); updateChips(); e.currentTarget.textContent = "Добавлено в тренировку";
+  };
+}
+
+function renderAll() { renderPlan(); renderTrain(); renderPhrases(); renderGrammar(); renderDialogs(); renderTranslator(); renderWords(); renderSounds(); renderErrors(); renderTests(); updateChips(); if (!$("#p-stats").hidden) renderStats(); }
 Store.loadLocal();
 renderAll();
 try { const t = localStorage.getItem(KEY + "-tab"); if (t && document.getElementById(t)) openTab(t); } catch (e) {}

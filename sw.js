@@ -1,6 +1,6 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261021-1440";
+const CACHE = "learn-20261021-1442";
 const FILES = [
   "./", "index.html", "english.html", "course.html",
   "manifest-english.json", "manifest-course.json",
@@ -26,6 +26,7 @@ self.addEventListener("fetch", event => {
   const url = new URL(req.url);
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" || url.hostname === "cdn.jsdelivr.net";
   if (url.origin !== location.origin && !isFont) return;
+  if (url.pathname.includes("/models/")) return;   // модели перевода кэширует сама библиотека
   event.respondWith(
     caches.open(CACHE).then(async cache => {
       const cached = await cache.match(req, { ignoreSearch: !isFont });
