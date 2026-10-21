@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0f6e63">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
-</head><body><title>Технический английский</title>
+</head><body><title>Английский</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@500;700&family=Charis+SIL:wght@400;700&display=swap">
@@ -102,28 +102,54 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
 .boxes span { font-size: 13px; padding: 4px 9px; border-radius: 6px; background: var(--surface2); font-variant-numeric: tabular-nums }
 .settings { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; font-size: 14px }
 @media (prefers-reduced-motion: no-preference) { .opts button, .btn { transition: border-color .15s, background .15s } }
+.teach { margin-bottom: 12px } .teach h3 { margin: 0 0 8px; font-size: 17px } .teach p { margin: 0 0 10px; max-width: 70ch } .teach ul, .teach ol { margin: 0 0 10px; padding-left: 20px; max-width: 70ch } .teach li { margin-bottom: 5px }
+.teach i { color: var(--accent); font-style: normal; font-weight: 500 }
+.goal-card { border-color: var(--accent) }
+.g-title { font: 700 clamp(20px, 4vw, 26px)/1.2 var(--f-display); margin: 0 0 6px; text-wrap: balance }
+.tbl { overflow-x: auto; margin: 0 0 10px } .tbl table { border-collapse: collapse; font-size: 14px; min-width: 100% }
+.tbl th, .tbl td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top } .tbl th { background: var(--surface2); font-weight: 600 }
+.lesson-btn { display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; text-align: left; color: var(--fg); font: inherit; cursor: pointer; width: 100% }
+.lesson-btn:hover { border-color: var(--accent) } .lesson-btn .num { font: 700 18px var(--f-display); color: var(--accent); text-align: center }
+.ex-line { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line) } .ex-line:last-child { border-bottom: 0 }
+.en-line { font-weight: 500 }
+.q-big { font-size: 20px; font-weight: 600; margin: 6px 0 4px }
+.explain { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--surface2); font-size: 15px } .explain b.ok { color: var(--ok) } .explain b.bad { color: var(--bad) }
+.build-line { min-height: 52px; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px dashed var(--line); border-radius: 10px; margin: 8px 0; align-items: center }
+.build-pool { display: flex; flex-wrap: wrap; gap: 6px }
+.chip-w { border: 1px solid var(--line); background: var(--surface2); color: var(--fg); border-radius: 8px; padding: 8px 12px; font: 600 16px var(--f-body); cursor: pointer }
+.chip-w.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.week.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset } .now-chip { background: var(--accent); color: var(--accent-ink) }
 </style>
 
 <div class="wrap">
   <header class="top">
-    <h1>Технический английский<small>Звуки, слова команд и ошибок, тренировка и тесты</small></h1>
+    <h1>Английский<small>Разговорный к Новому году и технический: фразы, грамматика, диалоги, слова, тесты</small></h1>
     <div class="chips">
-      <span class="chip" id="chip-learned">Выучено: <b>0</b></span>
+      <span class="chip" id="chip-phrases">Фразы: <b>0</b></span>
+      <span class="chip" id="chip-learned">Слова: <b>0</b></span>
       <span class="chip" id="chip-due">К повтору: <b>0</b></span>
       <span class="chip" id="chip-sync">Прогресс: этот браузер</span>
     </div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Разделы">
-    <button role="tab" id="tab-train" aria-controls="p-train" aria-selected="true">Тренировка</button>
-    <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Словарь</button>
+    <button role="tab" id="tab-plan" aria-controls="p-plan" aria-selected="true">План</button>
+    <button role="tab" id="tab-train" aria-controls="p-train" aria-selected="false">Тренировка</button>
+    <button role="tab" id="tab-phrases" aria-controls="p-phrases" aria-selected="false">Фразы</button>
+    <button role="tab" id="tab-grammar" aria-controls="p-grammar" aria-selected="false">Грамматика</button>
+    <button role="tab" id="tab-dialogs" aria-controls="p-dialogs" aria-selected="false">Диалоги</button>
+    <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Тех. слова</button>
     <button role="tab" id="tab-sounds" aria-controls="p-sounds" aria-selected="false">Звуки</button>
     <button role="tab" id="tab-errors" aria-controls="p-errors" aria-selected="false">Ошибки и сообщения</button>
     <button role="tab" id="tab-tests" aria-controls="p-tests" aria-selected="false">Тесты</button>
     <button role="tab" id="tab-stats" aria-controls="p-stats" aria-selected="false">Прогресс</button>
   </nav>
 
-  <section class="panel" id="p-train" role="tabpanel" aria-labelledby="tab-train"></section>
+  <section class="panel" id="p-plan" role="tabpanel" aria-labelledby="tab-plan"></section>
+  <section class="panel" id="p-train" role="tabpanel" aria-labelledby="tab-train" hidden></section>
+  <section class="panel" id="p-phrases" role="tabpanel" aria-labelledby="tab-phrases" hidden></section>
+  <section class="panel" id="p-grammar" role="tabpanel" aria-labelledby="tab-grammar" hidden></section>
+  <section class="panel" id="p-dialogs" role="tabpanel" aria-labelledby="tab-dialogs" hidden></section>
   <section class="panel" id="p-words" role="tabpanel" aria-labelledby="tab-words" hidden></section>
   <section class="panel" id="p-sounds" role="tabpanel" aria-labelledby="tab-sounds" hidden></section>
   <section class="panel" id="p-errors" role="tabpanel" aria-labelledby="tab-errors" hidden></section>
@@ -507,6 +533,7 @@ function pickVoice() {
 if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 function speak(text, rate) {
   if (!window.speechSynthesis) { toast("Озвучка недоступна в этом браузере"); return; }
+  if (activeRec) activeRec.finish("Остановлено.");
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US"; if (voice) u.voice = voice;
@@ -514,27 +541,53 @@ function speak(text, rate) {
   speechSynthesis.speak(u);
 }
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-function listen(target, outEl, onResult) {
-  if (!SR) { outEl.textContent = "Проверка произношения работает в Edge или Chrome на компьютере (ярлык «Технический английский»)."; return; }
-  const r = new SR(); r.lang = "en-US"; r.maxAlternatives = 5; r.interimResults = false;
-  outEl.textContent = "Говорите…";
-  r.onresult = ev => {
-    const alts = Array.from(ev.results[0]).map(a => a.transcript.trim().toLowerCase().replace(/[.!?,]/g, ""));
-    const goal = target.toLowerCase().replace(/[-.!?,]/g, " ").replace(/\s+/g, " ").trim();
-    const ok = alts.some(a => a.replace(/-/g, " ") === goal);
+let activeRec = null;
+function normText(s) { return String(s).toLowerCase().replace(/[’`]/g, "'").replace(/-/g, " ").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim(); }
+function similarity(target, heard) {
+  const t = normText(target).split(" ").filter(Boolean), h = new Set(normText(heard).split(" "));
+  return t.length ? t.filter(w => h.has(w)).length / t.length : 0;
+}
+// Распознавание речи. На iPhone Safari может не прислать итог или конец записи,
+// поэтому: кнопка «Стоп», предел 8 секунд, оценка по последнему услышанному варианту.
+function listen(target, outEl, btn) {
+  if (activeRec) { activeRec.finish("Остановлено."); return; }
+  if (!SR) { outEl.textContent = "Этот браузер не умеет распознавать речь. На iPhone откройте приложение в Safari, на компьютере — в Edge или Chrome."; return; }
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const r = new SR();
+  r.lang = "en-US"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
+  const label = btn ? btn.innerHTML : "";
+  let heard = [], done = false, timer = null;
+  const finish = msg => {
+    if (done) return;
+    done = true; activeRec = null; clearTimeout(timer);
+    try { r.abort(); } catch (e) {}
+    if (btn) { btn.innerHTML = label; btn.classList.remove("primary"); }
+    if (msg) { outEl.textContent = msg; return; }
+    if (!heard.length) { outEl.textContent = "Ничего не услышал. Нажмите и сразу говорите, чуть громче."; return; }
+    const best = heard.reduce((a, h) => Math.max(a, similarity(target, h)), 0);
+    const ok = best >= (normText(target).split(" ").length > 2 ? 0.75 : 1);
     outEl.innerHTML = "";
-    const b = document.createElement("span");
-    b.textContent = ok ? "Отлично, понятно: «" + alts[0] + "»" : "Услышано: «" + alts[0] + "». Попробуйте ещё раз — послушайте образец.";
-    b.style.color = ok ? "var(--ok)" : "var(--bad)";
-    outEl.appendChild(b);
-    if (onResult) onResult(ok);
+    const s = document.createElement("span");
+    s.textContent = ok ? "Отлично, понятно: «" + heard[0] + "»" : "Услышано: «" + heard[0] + "» — совпало " + Math.round(best * 100) + "%. Послушайте образец и попробуйте ещё раз.";
+    s.style.color = ok ? "var(--ok)" : "var(--bad)";
+    outEl.appendChild(s);
   };
-  r.onerror = ev => {
-    outEl.textContent = (ev.error === "not-allowed" || ev.error === "service-not-allowed")
-      ? "Нет доступа к микрофону. На claude.ai он закрыт: проверяйте произношение в версии на компьютере."
-      : "Не расслышал (" + ev.error + "). Попробуйте ещё раз.";
+  activeRec = { finish };
+  r.onresult = ev => {
+    const res = ev.results[ev.results.length - 1];
+    heard = Array.from(res).map(a => a.transcript.trim()).filter(Boolean);
+    outEl.textContent = "Слышу: " + (heard[0] || "…");
+    if (res.isFinal) finish();
   };
-  try { r.start(); } catch (e) { outEl.textContent = "Не удалось включить микрофон."; }
+  r.onerror = ev => finish(
+    ev.error === "not-allowed" || ev.error === "service-not-allowed"
+      ? "Нет доступа к микрофону. iPhone: Настройки → Safari → Микрофон → Разрешить; также включите диктовку (Настройки → Основные → Клавиатура → Диктовка)."
+      : ev.error === "no-speech" ? "Ничего не услышал. Попробуйте ещё раз." : "Не получилось (" + ev.error + "). Попробуйте ещё раз.");
+  r.onend = () => finish();
+  timer = setTimeout(() => { try { r.stop(); } catch (e) {} setTimeout(() => finish(), 1200); }, 8000);
+  if (btn) { btn.textContent = "Стоп"; btn.classList.add("primary"); }
+  outEl.textContent = "Говорите…";
+  try { r.start(); } catch (e) { finish("Не удалось включить микрофон. Попробуйте ещё раз."); }
 }
 
 /* ======================= УТИЛИТЫ ======================= */
@@ -554,12 +607,19 @@ function toast(msg) {
   t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600);
 }
 const wordByEn = Object.fromEntries(W.map(w => [w[0], w]));
-function card(en) { return Store.data.cards[en]; }
-function learnedCount() { return Object.values(Store.data.cards).filter(c => c.b >= 3).length; }
-function dueList() { const now = Date.now(); return W.filter(w => { const c = card(w[0]); return c && c.d <= now; }); }
+function card(key) { return Store.data.cards[key]; }
+// Колоды для тренировки: разговорные фразы и технические слова
+function deckItems(deck) {
+  return deck === "words"
+    ? W.map(w => ({ key: w[0], front: w[0], ipa: w[1], back: w[3], approx: w[2], ex: w[5], topic: TOPICS[w[4]] }))
+    : PHRASES.map(p => ({ key: "p:" + p[0], front: p[0], ipa: "", back: p[1], approx: "", ex: "", topic: PTOPICS[p[2]] }));
+}
+function learnedCount(deck = "words") { return deckItems(deck).filter(i => (card(i.key) || {}).b >= 3).length; }
+function dueList(deck = "words") { const now = Date.now(); return deckItems(deck).filter(i => { const c = card(i.key); return c && c.d <= now; }); }
 function updateChips() {
-  $("#chip-learned b").textContent = learnedCount() + " из " + W.length;
-  $("#chip-due b").textContent = dueList().length;
+  $("#chip-phrases b").textContent = learnedCount("phrases") + " из " + PHRASES.length;
+  $("#chip-learned b").textContent = learnedCount("words") + " из " + W.length;
+  $("#chip-due b").textContent = dueList("phrases").length + dueList("words").length;
   $("#chip-sync").textContent = ({ cloud: "Прогресс: в облаке", server: "Прогресс: на сервере", offline: "Сервер недоступен, сохраняю в браузере" }[Store.mode] || "Прогресс: этот браузер");
 }
 
@@ -570,25 +630,31 @@ function openTab(id) {
   try { localStorage.setItem(KEY + "-tab", id); } catch (e) {}
   if (id === "tab-stats") renderStats();
   if (id === "tab-train") renderTrain();
+  if (id === "tab-plan") renderPlan();
+  if (activeRec) activeRec.finish("Остановлено.");
+  window.scrollTo(0, 0);
 }
 tabs.forEach(t => t.addEventListener("click", () => openTab(t.id)));
 
 /* ======================= ТРЕНИРОВКА (карточки) ======================= */
 let session = null;
+function trainDeck() { return Store.data.settings.deck || "phrases"; }
 function buildSession() {
-  const due = shuffle(dueList()).slice(0, 40);
+  const deck = trainDeck();
+  const due = shuffle(dueList(deck)).slice(0, 40);
   const d = Store.data.daily[today()] || { newDone: 0, reviews: 0 };
   const newLeft = Math.max(0, (Store.data.settings.newPerDay || 12) - d.newDone);
-  const fresh = W.filter(w => !card(w[0])).slice(0, newLeft);
-  return { queue: [...due, ...fresh], i: 0, flipped: false, right: 0, total: 0 };
+  const fresh = deckItems(deck).filter(i => !card(i.key)).slice(0, newLeft);
+  return { deck, queue: [...due, ...fresh], i: 0, flipped: false, right: 0, total: 0 };
 }
 function renderTrain() {
   const p = $("#p-train");
-  if (!session || session.i >= session.queue.length) session = buildSession();
+  if (!session || session.deck !== trainDeck() || session.i >= session.queue.length) session = buildSession();
   const boxes = [0, 0, 0, 0, 0, 0];
-  Object.values(Store.data.cards).forEach(c => boxes[Math.min(5, c.b)]++);
-  const intro = `<p class="lead">Карточка показывает английское слово. Вспомните перевод, послушайте, повторите вслух и откройте ответ. Слова, которые вы знаете, возвращаются всё реже: через 1, 3, 7, 16 и 35 дней.</p>
-    <div class="settings"><label for="set-new">Новых слов в день</label>
+  deckItems(trainDeck()).forEach(i => { const c = card(i.key); if (c) boxes[Math.min(5, c.b)]++; });
+  const intro = `<p class="lead">Карточка показывает английскую фразу или слово. Вспомните перевод, послушайте, повторите вслух и откройте ответ. То, что вы знаете, возвращается всё реже: через 1, 3, 7, 16 и 35 дней.</p>
+    <div class="filters" role="group" aria-label="Колода"><button data-deck="phrases" aria-pressed="${trainDeck() === "phrases"}">Разговорные фразы</button><button data-deck="words" aria-pressed="${trainDeck() === "words"}">Технические слова</button></div>
+    <div class="settings"><label for="set-new">Новых в день</label>
       <select id="set-new">${[5, 8, 12, 20, 30].map(n => `<option ${n == Store.data.settings.newPerDay ? "selected" : ""}>${n}</option>`).join("")}</select>
       <label for="set-rate">Скорость голоса</label>
       <select id="set-rate">${[[0.6, "медленно"], [0.85, "обычно"], [1, "быстро"]].map(([v, l]) => `<option value="${v}" ${v == Store.data.settings.rate ? "selected" : ""}>${l}</option>`).join("")}</select></div>
@@ -597,14 +663,14 @@ function renderTrain() {
     p.innerHTML = intro + `<div class="card big-card"><div class="en">На сегодня всё</div><p class="note">Новые слова закончились на сегодня, повторять пока нечего. Загляните завтра, пройдите тест или поднимите число новых слов в день.</p><button class="btn primary" id="go-tests">Пройти тест</button></div>`;
     $("#go-tests").onclick = () => openTab("tab-tests");
   } else {
-    const w = session.queue[session.i];
-    const isNew = !card(w[0]);
+    const it = session.queue[session.i];
+    const isNew = !card(it.key);
     p.innerHTML = intro + `
       <div class="progress" aria-hidden="true"><i style="width:${(session.i / session.queue.length) * 100}%"></i></div>
-      <p class="note" style="margin:6px 0 12px">Карточка ${session.i + 1} из ${session.queue.length}${isNew ? " · новое слово" : " · повторение"} · тема: ${TOPICS[w[4]]}</p>
+      <p class="note" style="margin:6px 0 12px">Карточка ${session.i + 1} из ${session.queue.length}${isNew ? " · новая" : " · повторение"} · тема: ${esc(it.topic)}</p>
       <div class="card big-card">
-        <div class="en">${esc(w[0])}</div>
-        <div class="ipa">/${esc(w[1])}/</div>
+        <div class="en" style="${it.front.length > 18 ? "font-size:clamp(22px,5vw,30px)" : ""}">${esc(it.front)}</div>
+        ${it.ipa ? `<div class="ipa">/${esc(it.ipa)}/</div>` : ""}
         <div class="row" style="justify-content:center;margin-top:12px">
           <button class="btn" id="t-say">${SPK} Послушать</button>
           <button class="btn" id="t-slow">${SPK} Медленно</button>
@@ -612,9 +678,9 @@ function renderTrain() {
         </div>
         <div class="mic-heard" id="t-heard" aria-live="polite"></div>
         <div class="answer" id="t-ans" ${session.flipped ? "" : "hidden"}>
-          <div class="tr" style="font-size:22px">${esc(w[3])}</div>
-          <div class="ru-approx">по-русски примерно: ${esc(w[2])}</div>
-          <div class="ex">${esc(w[5])}</div>
+          <div class="tr" style="font-size:22px">${esc(it.back)}</div>
+          ${it.approx ? `<div class="ru-approx">по-русски примерно: ${esc(it.approx)}</div>` : ""}
+          ${it.ex ? `<div class="ex">${esc(it.ex)}</div>` : ""}
           <div class="row" style="justify-content:center;margin-top:16px">
             <button class="btn" id="t-bad">Не вспомнил</button>
             <button class="btn" id="t-hard">С трудом</button>
@@ -625,23 +691,24 @@ function renderTrain() {
           <button class="btn primary" id="t-flip">Показать перевод</button>
         </div>
       </div>`;
-    $("#t-say").onclick = () => speak(w[0]);
-    $("#t-slow").onclick = () => speak(w[0], 0.5);
-    $("#t-mic").onclick = () => listen(w[0], $("#t-heard"));
-    $("#t-flip").onclick = () => { session.flipped = true; $("#t-ans").hidden = false; $("#t-flip-row").hidden = true; speak(w[0]); };
+    $("#t-say").onclick = () => speak(it.front);
+    $("#t-slow").onclick = () => speak(it.front, 0.5);
+    $("#t-mic").onclick = e => listen(it.front, $("#t-heard"), e.currentTarget);
+    $("#t-flip").onclick = () => { session.flipped = true; $("#t-ans").hidden = false; $("#t-flip-row").hidden = true; speak(it.front); };
     const grade = g => {
-      const c = card(w[0]) || { b: 0, d: 0, ok: 0, bad: 0 };
+      const c = card(it.key) || { b: 0, d: 0, ok: 0, bad: 0 };
       const d = Store.data.daily[today()] || (Store.data.daily[today()] = { newDone: 0, reviews: 0 });
-      if (!card(w[0])) d.newDone++; else d.reviews++;
+      if (!card(it.key)) d.newDone++; else d.reviews++;
       if (g === "good") { c.b = Math.min(5, c.b + 1); c.ok++; session.right++; }
       else if (g === "hard") { c.b = Math.max(1, c.b); c.ok++; }
       else { c.b = 1; c.bad++; }
       c.d = Date.now() + (g === "bad" ? 10 * 60000 : BOX_DAYS[c.b] * DAY);
-      Store.data.cards[w[0]] = c; session.total++; session.i++; session.flipped = false;
+      Store.data.cards[it.key] = c; session.total++; session.i++; session.flipped = false;
       Store.save(); updateChips(); renderTrain();
     };
     $("#t-bad").onclick = () => grade("bad"); $("#t-hard").onclick = () => grade("hard"); $("#t-good").onclick = () => grade("good");
   }
+  p.querySelectorAll("[data-deck]").forEach(b => b.onclick = () => { Store.data.settings.deck = b.dataset.deck; Store.save(); session = null; renderTrain(); });
   $("#set-new").onchange = e => { Store.data.settings.newPerDay = +e.target.value; Store.save(); session = null; renderTrain(); };
   $("#set-rate").onchange = e => { Store.data.settings.rate = +e.target.value; Store.save(); };
 }
@@ -682,7 +749,7 @@ function fillWords() {
     </div>`;
   }).join("") || `<p class="note">Ничего не найдено.</p>`;
   g.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say));
-  g.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(list[+b.dataset.mic][0], $("#wh-" + b.dataset.mic)));
+  g.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(list[+b.dataset.mic][0], $("#wh-" + b.dataset.mic), b));
 }
 
 /* ======================= ЗВУКИ ======================= */
@@ -839,8 +906,495 @@ function renderStats() {
     <p class="note" style="margin-top:16px">${({ cloud: "Прогресс хранится в облаке claude.ai.", server: "Прогресс хранится на сервере и одинаков на телефоне и компьютере." }[Store.mode] || "Прогресс хранится в этом браузере.")}</p>`;
 }
 
+/* ======================= РАЗГОВОРНЫЙ: ФРАЗЫ ======================= */
+const PTOPICS = {
+  meet: "Знакомство", me: "О себе и семье", work: "Работа", food: "Кафе и ресторан", shop: "Покупки",
+  travel: "Аэропорт и отель", city: "Город и дорога", time: "Время и планы", feel: "Мнения и чувства", talk: "Связки для разговора"
+};
+const PHRASES = [
+ ["Hello! My name is Alex.","Здравствуйте! Меня зовут Алекс.","meet"],["Nice to meet you.","Приятно познакомиться.","meet"],["Nice to meet you too.","Мне тоже приятно.","meet"],
+ ["How are you?","Как дела?","meet"],["I'm fine, thanks. And you?","Хорошо, спасибо. А у вас?","meet"],["Where are you from?","Откуда вы?","meet"],
+ ["I'm from Russia.","Я из России.","meet"],["What do you do?","Чем вы занимаетесь (кем работаете)?","meet"],["Do you speak Russian?","Вы говорите по-русски?","meet"],
+ ["My English is not very good yet.","Мой английский пока не очень хороший.","meet"],["Sorry, I don't understand.","Извините, я не понимаю.","meet"],
+ ["Could you repeat that, please?","Не могли бы вы повторить?","meet"],["Could you speak more slowly, please?","Говорите, пожалуйста, помедленнее.","meet"],
+ ["See you later!","Увидимся!","meet"],["Have a nice day!","Хорошего дня!","meet"],
+ ["I'm thirty years old.","Мне тридцать лет.","me"],["I'm married.","Я женат.","me"],["I have two children.","У меня двое детей.","me"],
+ ["This is my wife.","Это моя жена.","me"],["My brother lives in another city.","Мой брат живёт в другом городе.","me"],["I like music and movies.","Мне нравятся музыка и фильмы.","me"],
+ ["In my free time I read and play sports.","В свободное время я читаю и занимаюсь спортом.","me"],["I don't like cold weather.","Я не люблю холодную погоду.","me"],
+ ["I'm interested in technology.","Я интересуюсь технологиями.","me"],["What are your hobbies?","Какие у вас хобби?","me"],
+ ["Do you have any brothers or sisters?","У вас есть братья или сёстры?","me"],["My favorite food is pizza.","Моя любимая еда — пицца.","me"],["I'm learning English.","Я учу английский.","me"],
+ ["I have my own business.","У меня свой бизнес.","work"],["We make valves for water networks.","Мы делаем задвижки для водопроводных сетей.","work"],
+ ["I work with artificial intelligence.","Я работаю с искусственным интеллектом.","work"],["I'm busy right now.","Я сейчас занят.","work"],
+ ["Let's discuss it tomorrow.","Давайте обсудим это завтра.","work"],["Can we schedule a call?","Можем назначить созвон?","work"],["I'll send you an email.","Я пришлю вам письмо.","work"],
+ ["What's the deadline?","Какой срок?","work"],["The project is almost ready.","Проект почти готов.","work"],["We have a problem with the server.","У нас проблема с сервером.","work"],
+ ["Could you help me with this?","Не могли бы вы помочь мне с этим?","work"],["I agree with you.","Я с вами согласен.","work"],["Let me think about it.","Дайте подумать.","work"],
+ ["A table for two, please.","Столик на двоих, пожалуйста.","food"],["Can I see the menu, please?","Можно меню?","food"],["What do you recommend?","Что посоветуете?","food"],
+ ["I'd like a coffee, please.","Я бы хотел кофе.","food"],["I'll have the steak.","Я возьму стейк.","food"],["Without sugar, please.","Без сахара, пожалуйста.","food"],
+ ["Is it spicy?","Это острое?","food"],["Can I have some water?","Можно воды?","food"],["It's delicious!","Очень вкусно!","food"],
+ ["Could we have the bill, please?","Счёт, пожалуйста.","food"],["Can I pay by card?","Можно оплатить картой?","food"],["Two coffees to go, please.","Два кофе с собой, пожалуйста.","food"],
+ ["How much is it?","Сколько это стоит?","shop"],["Do you have this in a bigger size?","Есть размер побольше?","shop"],["Can I try it on?","Можно примерить?","shop"],
+ ["I'm just looking, thanks.","Я просто смотрю, спасибо.","shop"],["It's too expensive.","Слишком дорого.","shop"],["Do you have a discount?","У вас есть скидка?","shop"],
+ ["I'll take it.","Я возьму это.","shop"],["Can I return it?","Можно это вернуть?","shop"],["Where can I find milk?","Где найти молоко?","shop"],
+ ["It doesn't fit me.","Мне не подходит по размеру.","shop"],["Do you have it in black?","Есть в чёрном цвете?","shop"],["I need a receipt.","Мне нужен чек.","shop"],
+ ["Where is the check-in desk?","Где стойка регистрации?","travel"],["Here is my passport.","Вот мой паспорт.","travel"],["Which gate is it?","Какой выход на посадку?","travel"],
+ ["My flight is delayed.","Мой рейс задерживается.","travel"],["I have a reservation.","У меня бронь.","travel"],["I'd like to check in.","Я хотел бы заселиться.","travel"],
+ ["What time is breakfast?","Во сколько завтрак?","travel"],["What's the Wi-Fi password?","Какой пароль от Wi-Fi?","travel"],["The air conditioner doesn't work.","Кондиционер не работает.","travel"],
+ ["Could you call a taxi for me?","Не могли бы вы вызвать мне такси?","travel"],["I'm here on business.","Я здесь по делам.","travel"],["I lost my luggage.","Я потерял багаж.","travel"],
+ ["Excuse me, where is the metro?","Извините, где метро?","city"],["How can I get to the city center?","Как добраться до центра?","city"],["Is it far from here?","Это далеко отсюда?","city"],
+ ["It's about ten minutes on foot.","Около десяти минут пешком.","city"],["Go straight and turn left.","Идите прямо и поверните налево.","city"],["Turn right at the traffic lights.","На светофоре поверните направо.","city"],
+ ["It's next to the bank.","Это рядом с банком.","city"],["Which bus goes to the airport?","Какой автобус идёт в аэропорт?","city"],["One ticket, please.","Один билет, пожалуйста.","city"],
+ ["I'm lost.","Я заблудился.","city"],["How long does it take?","Сколько времени это займёт?","city"],["Where is the toilet?","Где туалет?","city"],
+ ["What time is it?","Который час?","time"],["It's half past three.","Половина четвёртого.","time"],["What are you doing tonight?","Что делаешь сегодня вечером?","time"],
+ ["Are you free tomorrow?","Ты завтра свободен?","time"],["Let's meet at six.","Давай встретимся в шесть.","time"],["Sorry, I'm late.","Извини, я опоздал.","time"],
+ ["I'll be there in five minutes.","Буду через пять минут.","time"],["What did you do yesterday?","Что ты делал вчера?","time"],["I usually get up at seven.","Я обычно встаю в семь.","time"],
+ ["How was your weekend?","Как прошли выходные?","time"],["It was great!","Было отлично!","time"],["Happy New Year!","С Новым годом!","time"],
+ ["I think it's a good idea.","Думаю, это хорошая идея.","feel"],["In my opinion, it's too expensive.","По-моему, это слишком дорого.","feel"],["I like it a lot.","Мне очень нравится.","feel"],
+ ["I don't think so.","Не думаю.","feel"],["I'm tired.","Я устал.","feel"],["I'm happy to hear that.","Рад это слышать.","feel"],["I'm sorry to hear that.","Жаль это слышать.","feel"],
+ ["That's interesting.","Это интересно.","feel"],["Don't worry.","Не волнуйтесь.","feel"],["I'm looking forward to it.","Жду с нетерпением.","feel"],["What do you think?","Что вы думаете?","feel"],
+ ["I changed my mind.","Я передумал.","feel"],
+ ["Actually, I don't know.","Вообще-то, я не знаю.","talk"],["By the way, how is your project?","Кстати, как твой проект?","talk"],["Well, it depends.","Ну, смотря как (от чего зависит).","talk"],
+ ["I mean, it's not easy.","В смысле, это непросто.","talk"],["That makes sense.","Понятно, логично.","talk"],["Exactly!","Именно!","talk"],["Sounds good!","Звучит хорошо, договорились!","talk"],
+ ["No problem.","Без проблем.","talk"],["Really?","Правда?","talk"],["Of course.","Конечно.","talk"],["Me too.","Я тоже.","talk"],["Me neither.","Я тоже нет.","talk"],
+ ["Let me see.","Дай подумать.","talk"],["Anyway, let's go.","Ладно, в общем, пошли.","talk"]
+];
+let phraseTopic = "meet";
+function renderPhrases() {
+  const p = $("#p-phrases");
+  const list = PHRASES.filter(x => x[2] === phraseTopic);
+  p.innerHTML = `<p class="lead">Готовые фразы для живого разговора. Слушайте, повторяйте вслух, проверяйте произношение. Все они автоматически попадают в «Тренировку» (колода «Разговорные фразы»).</p>
+    <div class="filters" role="group" aria-label="Темы фраз">${Object.entries(PTOPICS).map(([k, v]) => `<button data-t="${k}" aria-pressed="${phraseTopic === k}">${v}</button>`).join("")}</div>
+    <div class="grid" style="grid-template-columns:1fr">${list.map((x, i) => {
+      const c = card("p:" + x[0]);
+      return `<div class="card"><div class="word"><span class="en" style="font-size:18px">${esc(x[0])}</span><span class="chip">${!c ? "новая" : c.b >= 3 ? "выучена" : "учу"}</span></div>
+        <div class="tr">${esc(x[1])}</div>
+        <div class="row" style="margin-top:8px"><button class="btn small" data-say="${i}">${SPK} Послушать</button><button class="btn small" data-slow="${i}">${SPK} Медленно</button><button class="btn small" data-mic="${i}">${MIC} Сказать</button></div>
+        <div class="mic-heard" id="ph-${i}" aria-live="polite"></div></div>`; }).join("")}</div>`;
+  p.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { phraseTopic = b.dataset.t; renderPhrases(); });
+  p.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(list[+b.dataset.say][0]));
+  p.querySelectorAll("[data-slow]").forEach(b => b.onclick = () => speak(list[+b.dataset.slow][0], 0.55));
+  p.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(list[+b.dataset.mic][0], $("#ph-" + b.dataset.mic), b));
+}
+
+/* ======================= ГРАММАТИКА: УРОКИ УЧИТЕЛЯ =======================
+   Урок: title, goal, blocks [заголовок, html], examples [en, ru], mistakes [неверно, верно, почему],
+   ex: {t:"choose", q, o:[...], a, why} | {t:"build", ru, en} | {t:"tr", ru, en, alt:[...]} */
+const T = (head, rows) => `<div class="tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+const GRAMMAR = [
+{ title: "Как устроено английское предложение", goal: "Главное правило, из которого вырастает вся грамматика.",
+  blocks: [
+   ["Главное отличие от русского", "<p>В русском слова можно переставлять: «Я люблю кофе», «Кофе я люблю», «Люблю я кофе» — смысл один. Это работает благодаря окончаниям (падежам). В английском окончаний почти нет, поэтому смысл держится на <b>порядке слов</b>. Переставили слова — получилась ошибка или другой смысл.</p>"],
+   ["Формула предложения", T(["Кто", "Что делает", "Что / кого", "Где", "Когда"], [["I", "drink", "coffee", "at home", "every morning."], ["My brother", "works", "—", "in a bank.", "—"]]) + "<p>Запомните порядок: <b>кто → что делает → остальное</b>. Время и место обычно в конце.</p>"],
+   ["Правило 1: подлежащее есть всегда", "<p>По-русски можно сказать «Холодно», «Идёт дождь». В английском «кто» нужен всегда, и тогда ставят пустое <b>it</b>: <i>It is cold. It is raining.</i></p>"],
+   ["Правило 2: глагол есть всегда", "<p>«Я инженер» — в русском глагола нет. В английском нужен: <i>I <b>am</b> an engineer</i> (дословно «я есть инженер»). Этому посвящён следующий урок.</p>"],
+   ["Правило 3: одно отрицание", "<p>«Я ничего не знаю» — в русском два «не». В английском одно: <i>I don't know anything</i>, а не <i>I don't know nothing</i>.</p>"],
+   ["Как думать, когда говорите", "<p>Найдите в русской фразе <b>кто</b> и <b>что делает</b>, поставьте их первыми, остальное добавьте после. Так вы не запутаетесь в порядке даже в длинных фразах.</p>"]],
+  examples: [["I drink coffee every morning.", "Я пью кофе каждое утро."], ["My brother works in a bank.", "Мой брат работает в банке."], ["It is cold today.", "Сегодня холодно."], ["We live in a big city.", "Мы живём в большом городе."]],
+  mistakes: [["Cold today.", "It is cold today.", "Нет подлежащего и глагола."], ["I engineer.", "I am an engineer.", "Нужен глагол am и артикль an."], ["Coffee I like.", "I like coffee.", "Порядок: кто → что делает → что."]],
+  ex: [{ t: "choose", q: "Как правильно сказать «Сегодня тепло»?", o: ["Today warm.", "It is warm today.", "Warm is today."], a: 1, why: "Нужны подлежащее (it) и глагол (is)." },
+   { t: "build", ru: "Мой брат живёт в Москве.", en: "My brother lives in Moscow" },
+   { t: "build", ru: "Я пью чай каждое утро.", en: "I drink tea every morning" },
+   { t: "choose", q: "«Я ничего не вижу»", o: ["I don't see nothing.", "I don't see anything.", "I see not nothing."], a: 1, why: "В английском только одно отрицание: don't + anything." },
+   { t: "tr", ru: "Сегодня холодно.", en: "It is cold today", alt: ["It's cold today", "Today it is cold", "Today it's cold"] }] },
+{ title: "Глагол to be: am, is, are", goal: "Говорить, кто вы, где вы и какой вы.",
+  blocks: [
+   ["Что это", "<p>По-русски мы говорим «Я инженер», «Он дома», «Мы устали» без глагола. В английском глагол обязателен, и в таких фразах его роль играет <b>to be</b> — «быть, находиться, являться».</p>"],
+   ["Формы", T(["Кто", "Форма", "Сокращённо"], [["I", "am", "I'm"], ["he / she / it", "is", "he's, she's, it's"], ["you / we / they", "are", "you're, we're, they're"]]) + "<p><b>You</b> — всегда <b>are</b>, даже когда говорите одному человеку.</p>"],
+   ["Когда нужен", "<ul><li>кто или что: <i>I am an engineer.</i></li><li>где: <i>She is at home.</i></li><li>какой, состояние: <i>We are tired.</i></li><li>возраст: <i>I am thirty</i> (дословно «я есть тридцать»).</li><li>погода: <i>It is cold.</i></li></ul>"],
+   ["Отрицание", "<p>Добавьте <b>not</b> после am / is / are: <i>I am not tired. He isn't at work. They aren't ready.</i></p>"],
+   ["Вопрос", "<p>Поменяйте местами «кто» и глагол: <i>You are ready → <b>Are you</b> ready?</i> <i>He is at home → <b>Is he</b> at home?</i> С вопросительным словом: <i>Where are you?</i></p><p>Короткий ответ повторяет глагол: <i>Yes, I am. No, he isn't.</i></p>"]],
+  examples: [["I am an engineer.", "Я инженер."], ["She is at home.", "Она дома."], ["We are not tired.", "Мы не устали."], ["Are you ready?", "Ты готов?"], ["How old are you? I'm thirty.", "Сколько тебе лет? Тридцать."], ["It's cold today.", "Сегодня холодно."]],
+  mistakes: [["I thirty years.", "I am thirty.", "Возраст — через am."], ["He are my friend.", "He is my friend.", "he / she / it → is."], ["You is right.", "You are right.", "you → всегда are."], ["Where you are?", "Where are you?", "В вопросе глагол стоит перед подлежащим."]],
+  ex: [{ t: "choose", q: "I ___ from Russia.", o: ["am", "is", "are"], a: 0, why: "I всегда с am." },
+   { t: "choose", q: "They ___ my friends.", o: ["is", "are", "am"], a: 1, why: "they → are." },
+   { t: "choose", q: "___ she at home?", o: ["Is", "Are", "Am"], a: 0, why: "Вопрос начинается с глагола; she → is." },
+   { t: "choose", q: "It ___ not expensive.", o: ["are", "is", "am"], a: 1, why: "it → is." },
+   { t: "build", ru: "Я не устал.", en: "I am not tired" },
+   { t: "build", ru: "Ты готов?", en: "Are you ready" },
+   { t: "tr", ru: "Мой брат врач.", en: "My brother is a doctor", alt: ["My brother's a doctor"] },
+   { t: "tr", ru: "Где ты?", en: "Where are you", alt: [] }] },
+{ title: "Present Simple: настоящее простое", goal: "Говорить о привычках, работе, фактах.",
+  blocks: [
+   ["Когда используем", "<p>То, что происходит регулярно или всегда верно: <i>I work every day. She lives in London.</i> Слова-подсказки: <b>always, usually, often, sometimes, never, every day</b>.</p>"],
+   ["Формула", T(["Кто", "Глагол", "Пример"], [["I / you / we / they", "глагол", "I work"], ["he / she / it", "глагол + <b>s</b>", "she works"]]) + "<p>Это единственное окончание: «он, она, оно — <b>s</b> на конце». Особые случаи: go → goes, do → does, have → <b>has</b>, watch → watches, study → studies.</p>"],
+   ["Отрицание: нужен помощник do", "<p>Нельзя сказать <i>I not work</i>. Нужен служебный глагол <b>do</b>: <i>I <b>don't</b> work.</i> Для he / she / it — <b>does</b>: <i>She <b>doesn't</b> work.</i></p><p>Важно: буква s «переезжает» в doesn't, а сам глагол остаётся без s: <i>She doesn't work</i>, не <i>works</i>.</p>"],
+   ["Вопрос", "<p>Помощник выходит вперёд: <i><b>Do</b> you work? <b>Does</b> she work? Where <b>do</b> you live? What <b>does</b> he do?</i> Короткий ответ: <i>Yes, I do. No, she doesn't.</i></p>"],
+   ["Почему так", "<p>do / does — служебное слово без перевода. Оно показывает время и лицо, чтобы основной глагол не менялся. Привыкнете к нему один раз, и прошедшее время (did) построите по той же схеме.</p>"]],
+  examples: [["I work every day.", "Я работаю каждый день."], ["She lives in London.", "Она живёт в Лондоне."], ["He doesn't drink coffee.", "Он не пьёт кофе."], ["Do you speak English?", "Вы говорите по-английски?"], ["Where do you live?", "Где ты живёшь?"], ["What does she do?", "Кем она работает?"]],
+  mistakes: [["She work in a bank.", "She works in a bank.", "he / she / it → +s."], ["I not like it.", "I don't like it.", "Отрицание через don't."], ["She doesn't works.", "She doesn't work.", "s уже в doesn't."], ["You speak English?", "Do you speak English?", "Вопрос начинается с do."]],
+  ex: [{ t: "choose", q: "She ___ in a bank.", o: ["work", "works", "working"], a: 1, why: "she → глагол + s." },
+   { t: "choose", q: "I ___ like coffee.", o: ["don't", "doesn't", "not"], a: 0, why: "I → don't." },
+   { t: "choose", q: "___ he speak English?", o: ["Do", "Does", "Is"], a: 1, why: "he → does." },
+   { t: "choose", q: "He doesn't ___ meat.", o: ["eats", "eat", "eating"], a: 1, why: "После doesn't глагол без s." },
+   { t: "build", ru: "Ты живёшь в Москве?", en: "Do you live in Moscow" },
+   { t: "build", ru: "Он не пьёт кофе.", en: "He doesn't drink coffee" },
+   { t: "tr", ru: "Я работаю каждый день.", en: "I work every day", alt: ["Every day I work"] },
+   { t: "tr", ru: "Чем ты занимаешься по выходным?", en: "What do you do at weekends", alt: ["What do you do on weekends", "What do you do on the weekend", "What do you do at the weekend"] }] },
+{ title: "Вопросы: как их строить", goal: "Задавать любые вопросы без ошибок.",
+  blocks: [
+   ["Главный секрет", "<p>В русском вопрос — это интонация: «Ты работаешь?» В английском меняется <b>порядок слов</b>: вперёд выходит помощник (do, does, did, am, is, are, will, can).</p>"],
+   ["Схема вопроса", T(["Вопрос. слово", "Помощник", "Кто", "Глагол", "Остальное"], [["Where", "do", "you", "live", "?"], ["What", "does", "he", "do", "?"], ["When", "did", "you", "arrive", "?"], ["Why", "are", "you", "—", "late?"]]) + "<p>С to be помощником служит сам am / is / are.</p>"],
+   ["Вопросительные слова", T(["Слово", "Значение"], [["what", "что"], ["where", "где, куда"], ["when", "когда"], ["why", "почему"], ["how", "как"], ["who", "кто"], ["which", "который"], ["how much", "сколько (стоит, неисчисляемое)"], ["how many", "сколько (штук)"], ["how long", "как долго"], ["what time", "во сколько"]])],
+   ["Вопрос к «кто»", "<p>Когда спрашиваем «кто?» про того, кто делает действие, помощник не нужен: <i>Who lives here? Who called you?</i></p>"],
+   ["Короткие ответы", "<p>Повторяем помощника: <i>Do you like it? — Yes, I do. Is she here? — No, she isn't.</i></p>"]],
+  examples: [["What do you do?", "Чем ты занимаешься?"], ["Where does he work?", "Где он работает?"], ["When did you arrive?", "Когда ты приехал?"], ["How much is it?", "Сколько это стоит?"], ["How long does it take?", "Сколько времени это занимает?"], ["Who knows the answer?", "Кто знает ответ?"]],
+  mistakes: [["Where you live?", "Where do you live?", "Нужен помощник do."], ["What he does?", "What does he do?", "Помощник перед подлежащим, глагол без s."], ["How many is it?", "How much is it?", "Цена — how much."]],
+  ex: [{ t: "choose", q: "___ do you live?", o: ["Where", "What", "Who"], a: 0, why: "«Где» — where." },
+   { t: "choose", q: "How ___ is it? (про цену)", o: ["many", "much", "long"], a: 1, why: "Деньги не считают штуками — much." },
+   { t: "choose", q: "Where ___ she work?", o: ["do", "does", "is"], a: 1, why: "she → does." },
+   { t: "choose", q: "What time ___ you get up?", o: ["do", "does", "are"], a: 0, why: "you → do." },
+   { t: "build", ru: "Чем ты занимаешься?", en: "What do you do" },
+   { t: "build", ru: "Сколько времени это занимает?", en: "How long does it take" },
+   { t: "tr", ru: "Где ты работаешь?", en: "Where do you work", alt: [] },
+   { t: "tr", ru: "Почему ты устал?", en: "Why are you tired", alt: [] }] },
+{ title: "Present Continuous: что происходит сейчас", goal: "Говорить о том, что происходит в эту минуту, и отличать от привычек.",
+  blocks: [
+   ["Когда используем", "<ul><li>прямо сейчас: <i>I'm working now.</i></li><li>временно, в этот период: <i>I'm learning English this year.</i></li><li>договорённость на ближайшее время: <i>I'm meeting him tomorrow.</i></li></ul>"],
+   ["Формула", "<p><b>am / is / are + глагол-ing</b>: <i>I am working, she is reading, they are sleeping.</i> Правописание: make → making, sit → sitting.</p>"],
+   ["Отрицание и вопрос", "<p>Как у to be: <i>I'm not working. Are you working? What are you doing?</i></p>"],
+   ["Simple или Continuous?", T(["Present Simple — вообще, регулярно", "Present Continuous — сейчас, временно"], [["I work in IT. (моя профессия)", "I'm working at home today. (сегодня)"], ["He plays football. (по выходным)", "He's playing football now. (в эту минуту)"], ["usually, every day, often", "now, right now, at the moment, today"]])],
+   ["Глаголы-состояния", "<p>Некоторые глаголы почти не бывают с -ing, потому что это состояния, а не действия: <b>know, like, love, want, need, understand</b>. Говорим <i>I know</i>, а не <i>I'm knowing</i>.</p>"]],
+  examples: [["I'm working from home today.", "Сегодня я работаю из дома."], ["What are you doing?", "Что ты делаешь?"], ["She's not listening.", "Она не слушает."], ["I'm meeting him tomorrow.", "Завтра я встречаюсь с ним."], ["I usually drive, but today I'm walking.", "Обычно я езжу на машине, но сегодня иду пешком."]],
+  mistakes: [["I working now.", "I am working now.", "Нужен am."], ["I am knowing him.", "I know him.", "know — состояние, без -ing."], ["What you are doing?", "What are you doing?", "В вопросе are перед you."]],
+  ex: [{ t: "choose", q: "Look! It ___ raining.", o: ["is", "are", "does"], a: 0, why: "it → is + ing." },
+   { t: "choose", q: "What are you ___?", o: ["do", "doing", "does"], a: 1, why: "are + глагол-ing." },
+   { t: "choose", q: "I ___ TV now.", o: ["watch", "am watching", "watching"], a: 1, why: "now → Continuous: am + ing." },
+   { t: "choose", q: "She usually ___ tea.", o: ["drinks", "is drinking", "drinking"], a: 0, why: "usually → Present Simple." },
+   { t: "choose", q: "I ___ what you mean.", o: ["understand", "am understanding"], a: 0, why: "understand — состояние." },
+   { t: "build", ru: "Что ты сейчас делаешь?", en: "What are you doing now" },
+   { t: "tr", ru: "Сегодня я работаю из дома.", en: "I am working from home today", alt: ["I'm working from home today", "Today I am working from home", "Today I'm working from home"] }] },
+{ title: "Past Simple: прошедшее время", goal: "Рассказывать, что было вчера, на выходных, в прошлом году.",
+  blocks: [
+   ["Когда используем", "<p>Законченное действие в прошлом, обычно с указанием когда: <b>yesterday, last week, in 2020, two days ago</b>.</p>"],
+   ["Правильные глаголы", "<p>Добавляем <b>-ed</b>: work → worked, play → played, live → lived, stop → stopped, study → studied.</p>"],
+   ["Неправильные глаголы", T(["Глагол", "Прошедшее", "Глагол", "Прошедшее"], [["be", "was / were", "buy", "bought"], ["go", "went", "say", "said"], ["have", "had", "think", "thought"], ["do", "did", "eat", "ate"], ["see", "saw", "drink", "drank"], ["make", "made", "write", "wrote"], ["get", "got", "meet", "met"], ["come", "came", "know", "knew"], ["take", "took", "give", "gave"], ["find", "found", "leave", "left"]]) + "<p>Их учат наизусть, как таблицу умножения. Эти 20 самых частых покрывают большую часть разговоров.</p>"],
+   ["Отрицание и вопрос", "<p>Помощник <b>did</b> (прошедшее от do), а основной глагол возвращается в начальную форму: <i>I didn't go</i> (не <i>didn't went</i>). <i>Did you see him? What did you do yesterday?</i></p>"],
+   ["was / were", "<p>Для to be: I / he / she / it — <b>was</b>, you / we / they — <b>were</b>. <i>I was at home. Were you tired? I wasn't there.</i></p>"]],
+  examples: [["I worked yesterday.", "Я работал вчера."], ["We went to the mountains.", "Мы ездили в горы."], ["I didn't see him.", "Я его не видел."], ["Did you sleep well?", "Ты хорошо спал?"], ["What did you do last weekend?", "Что ты делал на прошлых выходных?"], ["I was tired.", "Я устал."]],
+  mistakes: [["I didn't went.", "I didn't go.", "После did — начальная форма."], ["Did you saw it?", "Did you see it?", "did + see."], ["I goed home.", "I went home.", "go — неправильный глагол: went."], ["We was at home.", "We were at home.", "we → were."]],
+  ex: [{ t: "choose", q: "Yesterday I ___ to the office.", o: ["go", "went", "goed"], a: 1, why: "go → went." },
+   { t: "choose", q: "I didn't ___ him.", o: ["saw", "see", "seen"], a: 1, why: "После didn't — начальная форма." },
+   { t: "choose", q: "___ you sleep well?", o: ["Did", "Do", "Was"], a: 0, why: "Вопрос о прошлом — did." },
+   { t: "choose", q: "We ___ at home last night.", o: ["was", "were", "are"], a: 1, why: "we → were." },
+   { t: "build", ru: "Я купил новый телефон.", en: "I bought a new phone" },
+   { t: "build", ru: "Ты видел письмо?", en: "Did you see the email" },
+   { t: "tr", ru: "Она не пришла вчера.", en: "She didn't come yesterday", alt: ["She did not come yesterday"] },
+   { t: "tr", ru: "Что ты делал вчера?", en: "What did you do yesterday", alt: [] }] },
+{ title: "Будущее: will и going to", goal: "Говорить о планах, обещаниях и прогнозах.",
+  blocks: [
+   ["Три способа", "<ul><li><b>will</b> — решение в момент речи, обещание, прогноз: <i>I'll call you. It will rain.</i></li><li><b>be going to</b> — план, решили заранее: <i>I'm going to buy a car.</i></li><li><b>Present Continuous</b> — договорились на время: <i>I'm meeting him at six.</i></li></ul>"],
+   ["will", "<p>Одна форма для всех: <i>I / you / he will work</i>. Сокращение <b>'ll</b>. Отрицание <b>won't</b> (= will not). Вопрос: <i>Will you help me?</i> После will глагол без to.</p>"],
+   ["going to", "<p><b>am / is / are + going to + глагол</b>: <i>She is going to study. Are you going to come?</i></p>"],
+   ["Как выбрать", T(["Ситуация", "Как сказать"], [["Звонит телефон: «Я возьму!»", "I'll get it. (решил сейчас)"], ["«Летом поеду в Италию» (уже купил билеты)", "I'm going to travel to Italy."], ["«Встречаюсь с ним в 6» (договорились)", "I'm meeting him at six."]])],
+   ["После when и if — настоящее", "<p>«Когда приду, позвоню» → <i>When I <b>come</b>, I'll call you</i>, а не <i>When I will come</i>. Это частая ошибка, потому что в русском там будущее.</p>"]],
+  examples: [["I'll call you later.", "Я позвоню тебе позже."], ["It will be cold tomorrow.", "Завтра будет холодно."], ["I won't forget, I promise.", "Не забуду, обещаю."], ["I'm going to learn English.", "Я собираюсь выучить английский."], ["Are you going to come?", "Ты собираешься прийти?"], ["When I get home, I'll text you.", "Когда приду домой, напишу тебе."]],
+  mistakes: [["I will to call you.", "I will call you.", "После will — без to."], ["When I will come, I call.", "When I come, I'll call.", "После when — настоящее."], ["I going to buy.", "I am going to buy.", "Нужен am."]],
+  ex: [{ t: "choose", q: "I ___ call you later.", o: ["will", "am", "going"], a: 0, why: "Обещание — will." },
+   { t: "choose", q: "We are going ___ visit them.", o: ["to", "for", "at"], a: 0, why: "going to + глагол." },
+   { t: "choose", q: "I ___ forget, I promise.", o: ["don't", "won't", "not"], a: 1, why: "won't = will not." },
+   { t: "choose", q: "When I ___ home, I'll call you.", o: ["get", "will get", "got"], a: 0, why: "После when — настоящее время." },
+   { t: "build", ru: "Я собираюсь выучить английский.", en: "I am going to learn English" },
+   { t: "build", ru: "Ты поможешь мне?", en: "Will you help me" },
+   { t: "tr", ru: "Завтра будет холодно.", en: "It will be cold tomorrow", alt: ["Tomorrow it will be cold", "It'll be cold tomorrow"] }] },
+{ title: "Могу, должен, хочу: модальные глаголы", goal: "Просить, предлагать, говорить вежливо.",
+  blocks: [
+   ["Что это", "<p>Глаголы, которые показывают отношение к действию: могу, должен, стоит, хотел бы. После большинства из них глагол идёт <b>без to</b>.</p>"],
+   ["Главные", T(["Глагол", "Значение", "Пример"], [["can / can't", "могу, умею / не могу", "I can swim."], ["could", "мог; вежливо «не могли бы»", "Could you help me?"], ["must", "должен (сам считаю нужным, строго)", "I must go."], ["have to", "приходится (обстоятельства)", "I have to work on Saturday."], ["should", "стоит, следует (совет)", "You should rest."], ["would like (I'd like)", "хотел бы, вежливо", "I'd like a coffee."], ["want to", "хочу", "I want to sleep."]])],
+   ["Вопрос и отрицание", "<p>У can, must, should — сами: <i>Can you...? I can't. You shouldn't.</i> У have to — через do: <i>Do you have to work? I don't have to.</i></p>"],
+   ["Вежливость в разговоре", "<p>Вместо <i>want</i> чаще говорят <i>would like</i>, вместо <i>can</i> — <i>could</i>: <i>Could you repeat, please? I'd like the bill.</i> Это звучит естественно и вежливо.</p>"]],
+  examples: [["Can you help me?", "Можешь мне помочь?"], ["Could you repeat that, please?", "Не могли бы вы повторить?"], ["I have to go now.", "Мне пора идти."], ["You should see a doctor.", "Тебе стоит сходить к врачу."], ["I'd like a table for two.", "Я бы хотел столик на двоих."], ["I can't hear you.", "Я тебя не слышу."]],
+  mistakes: [["I can to swim.", "I can swim.", "После can — без to."], ["He cans speak.", "He can speak.", "can не меняется по лицам."], ["I must to go.", "I must go.", "После must — без to."]],
+  ex: [{ t: "choose", q: "I ___ swim.", o: ["can", "can to", "cans"], a: 0, why: "can + глагол без to." },
+   { t: "choose", q: "I'd like ___ a table.", o: ["book", "to book", "booking"], a: 1, why: "would like + to + глагол." },
+   { t: "choose", q: "You look tired. You ___ rest.", o: ["should", "must to", "can to"], a: 0, why: "Совет — should, без to." },
+   { t: "choose", q: "___ you have to work tomorrow?", o: ["Do", "Are", "Have"], a: 0, why: "have to — вопрос через do." },
+   { t: "build", ru: "Не могли бы вы мне помочь?", en: "Could you help me" },
+   { t: "build", ru: "Мне надо идти.", en: "I have to go" },
+   { t: "tr", ru: "Я бы хотел кофе.", en: "I would like a coffee", alt: ["I'd like a coffee", "I would like coffee", "I'd like coffee"] }] },
+{ title: "Артикли a / the и there is", goal: "Справиться с самой частой ошибкой русскоговорящих.",
+  blocks: [
+   ["Зачем артикли", "<p>В русском их нет, поэтому это главная ошибка русскоговорящих. Простое правило: <b>a / an</b> — «один, какой-то, упоминаем впервые»; <b>the</b> — «тот самый, понятно какой».</p>"],
+   ["a или an", "<p><b>a</b> перед согласным звуком: <i>a car, a big house</i>. <b>an</b> перед гласным звуком: <i>an apple, an engineer, an hour</i>.</p>"],
+   ["Когда the", "<ul><li>уже упоминали: <i>I bought a car. The car is red.</i></li><li>единственный в своём роде: <i>the sun, the internet</i></li><li>понятно из ситуации: <i>Close the door.</i></li></ul>"],
+   ["Когда без артикля", "<ul><li>множественное в общем смысле: <i>I like cats.</i></li><li>неисчисляемое: <i>I drink coffee. I need money.</i></li><li>имена, города, страны, языки: <i>Moscow, Russia, English.</i></li></ul>"],
+   ["There is / there are", "<p>«Есть, имеется где-то»: <i>There is a pharmacy near here. There are two cafes on this street.</i> Вопрос: <i>Is there a toilet here? Are there any shops?</i> Отрицание: <i>There isn't any milk.</i></p>"]],
+  examples: [["I have an idea.", "У меня есть идея."], ["I bought a car. The car is red.", "Я купил машину. Машина красная."], ["Close the door, please.", "Закрой дверь, пожалуйста."], ["There is a problem with the server.", "Есть проблема с сервером."], ["Is there a pharmacy near here?", "Здесь рядом есть аптека?"], ["There are a lot of people here.", "Здесь много людей."]],
+  mistakes: [["I am engineer.", "I am an engineer.", "Профессия — с a / an."], ["There is two cafes.", "There are two cafes.", "Много → there are."], ["I like the cats.", "I like cats.", "В общем смысле — без артикля."]],
+  ex: [{ t: "choose", q: "There ___ two banks on this street.", o: ["is", "are", "be"], a: 1, why: "Два → there are." },
+   { t: "choose", q: "___ there a toilet here?", o: ["Is", "Are", "Do"], a: 0, why: "Один туалет → is there." },
+   { t: "choose", q: "I have ___ idea.", o: ["a", "an", "the"], a: 1, why: "idea начинается с гласного звука → an." },
+   { t: "choose", q: "Close ___ door, please.", o: ["a", "an", "the"], a: 2, why: "Понятно, какая дверь → the." },
+   { t: "choose", q: "I need ___ money.", o: ["a", "the", "без артикля"], a: 2, why: "money неисчисляемое: без артикля." },
+   { t: "build", ru: "Здесь рядом есть аптека?", en: "Is there a pharmacy near here" },
+   { t: "tr", ru: "Я инженер.", en: "I am an engineer", alt: ["I'm an engineer"] }] },
+{ title: "Present Perfect: опыт и результат", goal: "Спрашивать «ты когда-нибудь…?» и говорить «я уже…».",
+  blocks: [
+   ["Зачем", "<p>Одно из самых разговорных времён:</p><ul><li>опыт: <i>Have you ever been to London?</i></li><li>результат сейчас: <i>I've lost my keys</i> (и сейчас их нет)</li><li>уже / ещё не: <i>I've already eaten. I haven't finished yet.</i></li></ul>"],
+   ["Формула", "<p><b>have / has + третья форма глагола</b>: <i>I have worked, she has seen.</i> У правильных третья форма тоже с -ed. Неправильные: go – went – <b>gone</b>, see – saw – <b>seen</b>, do – did – <b>done</b>, be – was – <b>been</b>, eat – ate – <b>eaten</b>, buy – bought – <b>bought</b>.</p>"],
+   ["Отрицание и вопрос", "<p><i>I haven't seen it. Has she called? Have you ever...? — Yes, I have. / No, I haven't.</i></p>"],
+   ["Perfect или Past?", T(["Past Simple", "Present Perfect"], [["есть точное время: yesterday, in 2020, last week", "время не важно, важен опыт или результат"], ["I saw him yesterday.", "I have seen this film."]]) + "<p>Слова-подсказки Perfect: <b>ever, never, already, yet, just, recently</b>.</p>"]],
+  examples: [["Have you ever been to London?", "Ты когда-нибудь был в Лондоне?"], ["I've never tried sushi.", "Я никогда не пробовал суши."], ["I've lost my keys.", "Я потерял ключи."], ["She has already left.", "Она уже ушла."], ["I haven't finished yet.", "Я ещё не закончил."], ["I've just arrived.", "Я только что приехал."]],
+  mistakes: [["I have seen him yesterday.", "I saw him yesterday.", "С yesterday — Past Simple."], ["Have you ever went there?", "Have you ever been there?", "Нужна третья форма: been."], ["She have finished.", "She has finished.", "she → has."]],
+  ex: [{ t: "choose", q: "Have you ever ___ to Paris?", o: ["be", "been", "was"], a: 1, why: "have + третья форма: been." },
+   { t: "choose", q: "I ___ him yesterday.", o: ["have seen", "saw", "see"], a: 1, why: "yesterday → Past Simple." },
+   { t: "choose", q: "She ___ already left.", o: ["have", "has", "is"], a: 1, why: "she → has." },
+   { t: "choose", q: "I haven't finished ___.", o: ["yet", "already", "ever"], a: 0, why: "В отрицании «ещё не» — yet." },
+   { t: "build", ru: "Я никогда не был в Лондоне.", en: "I have never been to London" },
+   { t: "tr", ru: "Я потерял ключи.", en: "I have lost my keys", alt: ["I've lost my keys", "I lost my keys"] }] },
+{ title: "Система времён: как не запутаться", goal: "Увидеть всю картину и понять, какие времена нужны для общения.",
+  blocks: [
+   ["Не пугайтесь «12 времён»", "<p>Их можно разложить по таблице: <b>когда</b> (настоящее, прошлое, будущее) × <b>как</b> (Simple — факт, Continuous — процесс, Perfect — результат).</p>" + T(["", "Simple (факт)", "Continuous (процесс)", "Perfect (результат)"], [["Настоящее", "I work", "I am working", "I have worked"], ["Прошлое", "I worked", "I was working", "I had worked"], ["Будущее", "I will work", "I will be working", "I will have worked"]])],
+   ["Что нужно для общения", "<p>Для уровня A2 хватит пяти: <b>Present Simple, Present Continuous, Past Simple, будущее (will / going to), Present Perfect</b>. Это около 90% разговорной речи. Остальные достаточно узнавать, когда читаете или слушаете.</p>"],
+   ["Бонус: Past Continuous", "<p>Процесс в прошлом, часто прерванный: <i>I was sleeping when you called.</i> Формула: was / were + глагол-ing.</p>"],
+   ["Как выбрать время: 3 вопроса", "<ol><li>Когда? Сейчас, в прошлом или в будущем.</li><li>Факт и привычка или процесс в конкретный момент?</li><li>Важен результат к настоящему моменту (уже, никогда, когда-нибудь)?</li></ol>"]],
+  examples: [["I work in IT.", "Я работаю в IT."], ["I'm working now.", "Я сейчас работаю."], ["I worked yesterday.", "Я работал вчера."], ["I was working when you called.", "Я работал, когда ты позвонил."], ["I've worked here for five years.", "Я работаю здесь пять лет."], ["I'll work tomorrow.", "Я буду работать завтра."]],
+  mistakes: [["I am work here five years.", "I've worked here for five years.", "Длится до сих пор → Present Perfect + for."]],
+  ex: [{ t: "choose", q: "Каждый день: «Я ___ в 8».", o: ["get up", "am getting up", "got up"], a: 0, why: "Привычка → Present Simple." },
+   { t: "choose", q: "Сейчас: «Тише, ребёнок ___».", o: ["sleeps", "is sleeping", "slept"], a: 1, why: "В эту минуту → Continuous." },
+   { t: "choose", q: "Вчера: «Я ___ его».", o: ["see", "saw", "have seen"], a: 1, why: "Есть «вчера» → Past Simple." },
+   { t: "choose", q: "Опыт: «Ты ___ суши?»", o: ["Did you ever try", "Have you ever tried", "Do you ever try"], a: 1, why: "Опыт в жизни → Present Perfect." },
+   { t: "choose", q: "«Я ___, когда ты позвонил».", o: ["slept", "was sleeping", "sleep"], a: 1, why: "Процесс в прошлом, прерванный → Past Continuous." }] },
+{ title: "Предлоги in, on, at", goal: "Правильно говорить о времени и месте.",
+  blocks: [
+   ["Время", T(["Предлог", "Когда", "Примеры"], [["at", "точное время", "at 6 o'clock, at night, at noon"], ["on", "дни и даты", "on Monday, on 5 May, on my birthday"], ["in", "месяцы, годы, части дня, сезоны", "in May, in 2026, in the morning, in winter"]]) + "<p>Без предлога: <i>next week, last year, this morning, tomorrow, yesterday</i>.</p>"],
+   ["Место", T(["Предлог", "Когда", "Примеры"], [["at", "точка, место события", "at home, at work, at the bus stop"], ["in", "внутри", "in the room, in Moscow, in a car"], ["on", "на поверхности, общественный транспорт", "on the table, on the wall, on the bus"]])]],
+  examples: [["I get up at seven.", "Я встаю в семь."], ["See you on Monday.", "Увидимся в понедельник."], ["I was born in 1990.", "Я родился в 1990 году."], ["I'm at home.", "Я дома."], ["She lives in Moscow.", "Она живёт в Москве."], ["The keys are on the table.", "Ключи на столе."]],
+  mistakes: [["in Monday", "on Monday", "Дни недели — on."], ["at the morning", "in the morning", "Части дня — in."], ["on next week", "next week", "С next / last / this — без предлога."]],
+  ex: [{ t: "choose", q: "I'll see you ___ Monday.", o: ["in", "on", "at"], a: 1, why: "Дни — on." },
+   { t: "choose", q: "The meeting is ___ 3 pm.", o: ["in", "on", "at"], a: 2, why: "Точное время — at." },
+   { t: "choose", q: "I was born ___ 1990.", o: ["in", "on", "at"], a: 0, why: "Год — in." },
+   { t: "choose", q: "I'm ___ home.", o: ["in", "on", "at"], a: 2, why: "at home — устойчивое." },
+   { t: "choose", q: "We'll meet ___ next week.", o: ["on", "in", "без предлога"], a: 2, why: "С next — без предлога." },
+   { t: "tr", ru: "Увидимся в пятницу.", en: "See you on Friday", alt: [] }] },
+{ title: "Связки: как говорить длинно", goal: "Соединять мысли — главный навык свободного общения.",
+  blocks: [
+   ["Соединяем мысли", T(["Связка", "Значение"], [["and", "и"], ["but", "но"], ["or", "или"], ["because", "потому что"], ["so", "поэтому"], ["when", "когда"], ["if", "если"], ["that", "что (I think that...)"], ["although", "хотя"]])],
+   ["because и so", "<p>Причина и следствие: <i>I stayed at home <b>because</b> I was ill.</i> = <i>I was ill, <b>so</b> I stayed at home.</i></p>"],
+   ["if — условия", "<p>Реальное будущее: <i>If it rains, I'll stay at home</i> — после if настоящее, в главной части will. Мечта (бонус): <i>If I had time, I would travel.</i></p>"],
+   ["who, that", "<p>Уточняем: <i>The man <b>who</b> called you is my boss. The car <b>that</b> I bought is red.</i> В разговоре that часто опускают: <i>I think it's good.</i></p>"],
+   ["Как говорить свободно", "<p>Сначала короткие простые предложения, затем соединяйте их связками. Не нужно сложных конструкций: носители так и говорят — коротко и через and, but, so, because.</p>"]],
+  examples: [["I like coffee, but I don't drink it at night.", "Я люблю кофе, но не пью его вечером."], ["I was tired, so I went to bed.", "Я устал, поэтому лёг спать."], ["If it rains, I'll stay at home.", "Если будет дождь, я останусь дома."], ["I think it's a good idea.", "Я думаю, это хорошая идея."], ["The man who called you is my boss.", "Человек, который тебе звонил, — мой начальник."], ["Call me when you arrive.", "Позвони мне, когда приедешь."]],
+  mistakes: [["If it will rain, I stay.", "If it rains, I'll stay.", "После if — настоящее, в главной — will."], ["Because I was tired.", "I went home because I was tired.", "because присоединяет причину к главной мысли."]],
+  ex: [{ t: "choose", q: "I was hungry, ___ I ate a sandwich.", o: ["because", "so", "but"], a: 1, why: "Следствие — so." },
+   { t: "choose", q: "If it ___, we'll stay home.", o: ["rains", "will rain", "rained"], a: 0, why: "После if — настоящее." },
+   { t: "choose", q: "I like tea, ___ I don't like coffee.", o: ["and", "but", "so"], a: 1, why: "Противопоставление — but." },
+   { t: "build", ru: "Позвони мне, когда приедешь.", en: "Call me when you arrive" },
+   { t: "tr", ru: "Я думаю, это хорошая идея.", en: "I think it is a good idea", alt: ["I think it's a good idea", "I think that it's a good idea", "I think that it is a good idea"] }] }
+];
+let gOpen = null, gEx = null;
+function gProg() { return Store.data.grammar || (Store.data.grammar = {}); }
+function renderGrammar() {
+  const p = $("#p-grammar");
+  if (gOpen == null) {
+    p.innerHTML = `<p class="lead">Уроки как у преподавателя: объяснение, формулы, сравнение с русским, частые ошибки и упражнения с разбором. Проходите по порядку: каждый следующий опирается на предыдущий.</p>
+      <div class="grid" style="grid-template-columns:1fr">${GRAMMAR.map((g, i) => { const s = gProg()[i];
+        return `<button class="card lesson-btn" data-g="${i}"><span class="num">${i + 1}</span><span><b>${esc(g.title)}</b><br><span class="note">${esc(g.goal)}</span></span><span class="chip">${s ? s.best + "/" + g.ex.length : "не начат"}</span></button>`; }).join("")}</div>`;
+    p.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { gOpen = +b.dataset.g; gEx = null; renderGrammar(); window.scrollTo(0, 0); });
+    return;
+  }
+  const g = GRAMMAR[gOpen];
+  p.innerHTML = `<button class="btn small" id="g-back">← Все уроки</button>
+    <p class="note" style="margin:14px 0 4px">Урок ${gOpen + 1} из ${GRAMMAR.length}</p><h2 class="g-title">${esc(g.title)}</h2><p class="lead">${esc(g.goal)}</p>
+    ${g.blocks.map(([h, html]) => `<div class="card teach"><h3>${esc(h)}</h3>${html}</div>`).join("")}
+    <div class="card teach"><h3>Примеры: послушайте и повторите вслух</h3>${g.examples.map((e, i) => `<div class="ex-line"><button class="btn small" data-ge="${i}" aria-label="Послушать">${SPK}</button><div><div class="en-line">${esc(e[0])}</div><div class="note">${esc(e[1])}</div></div></div>`).join("")}</div>
+    <div class="card teach"><h3>Частые ошибки</h3>${T(["Неверно", "Верно", "Почему"], g.mistakes.map(m => [`<s>${esc(m[0])}</s>`, `<b>${esc(m[1])}</b>`, esc(m[2])]))}</div>
+    <div class="card teach" id="g-ex"></div>`;
+  $("#g-back").onclick = () => { gOpen = null; renderGrammar(); window.scrollTo(0, 0); };
+  p.querySelectorAll("[data-ge]").forEach(b => b.onclick = () => speak(g.examples[+b.dataset.ge][0]));
+  renderGEx();
+}
+function renderGEx() {
+  const g = GRAMMAR[gOpen], box = $("#g-ex");
+  if (!gEx) { box.innerHTML = `<h3>Упражнения</h3><p>${g.ex.length} заданий. После каждого ответа — объяснение.</p><button class="btn primary" id="gx-start">Начать упражнения</button>`; $("#gx-start").onclick = () => { gEx = { i: 0, right: 0 }; renderGEx(); }; return; }
+  if (gEx.i >= g.ex.length) {
+    const s = gProg(); s[gOpen] = { best: Math.max((s[gOpen] || {}).best || 0, gEx.right), at: Date.now() }; Store.save();
+    box.innerHTML = `<h3>Результат: ${gEx.right} из ${g.ex.length}</h3><p>${gEx.right === g.ex.length ? "Отлично! Тема усвоена. Переходите к следующему уроку." : gEx.right >= g.ex.length * 0.7 ? "Хорошо. Перечитайте «Частые ошибки» и пройдите ещё раз завтра." : "Тема пока не закрепилась. Перечитайте объяснение и повторите упражнения."}</p>
+      <div class="row"><button class="btn" id="gx-again">Ещё раз</button>${gOpen < GRAMMAR.length - 1 ? `<button class="btn primary" id="gx-next">Следующий урок →</button>` : ""}</div>`;
+    $("#gx-again").onclick = () => { gEx = { i: 0, right: 0 }; renderGEx(); };
+    const nx = $("#gx-next"); if (nx) nx.onclick = () => { gOpen++; gEx = null; renderGrammar(); window.scrollTo(0, 0); };
+    return;
+  }
+  const e = g.ex[gEx.i];
+  const head = `<h3>Задание ${gEx.i + 1} из ${g.ex.length}</h3>`;
+  const after = (ok, html) => {
+    if (ok) gEx.right++;
+    $("#gx-fb").innerHTML = `<div class="explain"><b class="${ok ? "ok" : "bad"}">${ok ? "Верно." : "Не совсем."}</b> ${html}</div><div class="row" style="margin-top:10px"><button class="btn primary" id="gx-n">Дальше</button></div>`;
+    $("#gx-n").onclick = () => { gEx.i++; renderGEx(); };
+  };
+  if (e.t === "choose") {
+    box.innerHTML = head + `<div class="q-big">${esc(e.q)}</div><div class="opts">${e.o.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div><div id="gx-fb" aria-live="polite"></div>`;
+    let done = false;
+    box.querySelectorAll(".opts button").forEach(b => b.onclick = () => {
+      if (done) return; done = true;
+      const i = +b.dataset.i;
+      box.querySelectorAll(".opts button").forEach(x => { x.disabled = true; if (+x.dataset.i === e.a) x.classList.add("right"); });
+      if (i !== e.a) b.classList.add("wrong");
+      after(i === e.a, esc(e.why));
+    });
+  } else if (e.t === "build") {
+    const words = e.en.split(" ");
+    let pool = shuffle(words.map((w, i) => ({ w, i }))), picked = [];
+    const draw = () => {
+      box.innerHTML = head + `<p>Соберите предложение: <b>${esc(e.ru)}</b></p>
+        <div class="build-line" aria-label="Ваш ответ">${picked.map((x, k) => `<button class="chip-w on" data-k="${k}">${esc(x.w)}</button>`).join("") || '<span class="note">Нажимайте на слова ниже по порядку</span>'}</div>
+        <div class="build-pool">${pool.map((x, k) => `<button class="chip-w" data-p="${k}">${esc(x.w)}</button>`).join("")}</div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="gx-reset">Сбросить</button><button class="btn primary" id="gx-check" ${pool.length ? "disabled" : ""}>Проверить</button></div><div id="gx-fb" aria-live="polite"></div>`;
+      box.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { picked.push(pool.splice(+b.dataset.p, 1)[0]); draw(); });
+      box.querySelectorAll("[data-k]").forEach(b => b.onclick = () => { pool.push(picked.splice(+b.dataset.k, 1)[0]); draw(); });
+      $("#gx-reset").onclick = () => { pool = shuffle(words.map((w, i) => ({ w, i }))); picked = []; draw(); };
+      $("#gx-check").onclick = () => {
+        const ok = normText(picked.map(x => x.w).join(" ")) === normText(e.en);
+        box.querySelectorAll(".chip-w, #gx-reset, #gx-check").forEach(x => x.disabled = true);
+        speak(e.en);
+        after(ok, ok ? "Порядок слов правильный: " + esc(e.en) + "." : "Правильно: <b>" + esc(e.en) + "</b>. Сверьте порядок: кто → что делает → остальное.");
+      };
+    };
+    draw();
+  } else {
+    box.innerHTML = head + `<p>Переведите на английский: <b>${esc(e.ru)}</b></p>
+      <div class="row"><input type="text" id="gx-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Напишите или скажите" style="flex:1;min-width:200px"><button class="btn" id="gx-mic">${MIC} Сказать</button><button class="btn primary" id="gx-ok">Проверить</button></div>
+      <div class="mic-heard" id="gx-heard" aria-live="polite"></div><div id="gx-fb" aria-live="polite"></div>`;
+    const inp = $("#gx-in");
+    const check = () => {
+      if (!inp.value.trim()) return;
+      const answers = [e.en, ...(e.alt || [])];
+      const best = Math.max(...answers.map(a => Math.min(similarity(a, inp.value), similarity(inp.value, a))));
+      inp.disabled = true; $("#gx-ok").disabled = true; $("#gx-mic").disabled = true;
+      speak(e.en);
+      after(best >= 0.85, best >= 0.85 ? "Эталон: " + esc(e.en) + "." : "Правильно: <b>" + esc(e.en) + "</b>" + (e.alt && e.alt.length ? " (можно и так: " + e.alt.map(esc).join("; ") + ")" : "") + ". Сравните со своим ответом.");
+    };
+    $("#gx-ok").onclick = check; inp.onkeydown = ev => { if (ev.key === "Enter") check(); };
+    $("#gx-mic").onclick = ev => listenFree($("#gx-heard"), ev.currentTarget, text => { inp.value = text; });
+  }
+}
+// Диктовка без проверки: распознанный текст подставляется в поле ответа
+function listenFree(outEl, btn, onText) {
+  if (activeRec) { activeRec.finish("Остановлено."); return; }
+  if (!SR) { outEl.textContent = "Распознавание речи недоступно в этом браузере. Напишите ответ."; return; }
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = false;
+  const label = btn.innerHTML; let text = "", done = false, timer;
+  const finish = msg => { if (done) return; done = true; activeRec = null; clearTimeout(timer); try { r.abort(); } catch (e) {} btn.innerHTML = label; btn.classList.remove("primary"); outEl.textContent = msg || (text ? "Распознано, проверьте текст и нажмите «Проверить»." : "Ничего не услышал."); if (text) onText(text); };
+  activeRec = { finish };
+  r.onresult = ev => { const res = ev.results[ev.results.length - 1]; text = res[0].transcript.trim(); outEl.textContent = "Слышу: " + text; onText(text); if (res.isFinal) finish(); };
+  r.onerror = ev => finish(ev.error === "not-allowed" ? "Нет доступа к микрофону." : "Не получилось, попробуйте ещё раз.");
+  r.onend = () => finish();
+  timer = setTimeout(() => { try { r.stop(); } catch (e) {} setTimeout(() => finish(), 1200); }, 9000);
+  btn.textContent = "Стоп"; btn.classList.add("primary"); outEl.textContent = "Говорите…";
+  try { r.start(); } catch (e) { finish("Не удалось включить микрофон."); }
+}
+
+/* ======================= ДИАЛОГИ ======================= */
+const DIALOGS = [
+ ["Знакомство на встрече", [["A","Hi! I'm John. What's your name?","Привет! Я Джон. Как тебя зовут?"],["B","Hi, John! My name is Alex. Nice to meet you.","Привет, Джон! Меня зовут Алекс. Приятно познакомиться."],["A","Nice to meet you too. Where are you from?","Мне тоже. Откуда ты?"],["B","I'm from Russia. And you?","Я из России. А ты?"],["A","I'm from Canada. What do you do?","Я из Канады. Чем занимаешься?"],["B","I have my own business. We make valves for water networks.","У меня свой бизнес. Мы делаем задвижки для водопроводных сетей."],["A","Sounds interesting!","Звучит интересно!"],["B","Thank you. And what do you do?","Спасибо. А ты чем занимаешься?"]]],
+ ["В кафе", [["A","Hello! A table for one?","Здравствуйте! Столик на одного?"],["B","Yes, please. Can I see the menu?","Да, пожалуйста. Можно меню?"],["A","Of course. Here you are.","Конечно. Пожалуйста."],["B","What do you recommend?","Что посоветуете?"],["A","The chicken salad is very good.","Салат с курицей очень хороший."],["B","Great, I'll have the chicken salad and a coffee, please.","Отлично, я возьму салат с курицей и кофе."],["A","Anything else?","Что-нибудь ещё?"],["B","No, thank you. Could I have the bill, please?","Нет, спасибо. Можно счёт?"]]],
+ ["В отеле", [["A","Good evening! How can I help you?","Добрый вечер! Чем могу помочь?"],["B","Hello! I have a reservation. My name is Alex Smirnov.","Здравствуйте! У меня бронь на имя Алекс Смирнов."],["A","Yes, three nights. Can I see your passport, please?","Да, три ночи. Можно ваш паспорт?"],["B","Here you are. What time is breakfast?","Вот, пожалуйста. Во сколько завтрак?"],["A","From seven to ten. Your room is on the fifth floor.","С семи до десяти. Ваш номер на пятом этаже."],["B","Thank you. What's the Wi-Fi password?","Спасибо. Какой пароль от Wi-Fi?"]]],
+ ["Как пройти", [["A","Excuse me, can I help you?","Извините, вам помочь?"],["B","Yes, please. How can I get to the city center?","Да, пожалуйста. Как добраться до центра?"],["A","Take the bus number five.","Садитесь на автобус номер пять."],["B","Is it far from here?","Это далеко отсюда?"],["A","About fifteen minutes by bus.","Около пятнадцати минут на автобусе."],["B","Thank you very much!","Большое спасибо!"]]],
+ ["Планы на выходные", [["A","Hey! What are you doing this weekend?","Привет! Что делаешь на выходных?"],["B","I'm going to visit my parents. And you?","Собираюсь к родителям. А ты?"],["A","Nothing special. Do you want to meet on Sunday evening?","Ничего особенного. Хочешь встретиться в воскресенье вечером?"],["B","Sounds good! What time?","Отлично! Во сколько?"],["A","Let's say seven o'clock.","Давай в семь."],["B","OK, see you on Sunday!","Хорошо, увидимся в воскресенье!"]]],
+ ["Рабочий созвон", [["A","Hi, Alex! Can you hear me?","Привет, Алекс! Слышишь меня?"],["B","Yes, I can hear you well.","Да, слышу хорошо."],["A","How is the project going?","Как идёт проект?"],["B","It's almost ready. We have a small problem with the server.","Почти готов. Есть небольшая проблема с сервером."],["A","When can you finish it?","Когда сможешь закончить?"],["B","I think by Friday. I'll send you an email.","Думаю, к пятнице. Я пришлю письмо."]]],
+ ["В магазине", [["A","Hi! Can I help you?","Здравствуйте! Вам помочь?"],["B","I'm just looking, thanks.","Я просто смотрю, спасибо."],["A","OK. Let me know if you need anything.","Хорошо. Скажите, если что-то понадобится."],["B","Excuse me, do you have this jacket in a bigger size?","Извините, есть эта куртка размером побольше?"],["A","Yes, here you are. The fitting room is over there.","Да, вот. Примерочная там."],["B","It fits well. How much is it?","Хорошо сидит. Сколько стоит?"],["A","Eighty dollars.","Восемьдесят долларов."],["B","I'll take it. Can I pay by card?","Беру. Можно картой?"]]],
+ ["Как прошли выходные", [["A","How was your weekend?","Как прошли выходные?"],["B","It was great! I went to the mountains with my family.","Отлично! Ездил в горы с семьёй."],["A","Wow! Was it cold?","Ого! Было холодно?"],["B","A little, but the weather was sunny.","Немного, но было солнечно."],["A","What did you do there?","Что вы там делали?"],["B","We walked a lot and ate in a nice restaurant.","Много гуляли и поели в хорошем ресторане."]]]
+];
+let dOpen = null, role = null;
+function speakSeq(lines, i, done) {
+  if (i >= lines.length || !window.speechSynthesis) { if (done) done(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(lines[i]); u.lang = "en-US"; if (voice) u.voice = voice; u.rate = Store.data.settings.rate || 0.85;
+  u.onend = () => setTimeout(() => speakSeq(lines, i + 1, done), 350);
+  speechSynthesis.speak(u);
+}
+function renderDialogs() {
+  const p = $("#p-dialogs");
+  if (dOpen == null) {
+    p.innerHTML = `<p class="lead">Живые диалоги из типичных ситуаций. Сначала послушайте весь диалог, потом сыграйте роль B: программа говорит за собеседника, вы отвечаете голосом или текстом.</p>
+      <div class="grid" style="grid-template-columns:1fr">${DIALOGS.map((d, i) => `<button class="card lesson-btn" data-d="${i}"><span class="num">${i + 1}</span><span><b>${esc(d[0])}</b><br><span class="note">${d[1].length} реплик</span></span><span class="chip">${(Store.data.dialogs || {})[i] ? "сыгран" : "новый"}</span></button>`).join("")}</div>`;
+    p.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { dOpen = +b.dataset.d; role = null; renderDialogs(); window.scrollTo(0, 0); });
+    return;
+  }
+  const [title, lines] = DIALOGS[dOpen];
+  if (!role) {
+    p.innerHTML = `<button class="btn small" id="d-back">← Все диалоги</button><h2 class="g-title" style="margin-top:14px">${esc(title)}</h2>
+      <div class="row" style="margin:10px 0 14px"><button class="btn" id="d-all">${SPK} Прослушать весь диалог</button><button class="btn primary" id="d-role">Сыграть роль B</button></div>
+      <div class="card teach">${lines.map((l, i) => `<div class="ex-line"><button class="btn small" data-l="${i}" aria-label="Послушать">${SPK}</button><div><div class="en-line"><b>${l[0]}:</b> ${esc(l[1])}</div><div class="note">${esc(l[2])}</div></div></div>`).join("")}</div>`;
+    $("#d-back").onclick = () => { dOpen = null; renderDialogs(); };
+    $("#d-all").onclick = () => speakSeq(lines.map(l => l[1]), 0);
+    $("#d-role").onclick = () => { role = { i: 0, right: 0, total: 0 }; renderDialogs(); };
+    p.querySelectorAll("[data-l]").forEach(b => b.onclick = () => speak(lines[+b.dataset.l][1]));
+    return;
+  }
+  const past = lines.slice(0, role.i).map(l => `<div class="ex-line"><div><div class="en-line"><b>${l[0]}:</b> ${esc(l[1])}</div></div></div>`).join("");
+  if (role.i >= lines.length) {
+    (Store.data.dialogs || (Store.data.dialogs = {}))[dOpen] = Date.now(); Store.save();
+    p.innerHTML = `<h2 class="g-title">${esc(title)}</h2><div class="card teach">${past}</div><div class="card teach"><h3>Диалог сыгран: ${role.right} из ${role.total} реплик верно</h3><p>Повторите ещё раз через пару дней. Цель — отвечать без подсказки и без пауз.</p><div class="row"><button class="btn" id="d-again">Ещё раз</button><button class="btn primary" id="d-list">К диалогам</button></div></div>`;
+    $("#d-again").onclick = () => { role = { i: 0, right: 0, total: 0 }; renderDialogs(); };
+    $("#d-list").onclick = () => { dOpen = null; role = null; renderDialogs(); };
+    return;
+  }
+  const l = lines[role.i];
+  if (l[0] === "A") {
+    p.innerHTML = `<h2 class="g-title">${esc(title)}</h2><div class="card teach">${past}<div class="ex-line"><div><div class="en-line"><b>A:</b> ${esc(l[1])}</div><div class="note">${esc(l[2])}</div></div></div></div><div class="row"><button class="btn" id="d-rep">${SPK} Ещё раз</button><button class="btn primary" id="d-n">Ответить</button></div>`;
+    speak(l[1]);
+    $("#d-rep").onclick = () => speak(l[1]);
+    $("#d-n").onclick = () => { role.i++; renderDialogs(); };
+    return;
+  }
+  p.innerHTML = `<h2 class="g-title">${esc(title)}</h2><div class="card teach">${past}</div>
+    <div class="card teach"><h3>Ваша реплика (B)</h3><p>Скажите по-английски: <b>${esc(l[2])}</b></p>
+      <div class="row"><input type="text" id="d-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Скажите или напишите" style="flex:1;min-width:200px"><button class="btn" id="d-mic">${MIC} Сказать</button><button class="btn primary" id="d-ok">Проверить</button></div>
+      <div class="mic-heard" id="d-heard" aria-live="polite"></div><div id="d-fb" aria-live="polite"></div></div>`;
+  const inp = $("#d-in");
+  const check = () => {
+    if (!inp.value.trim()) return;
+    const ok = similarity(l[1], inp.value) >= 0.7;
+    role.total++; if (ok) role.right++;
+    inp.disabled = true; $("#d-ok").disabled = true; $("#d-mic").disabled = true;
+    speak(l[1]);
+    $("#d-fb").innerHTML = `<div class="explain"><b class="${ok ? "ok" : "bad"}">${ok ? "Хорошо!" : "Можно точнее."}</b> Как говорят: <b>${esc(l[1])}</b></div><div class="row" style="margin-top:10px"><button class="btn primary" id="d-n">Дальше</button></div>`;
+    $("#d-n").onclick = () => { role.i++; renderDialogs(); };
+  };
+  $("#d-ok").onclick = check; inp.onkeydown = ev => { if (ev.key === "Enter") check(); };
+  $("#d-mic").onclick = ev => listenFree($("#d-heard"), ev.currentTarget, t => { inp.value = t; });
+}
+
+/* ======================= ПЛАН К НОВОМУ ГОДУ ======================= */
+const PLAN = [
+ ["21–27 октября", [0, 1], "meet", [0], "Пройдите «Звуки»: th, w, æ, r — сразу ставим правильное произношение."],
+ ["28 октября – 3 ноября", [2], "me", [0], "Напишите и проговорите 5 предложений о себе."],
+ ["4–10 ноября", [3], "work", [5], "Задайте 10 вопросов о чужой работе и жизни."],
+ ["11–17 ноября", [4, 8], "city", [3], "Описывайте вслух, что делаете прямо сейчас."],
+ ["18–24 ноября", [5], "time", [7], "Каждый вечер рассказывайте вслух, как прошёл день (Past Simple)."],
+ ["25 ноября – 1 декабря", [6], "food", [1, 4], "Расскажите о планах на неделю и на Новый год."],
+ ["2–8 декабря", [7], "shop", [6], "Попросите о чём-то вежливо 10 разными способами."],
+ ["9–15 декабря", [9, 11], "travel", [2], "Опыт: «Have you ever…?» — спросите и ответьте о путешествиях."],
+ ["16–22 декабря", [10, 12], "feel", [], "Говорите длиннее: соединяйте мысли через because, so, but."],
+ ["23–31 декабря", [], "talk", [0, 1, 2, 3, 4, 5, 6, 7], "Повторение и свободный разговор: рассказ о себе на 2 минуты и беседа со мной в чате."]
+];
+const PLAN_START = new Date(2026, 9, 21);
+function currentWeek() { return Math.max(0, Math.min(PLAN.length - 1, Math.floor((Date.now() - PLAN_START) / (7 * DAY)))); }
+function renderPlan() {
+  const p = $("#p-plan"), cw = currentWeek(), gp = gProg(), dp = Store.data.dialogs || {};
+  const daysLeft = Math.max(0, Math.ceil((new Date(2027, 0, 1) - Date.now()) / DAY));
+  p.innerHTML = `<div class="card teach goal-card"><h3>Цель к Новому году: уровень A2</h3>
+      <p>Свободно объясняться в поездке, кафе, магазине и отеле, рассказать о себе и работе, поддержать простой разговор. До 1 января — <b>${daysLeft} дн.</b> Нужен примерно час в день. Свободная беседа на любые темы (B1–B2) — следующий шаг, ещё 6–12 месяцев после этого.</p></div>
+    <div class="card teach"><h3>Каждый день (около 60 минут)</h3><ol>
+      <li><b>15 мин — урок грамматики.</b> Читайте объяснение, слушайте примеры, делайте упражнения.</li>
+      <li><b>15 мин — тренировка фраз.</b> Карточки, каждую фразу вслух.</li>
+      <li><b>10 мин — диалог по ролям.</b> Отвечайте голосом.</li>
+      <li><b>10 мин — слушать живую речь.</b> Видео или сериал с английскими субтитрами.</li>
+      <li><b>10 мин — говорить.</b> Рассказывайте вслух, что делали и что планируете. Или пишите мне в чат по-английски, я поправлю ошибки.</li></ol></div>
+    <h2 class="section-title">Неделя за неделей</h2>
+    <div class="grid" style="grid-template-columns:1fr">${PLAN.map(([dates, gs, pt, ds, task], i) => `<div class="card week ${i === cw ? "now" : ""}">
+      <div class="word"><b>Неделя ${i + 1} · ${dates}</b>${i === cw ? '<span class="chip now-chip">сейчас</span>' : ""}</div>
+      <div class="row" style="margin-top:8px">${gs.map(g => `<button class="btn small" data-pg="${g}">${gp[g] ? "✓ " : ""}Урок ${g + 1}: ${esc(GRAMMAR[g].title)}</button>`).join("")}
+        <button class="btn small" data-pp="${pt}">Фразы: ${esc(PTOPICS[pt])}</button>
+        ${ds.slice(0, 3).map(d => `<button class="btn small" data-pd="${d}">${dp[d] ? "✓ " : ""}Диалог: ${esc(DIALOGS[d][0])}</button>`).join("")}</div>
+      <p class="note" style="margin:8px 0 0">Задание недели: ${esc(task)}</p></div>`).join("")}</div>`;
+  p.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => { gOpen = +b.dataset.pg; gEx = null; renderGrammar(); openTab("tab-grammar"); });
+  p.querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { phraseTopic = b.dataset.pp; renderPhrases(); openTab("tab-phrases"); });
+  p.querySelectorAll("[data-pd]").forEach(b => b.onclick = () => { dOpen = +b.dataset.pd; role = null; renderDialogs(); openTab("tab-dialogs"); });
+}
+
 /* ======================= ЗАПУСК ======================= */
-function renderAll() { renderTrain(); renderWords(); renderSounds(); renderErrors(); renderTests(); updateChips(); if (!$("#p-stats").hidden) renderStats(); }
+function renderAll() { renderPlan(); renderTrain(); renderPhrases(); renderGrammar(); renderDialogs(); renderWords(); renderSounds(); renderErrors(); renderTests(); updateChips(); if (!$("#p-stats").hidden) renderStats(); }
 Store.loadLocal();
 renderAll();
 try { const t = localStorage.getItem(KEY + "-tab"); if (t && document.getElementById(t)) openTab(t); } catch (e) {}
