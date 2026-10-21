@@ -105,6 +105,8 @@ pre.code { font-family: var(--f-mono); font-size: 13.5px; background: var(--term
 .note { font-size: 13px; color: var(--muted) }
 input[type=search] { font: 16px var(--f-body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); width: 100%; margin-bottom: 14px }
 .panel[hidden] { display: none }
+.vrow { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px dashed var(--line) }
+.vlink { color: var(--accent); font-weight: 600; text-decoration: none } .vlink:hover { text-decoration: underline }
 .why { border-color: var(--accent); margin-bottom: 12px } .why h3 { margin: 0 0 6px } .why p { margin: 0; max-width: 70ch }
 .editor { width: 100%; min-height: 130px; resize: vertical; font: 14px/1.5 var(--f-mono); background: var(--term-bg); color: var(--term-cmd); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; tab-size: 4; white-space: pre; overflow-x: auto }
 .editor.tall { min-height: 220px }
@@ -1027,6 +1029,27 @@ print("все тесты пройдены")</pre>
  ]
 }
 };
+// Видео к урокам: конкретные ролики проверены (существуют), поиск по теме — для свежих роликов на русском
+const YT = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+const W_ = id => "https://www.youtube.com/watch?v=" + id;
+const VIDEOS = {
+ 1: [["Как работает процессор — простыми словами", YT("как работает процессор простыми словами"), "поиск, на русском"], ["Crash Course: Computer Science", "https://www.youtube.com/@CrashCourse", "канал: устройство компьютера с нуля, на английском"]],
+ 2: [["Что такое операционная система", YT("что такое операционная система простыми словами"), "поиск, на русском"], ["Процессы и потоки", YT("процессы и потоки простыми словами"), "поиск, на русском"]],
+ 3: [["PowerShell для начинающих", YT("PowerShell для начинающих основы"), "поиск, на русском"], ["Linux in 100 Seconds (Fireship)", W_("rrB13utjYV4"), "2 минуты, на английском"]],
+ 4: [["Python in 100 Seconds (Fireship)", W_("x7X9w_GIm1s"), "2 минуты, на английском"], ["Learn Python — Full Course (freeCodeCamp)", W_("rfscVS0vtbw"), "полный курс, 4,5 часа, на английском"], ["selfedu — Python с нуля", "https://www.youtube.com/@selfedu_rus", "канал, на русском"]],
+ 5: [["Функции в Python", YT("функции python для начинающих"), "поиск, на русском"], ["Как читать ошибки Python (Traceback)", YT("python traceback как читать ошибки"), "поиск, на русском"]],
+ 6: [["SQL Explained in 100 Seconds (Fireship)", W_("zsjvFFKOm3c"), "2 минуты, на английском"], ["SQL для начинающих", YT("SQL для начинающих за час"), "поиск, на русском"], ["Что такое JSON", YT("что такое JSON простыми словами"), "поиск, на русском"]],
+ 7: [["Git Explained in 100 Seconds (Fireship)", W_("hwP7WQkmECE"), "2 минуты, на английском"], ["Git для начинающих", YT("git для начинающих основы"), "поиск, на русском"], ["Диджитализируй! — про программирование и Linux", "https://www.youtube.com/@t0digital", "канал, на русском"]],
+ 8: [["JavaScript in 100 Seconds (Fireship)", W_("DHjqpvDnNGE"), "2 минуты, на английском"], ["Как работает интернет и HTTP", YT("как работает интернет HTTP простыми словами"), "поиск, на русском"]],
+ 9: [["But what is a neural network? (3Blue1Brown)", W_("aircAruvnKk"), "лучшее объяснение нейросетей, 18 минут, на английском"], ["Large Language Models explained briefly (3Blue1Brown)", W_("LPZh9BOjkQs"), "8 минут, на английском"], ["Что такое токены и эмбеддинги", YT("токены эмбеддинги нейросети простыми словами"), "поиск, на русском"]],
+ 10: [["Transformers, the tech behind LLMs (3Blue1Brown)", W_("wjZofJX0v4M"), "27 минут, на английском"], ["Attention in transformers, step-by-step (3Blue1Brown)", W_("eMlx5fFNoYc"), "26 минут, на английском"]],
+ 11: [["Gradient descent, how neural networks learn (3Blue1Brown)", W_("IHZwWFHWa-w"), "21 минута, на английском"], ["Backpropagation, intuitively (3Blue1Brown)", W_("Ilg3gGewQ5U"), "13 минут, на английском"], ["Что такое LoRA", YT("LoRA дообучение нейросети простыми словами"), "поиск, на русском"]],
+ 12: [["Квантизация моделей", YT("квантизация LLM простыми словами"), "поиск, на русском"], ["Сколько видеопамяти нужно для LLM", YT("how much VRAM do you need for LLM"), "поиск, на английском"]],
+ 13: [["Intro to Large Language Models (Andrej Karpathy)", W_("zjkBMFhNj_g"), "1 час, на английском — от одного из основателей OpenAI"], ["Как вызывать LLM через API на Python", YT("LLM API python tutorial"), "поиск, на английском"]],
+ 14: [["What are AI Agents? (IBM Technology)", W_("F8NKVhkZZWI"), "12 минут, на английском"], ["Model Context Protocol (MCP)", YT("Model Context Protocol MCP explained"), "поиск, на английском"]],
+ 15: [["What is Retrieval-Augmented Generation (RAG)? (IBM Technology)", W_("T-D1OfcDW1M"), "6 минут, на английском"], ["RAG простыми словами", YT("RAG нейросети простыми словами"), "поиск, на русском"]],
+ 16: [["Deep Dive into LLMs like ChatGPT (Andrej Karpathy)", W_("7xTGNNLPyMI"), "3,5 часа, на английском — итог всего блока про ИИ"], ["Let's build GPT: from scratch, in code (Andrej Karpathy)", W_("kCc8FmEb1nY"), "2 часа, для тех, кто хочет написать модель сам"], ["Юнит-тесты простыми словами", YT("юнит тесты простыми словами python pytest"), "поиск, на русском"]]
+};
 // Учительские добавки к урокам: зачем это вам и частые ошибки
 const TEACH = {
  1: { why: "Чтобы понимать, что происходит с вашим сервером: почему он тормозит, что занимает процессор, хватит ли видеопамяти для модели. На этом держится весь остальной курс.",
@@ -1195,8 +1218,10 @@ function renderLesson() {
   const lv = $("#lv");
   if (lessonView === "theory") {
     const t = TEACH[n];
+    const vids = VIDEOS[n] || [];
     lv.innerHTML = (t ? `<div class="card why"><h3>Зачем это вам</h3><p>${esc(t.why)}</p></div>` : "") +
       `<div class="card theory">${c.theory}</div>` +
+      (vids.length ? `<div class="card theory" style="margin-top:12px"><h3 style="margin-top:0">Видео к уроку</h3>${vids.map(v => `<div class="vrow"><a class="vlink" href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a><span class="note">${esc(v[2])}</span></div>`).join("")}<p class="note" style="margin:8px 0 0">Ролики на английском смотрите с субтитрами: заодно тренируете язык. В YouTube можно включить автоперевод субтитров на русский.</p></div>` : "") +
       (t ? `<div class="card theory" style="margin-top:12px"><h3 style="margin-top:0">Частые ошибки</h3><div class="tbl"><table><thead><tr><th>Так делают</th><th>Как правильно</th><th>Почему</th></tr></thead><tbody>${t.mistakes.map(m => `<tr><td><s>${esc(m[0])}</s></td><td><b>${esc(m[1])}</b></td><td>${esc(m[2])}</td></tr>`).join("")}</tbody></table></div></div>` : "") +
       `<div class="row" style="margin-top:14px"><button class="btn primary" id="read-ok">${s.read ? "Прочитано · к тесту" : "Прочитал, перейти к тесту"}</button></div>`;
     attachRunners(lv);

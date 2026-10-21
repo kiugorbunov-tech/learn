@@ -119,6 +119,9 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
 .chip-w { border: 1px solid var(--line); background: var(--surface2); color: var(--fg); border-radius: 8px; padding: 8px 12px; font: 600 16px var(--f-body); cursor: pointer }
 .chip-w.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
 .week.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset } .now-chip { background: var(--accent); color: var(--accent-ink) }
+.vlink { color: var(--accent); font-weight: 600; text-decoration: none; display: inline-block; margin: 2px 10px 2px 0 }
+.vlink:hover { text-decoration: underline }
+.vids { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 0; align-items: baseline }
 .tr-area { width: 100%; min-height: 110px; resize: vertical; font: 17px/1.5 var(--f-body); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg) }
 </style>
 
@@ -127,7 +130,8 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
     <h1>Английский<small>Разговорный к Новому году и технический: фразы, грамматика, диалоги, слова, тесты</small></h1>
     <div class="chips">
       <span class="chip" id="chip-phrases">Фразы: <b>0</b></span>
-      <span class="chip" id="chip-learned">Слова: <b>0</b></span>
+      <span class="chip" id="chip-core">Базовые слова: <b>0</b></span>
+      <span class="chip" id="chip-learned">Тех. слова: <b>0</b></span>
       <span class="chip" id="chip-due">К повтору: <b>0</b></span>
       <span class="chip" id="chip-sync">Прогресс: этот браузер</span>
     </div>
@@ -140,7 +144,7 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
     <button role="tab" id="tab-grammar" aria-controls="p-grammar" aria-selected="false">Грамматика</button>
     <button role="tab" id="tab-dialogs" aria-controls="p-dialogs" aria-selected="false">Диалоги</button>
     <button role="tab" id="tab-tr" aria-controls="p-tr" aria-selected="false">Переводчик</button>
-    <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Тех. слова</button>
+    <button role="tab" id="tab-words" aria-controls="p-words" aria-selected="false">Словарь</button>
     <button role="tab" id="tab-sounds" aria-controls="p-sounds" aria-selected="false">Звуки</button>
     <button role="tab" id="tab-errors" aria-controls="p-errors" aria-selected="false">Ошибки и сообщения</button>
     <button role="tab" id="tab-tests" aria-controls="p-tests" aria-selected="false">Тесты</button>
@@ -609,10 +613,975 @@ function toast(msg) {
     t.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:90vw"; document.body.appendChild(t); }
   t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600);
 }
+/* ======================= БАЗОВЫЙ СЛОВАРЬ (около 1000 частых слов для разговора) =======================
+   Строка: слово|транскрипция (американская)|перевод */
+const CORE_TOPICS = {
+ c_func: ["Местоимения и служебные", `I|aɪ|я
+you|juː|ты, вы
+he|hiː|он
+she|ʃiː|она
+it|ɪt|оно, это
+we|wiː|мы
+they|ðeɪ|они
+me|miː|меня, мне
+him|hɪm|его, ему
+her|hɜːr|её, ей
+us|ʌs|нас, нам
+them|ðem|их, им
+my|maɪ|мой
+your|jʊr|твой, ваш
+his|hɪz|его (чей)
+our|aʊr|наш
+their|ðer|их (чей)
+this|ðɪs|этот, это
+that|ðæt|тот, что
+these|ðiːz|эти
+those|ðoʊz|те
+here|hɪr|здесь, сюда
+there|ðer|там, туда
+who|huː|кто
+what|wʌt|что, какой
+where|wer|где, куда
+when|wen|когда
+why|waɪ|почему
+how|haʊ|как
+which|wɪtʃ|который
+and|ænd|и
+but|bʌt|но
+or|ɔːr|или
+because|bɪˈkɔːz|потому что
+so|soʊ|поэтому; так
+if|ɪf|если
+then|ðen|тогда, потом
+also|ˈɔːlsoʊ|также
+too|tuː|тоже; слишком
+very|ˈveri|очень
+not|nɑːt|не
+no|noʊ|нет; никакой
+yes|jes|да
+in|ɪn|в (внутри)
+on|ɑːn|на
+at|æt|в, у (в точке)
+to|tuː|к, в (направление)
+from|frʌm|из, от
+with|wɪð|с
+without|wɪˈðaʊt|без
+for|fɔːr|для; в течение
+about|əˈbaʊt|о; около
+of|ʌv|(родительный падеж)
+by|baɪ|у; к (сроку); кем
+under|ˈʌndər|под
+over|ˈoʊvər|над; через
+between|bɪˈtwiːn|между
+near|nɪr|рядом; близкий
+after|ˈæftər|после
+before|bɪˈfɔːr|до, перед
+during|ˈdʊrɪŋ|во время
+until|ənˈtɪl|до (какого-то времени)
+into|ˈɪntuː|в (внутрь)
+out|aʊt|наружу, вне
+up|ʌp|вверх
+down|daʊn|вниз
+all|ɔːl|все, всё
+some|sʌm|несколько, немного
+any|ˈeni|любой, какой-нибудь
+every|ˈevri|каждый
+each|iːtʃ|каждый (по отдельности)
+many|ˈmeni|много (штук)
+much|mʌtʃ|много (неисчисляемого)
+more|mɔːr|больше
+most|moʊst|самый; большинство
+other|ˈʌðər|другой
+another|əˈnʌðər|ещё один, другой
+something|ˈsʌmθɪŋ|что-то
+nothing|ˈnʌθɪŋ|ничего
+everything|ˈevriθɪŋ|всё
+someone|ˈsʌmwʌn|кто-то
+everyone|ˈevriwʌn|все (люди)`],
+ c_verb: ["Главные глаголы", `be|biː|быть
+have|hæv|иметь
+do|duː|делать
+say|seɪ|сказать
+go|ɡoʊ|идти, ехать
+get|ɡet|получать; становиться
+make|meɪk|делать, создавать
+know|noʊ|знать
+think|θɪŋk|думать
+take|teɪk|брать
+see|siː|видеть
+come|kʌm|приходить
+want|wɑːnt|хотеть
+look|lʊk|смотреть; выглядеть
+use|juːz|использовать
+find|faɪnd|находить
+give|ɡɪv|давать
+tell|tel|рассказать, сказать (кому-то)
+work|wɜːrk|работать; работа
+call|kɔːl|звонить; называть
+try|traɪ|пытаться, пробовать
+ask|æsk|спрашивать, просить
+need|niːd|нуждаться
+feel|fiːl|чувствовать
+become|bɪˈkʌm|становиться
+leave|liːv|уходить, уезжать; оставлять
+put|pʊt|класть
+mean|miːn|значить; иметь в виду
+keep|kiːp|хранить; продолжать
+let|let|позволять
+begin|bɪˈɡɪn|начинать
+seem|siːm|казаться
+help|help|помогать; помощь
+talk|tɔːk|разговаривать
+turn|tɜːrn|поворачивать
+start|stɑːrt|начинать
+show|ʃoʊ|показывать
+hear|hɪr|слышать
+play|pleɪ|играть
+run|rʌn|бегать
+move|muːv|двигаться; переезжать
+like|laɪk|нравиться; как
+live|lɪv|жить
+believe|bɪˈliːv|верить
+hold|hoʊld|держать
+bring|brɪŋ|приносить
+happen|ˈhæpən|случаться
+write|raɪt|писать
+sit|sɪt|сидеть
+stand|stænd|стоять
+lose|luːz|терять; проигрывать
+pay|peɪ|платить
+meet|miːt|встречать, знакомиться
+learn|lɜːrn|учить, узнавать
+change|tʃeɪndʒ|менять; сдача
+understand|ˌʌndərˈstænd|понимать
+watch|wɑːtʃ|смотреть, следить; часы
+follow|ˈfɑːloʊ|следовать
+stop|stɑːp|останавливать; остановка
+speak|spiːk|говорить (на языке)
+read|riːd|читать
+spend|spend|тратить; проводить (время)
+grow|ɡroʊ|расти
+open|ˈoʊpən|открывать; открытый
+walk|wɔːk|ходить пешком; прогулка
+win|wɪn|выигрывать
+remember|rɪˈmembər|помнить
+love|lʌv|любить; любовь
+buy|baɪ|покупать
+wait|weɪt|ждать
+send|send|отправлять
+expect|ɪkˈspekt|ожидать
+build|bɪld|строить
+stay|steɪ|оставаться
+fall|fɔːl|падать
+cut|kʌt|резать
+reach|riːtʃ|достигать
+decide|dɪˈsaɪd|решать
+sell|sel|продавать
+eat|iːt|есть
+drink|drɪŋk|пить; напиток
+sleep|sliːp|спать; сон
+wake up|weɪk ʌp|просыпаться
+cook|kʊk|готовить (еду)
+drive|draɪv|водить машину
+fly|flaɪ|летать
+travel|ˈtrævəl|путешествовать
+close|kloʊz|закрывать
+forget|fərˈɡet|забывать
+finish|ˈfɪnɪʃ|заканчивать
+answer|ˈænsər|отвечать; ответ
+explain|ɪkˈspleɪn|объяснять
+agree|əˈɡriː|соглашаться
+carry|ˈkæri|нести
+check|tʃek|проверять
+choose|tʃuːz|выбирать
+clean|kliːn|убирать, чистить; чистый
+count|kaʊnt|считать
+dance|dæns|танцевать
+draw|drɔː|рисовать
+dream|driːm|мечтать; сон, мечта
+enjoy|ɪnˈdʒɔɪ|наслаждаться
+fix|fɪks|чинить, исправлять
+hope|hoʊp|надеяться; надежда
+hurry|ˈhɜːri|спешить
+invite|ɪnˈvaɪt|приглашать
+laugh|læf|смеяться
+lie|laɪ|лежать; лгать
+listen|ˈlɪsən|слушать
+miss|mɪs|скучать; опоздать на
+order|ˈɔːrdər|заказывать; заказ
+plan|plæn|планировать; план
+practice|ˈpræktɪs|практиковаться
+prefer|prɪˈfɜːr|предпочитать
+prepare|prɪˈper|готовить(ся)
+promise|ˈprɑːmɪs|обещать
+rain|reɪn|идти (о дожде); дождь
+relax|rɪˈlæks|расслабляться, отдыхать
+repeat|rɪˈpiːt|повторять
+rest|rest|отдыхать; отдых
+return|rɪˈtɜːrn|возвращаться
+ride|raɪd|ехать (на велосипеде, верхом)
+share|ʃer|делиться
+shout|ʃaʊt|кричать
+sing|sɪŋ|петь
+smile|smaɪl|улыбаться; улыбка
+smoke|smoʊk|курить; дым
+study|ˈstʌdi|учиться, изучать
+swim|swɪm|плавать
+teach|tiːtʃ|учить (кого-то)
+thank|θæŋk|благодарить
+throw|θroʊ|бросать
+touch|tʌtʃ|трогать
+visit|ˈvɪzɪt|посещать
+wash|wɑːʃ|мыть
+wear|wer|носить (одежду)
+wish|wɪʃ|желать
+worry|ˈwɜːri|волноваться
+book|bʊk|книга; бронировать
+borrow|ˈbɑːroʊ|брать взаймы
+lend|lend|давать взаймы
+break|breɪk|ломать; перерыв
+catch|kætʃ|ловить; успеть на
+fill|fɪl|наполнять, заполнять
+hate|heɪt|ненавидеть
+join|dʒɔɪn|присоединяться
+mind|maɪnd|возражать; ум
+save|seɪv|сохранять, экономить; спасать`],
+ c_verb2: ["Ещё глаголы и фразовые", `allow|əˈlaʊ|разрешать
+apply|əˈplaɪ|подавать заявку; применять
+argue|ˈɑːrɡjuː|спорить
+arrive|əˈraɪv|прибывать
+avoid|əˈvɔɪd|избегать
+belong|bɪˈlɔːŋ|принадлежать
+boil|bɔɪl|кипятить, кипеть
+burn|bɜːrn|гореть, жечь
+cancel|ˈkænsəl|отменять
+care|ker|заботиться
+celebrate|ˈseləbreɪt|праздновать
+complain|kəmˈpleɪn|жаловаться
+connect|kəˈnekt|соединять
+continue|kənˈtɪnjuː|продолжать
+cry|kraɪ|плакать
+describe|dɪˈskraɪb|описывать
+destroy|dɪˈstrɔɪ|разрушать
+die|daɪ|умирать
+discuss|dɪˈskʌs|обсуждать
+earn|ɜːrn|зарабатывать
+fail|feɪl|провалиться, не суметь
+fight|faɪt|драться, бороться
+fit|fɪt|подходить (по размеру)
+guess|ɡes|угадывать; полагать
+hang|hæŋ|вешать, висеть
+hide|haɪd|прятать
+hit|hɪt|ударять
+improve|ɪmˈpruːv|улучшать
+include|ɪnˈkluːd|включать (в состав)
+increase|ɪnˈkriːs|увеличивать
+jump|dʒʌmp|прыгать
+knock|nɑːk|стучать
+lead|liːd|вести, руководить
+mention|ˈmenʃən|упоминать
+offer|ˈɔːfər|предлагать
+own|oʊn|владеть; собственный
+pack|pæk|упаковывать, собирать вещи
+pass|pæs|проходить; сдавать (экзамен)
+pull|pʊl|тянуть
+push|pʊʃ|толкать
+raise|reɪz|поднимать
+realize|ˈriːəlaɪz|осознавать
+receive|rɪˈsiːv|получать
+recommend|ˌrekəˈmend|рекомендовать
+reduce|rɪˈduːs|уменьшать
+refuse|rɪˈfjuːz|отказываться
+replace|rɪˈpleɪs|заменять
+reply|rɪˈplaɪ|отвечать (на письмо)
+shake|ʃeɪk|трясти
+shut|ʃʌt|закрывать
+sign|saɪn|подписывать; знак
+solve|sɑːlv|решать (задачу)
+steal|stiːl|красть
+suggest|səˈdʒest|предлагать (идею)
+support|səˈpɔːrt|поддерживать
+pick up|pɪk ʌp|поднять; забрать
+take off|teɪk ɔːf|снимать; взлетать
+put on|pʊt ɑːn|надевать
+turn on|tɜːrn ɑːn|включать
+turn off|tɜːrn ɔːf|выключать
+look for|lʊk fɔːr|искать
+find out|faɪnd aʊt|выяснить
+give up|ɡɪv ʌp|сдаться, бросить
+get up|ɡet ʌp|вставать
+go out|ɡoʊ aʊt|выходить (развлечься)
+come back|kʌm bæk|возвращаться`],
+ c_adj: ["Прилагательные", `good|ɡʊd|хороший
+bad|bæd|плохой
+big|bɪɡ|большой
+small|smɔːl|маленький
+new|nuː|новый
+old|oʊld|старый
+young|jʌŋ|молодой
+long|lɔːŋ|длинный, долгий
+short|ʃɔːrt|короткий; низкий (рост)
+high|haɪ|высокий
+low|loʊ|низкий
+great|ɡreɪt|отличный; великий
+little|ˈlɪtəl|маленький; немного
+right|raɪt|правильный; правый; направо
+wrong|rɔːŋ|неправильный
+left|left|левый; налево
+easy|ˈiːzi|лёгкий (простой)
+hard|hɑːrd|трудный; твёрдый
+difficult|ˈdɪfɪkəlt|сложный
+important|ɪmˈpɔːrtənt|важный
+different|ˈdɪfərənt|разный, другой
+same|seɪm|одинаковый, тот же
+early|ˈɜːrli|ранний; рано
+late|leɪt|поздний; поздно
+hot|hɑːt|горячий, жаркий
+cold|koʊld|холодный; простуда
+warm|wɔːrm|тёплый
+cool|kuːl|прохладный; классный
+fast|fæst|быстрый
+slow|sloʊ|медленный
+quick|kwɪk|быстрый
+happy|ˈhæpi|счастливый
+sad|sæd|грустный
+tired|ˈtaɪərd|уставший
+hungry|ˈhʌŋɡri|голодный
+thirsty|ˈθɜːrsti|испытывающий жажду
+busy|ˈbɪzi|занятой
+free|friː|свободный; бесплатный
+ready|ˈredi|готовый
+sure|ʃʊr|уверенный
+beautiful|ˈbjuːtɪfəl|красивый
+nice|naɪs|приятный, милый
+cheap|tʃiːp|дешёвый
+expensive|ɪkˈspensɪv|дорогой
+rich|rɪtʃ|богатый
+poor|pʊr|бедный
+full|fʊl|полный
+empty|ˈempti|пустой
+dirty|ˈdɜːrti|грязный
+quiet|ˈkwaɪət|тихий
+loud|laʊd|громкий
+strong|strɔːŋ|сильный
+weak|wiːk|слабый
+safe|seɪf|безопасный
+dangerous|ˈdeɪndʒərəs|опасный
+real|riːl|настоящий
+true|truː|правдивый, верный
+possible|ˈpɑːsəbəl|возможный
+best|best|лучший
+better|ˈbetər|лучше
+worse|wɜːrs|хуже
+worst|wɜːrst|худший
+whole|hoʊl|целый
+closed|kloʊzd|закрытый
+dark|dɑːrk|тёмный
+light|laɪt|светлый; лёгкий; свет
+heavy|ˈhevi|тяжёлый
+wide|waɪd|широкий
+narrow|ˈnæroʊ|узкий
+deep|diːp|глубокий
+far|fɑːr|далёкий; далеко
+favorite|ˈfeɪvərɪt|любимый
+famous|ˈfeɪməs|знаменитый
+popular|ˈpɑːpjələr|популярный
+interesting|ˈɪntrəstɪŋ|интересный
+boring|ˈbɔːrɪŋ|скучный
+funny|ˈfʌni|смешной
+serious|ˈsɪriəs|серьёзный
+friendly|ˈfrendli|дружелюбный
+kind|kaɪnd|добрый; вид, тип
+polite|pəˈlaɪt|вежливый
+angry|ˈæŋɡri|сердитый
+afraid|əˈfreɪd|испуганный
+sick|sɪk|больной
+healthy|ˈhelθi|здоровый
+fine|faɪn|в порядке; хороший
+wonderful|ˈwʌndərfəl|чудесный
+terrible|ˈterəbəl|ужасный
+delicious|dɪˈlɪʃəs|вкусный
+sweet|swiːt|сладкий
+salty|ˈsɔːlti|солёный
+fresh|freʃ|свежий
+correct|kəˈrekt|правильный
+simple|ˈsɪmpəl|простой
+main|meɪn|главный
+local|ˈloʊkəl|местный
+public|ˈpʌblɪk|общественный
+private|ˈpraɪvət|частный, личный
+special|ˈspeʃəl|особенный
+usual|ˈjuːʒuəl|обычный
+modern|ˈmɑːdərn|современный
+comfortable|ˈkʌmftərbəl|удобный
+crazy|ˈkreɪzi|сумасшедший
+lucky|ˈlʌki|везучий`],
+ c_adv: ["Наречия и вежливые слова", `now|naʊ|сейчас
+today|təˈdeɪ|сегодня
+tomorrow|təˈmɑːroʊ|завтра
+yesterday|ˈjestərdeɪ|вчера
+always|ˈɔːlweɪz|всегда
+usually|ˈjuːʒuəli|обычно
+often|ˈɔːfən|часто
+sometimes|ˈsʌmtaɪmz|иногда
+never|ˈnevər|никогда
+again|əˈɡen|снова
+already|ɔːlˈredi|уже
+still|stɪl|всё ещё
+yet|jet|ещё (не); уже (в вопросе)
+just|dʒʌst|только что; просто
+only|ˈoʊnli|только
+soon|suːn|скоро
+later|ˈleɪtər|позже
+ago|əˈɡoʊ|назад (о времени)
+almost|ˈɔːlmoʊst|почти
+enough|ɪˈnʌf|достаточно
+really|ˈriːəli|действительно
+maybe|ˈmeɪbi|может быть
+probably|ˈprɑːbəbli|вероятно
+together|təˈɡeðər|вместе
+alone|əˈloʊn|один, в одиночестве
+well|wel|хорошо; ну
+quickly|ˈkwɪkli|быстро
+slowly|ˈsloʊli|медленно
+exactly|ɪɡˈzæktli|точно, именно
+actually|ˈæktʃuəli|на самом деле
+of course|əv ˈkɔːrs|конечно
+please|pliːz|пожалуйста (просьба)
+thanks|θæŋks|спасибо
+sorry|ˈsɑːri|извините
+hello|həˈloʊ|привет, здравствуйте
+goodbye|ɡʊdˈbaɪ|до свидания
+okay|oʊˈkeɪ|хорошо, ладно
+everywhere|ˈevriwer|везде
+somewhere|ˈsʌmwer|где-то
+home|hoʊm|дом; домой
+abroad|əˈbrɔːd|за границей
+outside|ˌaʊtˈsaɪd|снаружи, на улице
+inside|ˌɪnˈsaɪd|внутри
+online|ˌɑːnˈlaɪn|онлайн, в интернете`],
+ c_time: ["Числа, дни, месяцы", `one|wʌn|один
+two|tuː|два
+three|θriː|три
+four|fɔːr|четыре
+five|faɪv|пять
+six|sɪks|шесть
+seven|ˈsevən|семь
+eight|eɪt|восемь
+nine|naɪn|девять
+ten|ten|десять
+eleven|ɪˈlevən|одиннадцать
+twelve|twelv|двенадцать
+thirteen|ˌθɜːrˈtiːn|тринадцать
+fifteen|ˌfɪfˈtiːn|пятнадцать
+twenty|ˈtwenti|двадцать
+thirty|ˈθɜːrti|тридцать
+forty|ˈfɔːrti|сорок
+fifty|ˈfɪfti|пятьдесят
+hundred|ˈhʌndrəd|сто
+thousand|ˈθaʊzənd|тысяча
+million|ˈmɪljən|миллион
+first|fɜːrst|первый
+second|ˈsekənd|второй; секунда
+third|θɜːrd|третий
+half|hæf|половина
+time|taɪm|время; раз
+minute|ˈmɪnɪt|минута
+hour|ˈaʊər|час
+day|deɪ|день
+week|wiːk|неделя
+month|mʌnθ|месяц
+year|jɪr|год
+morning|ˈmɔːrnɪŋ|утро
+afternoon|ˌæftərˈnuːn|день (после полудня)
+evening|ˈiːvnɪŋ|вечер
+night|naɪt|ночь
+weekend|ˈwiːkend|выходные
+Monday|ˈmʌndeɪ|понедельник
+Tuesday|ˈtuːzdeɪ|вторник
+Wednesday|ˈwenzdeɪ|среда
+Thursday|ˈθɜːrzdeɪ|четверг
+Friday|ˈfraɪdeɪ|пятница
+Saturday|ˈsætərdeɪ|суббота
+Sunday|ˈsʌndeɪ|воскресенье
+January|ˈdʒænjueri|январь
+February|ˈfebrueri|февраль
+March|mɑːrtʃ|март
+April|ˈeɪprəl|апрель
+May|meɪ|май
+June|dʒuːn|июнь
+July|dʒuˈlaɪ|июль
+August|ˈɔːɡəst|август
+September|sepˈtembər|сентябрь
+October|ɑːkˈtoʊbər|октябрь
+November|noʊˈvembər|ноябрь
+December|dɪˈsembər|декабрь
+spring|sprɪŋ|весна
+summer|ˈsʌmər|лето
+autumn|ˈɔːtəm|осень
+winter|ˈwɪntər|зима
+birthday|ˈbɜːrθdeɪ|день рождения
+holiday|ˈhɑːlədeɪ|праздник; отпуск
+date|deɪt|дата; свидание
+o'clock|əˈklɑːk|(ровно) … часов
+quarter|ˈkwɔːrtər|четверть
+past|pæst|после (о времени); прошлое
+future|ˈfjuːtʃər|будущее
+moment|ˈmoʊmənt|момент`],
+ c_people: ["Люди и семья", `man|mæn|мужчина
+woman|ˈwʊmən|женщина
+men|men|мужчины
+women|ˈwɪmɪn|женщины
+child|tʃaɪld|ребёнок
+children|ˈtʃɪldrən|дети
+people|ˈpiːpəl|люди
+person|ˈpɜːrsən|человек
+family|ˈfæməli|семья
+mother|ˈmʌðər|мать
+father|ˈfɑːðər|отец
+parents|ˈperənts|родители
+son|sʌn|сын
+daughter|ˈdɔːtər|дочь
+brother|ˈbrʌðər|брат
+sister|ˈsɪstər|сестра
+husband|ˈhʌzbənd|муж
+wife|waɪf|жена
+baby|ˈbeɪbi|младенец
+boy|bɔɪ|мальчик
+girl|ɡɜːrl|девочка, девушка
+friend|frend|друг
+boyfriend|ˈbɔɪfrend|парень (бойфренд)
+girlfriend|ˈɡɜːrlfrend|девушка (подруга)
+grandmother|ˈɡrænmʌðər|бабушка
+grandfather|ˈɡrænfɑːðər|дедушка
+uncle|ˈʌŋkəl|дядя
+aunt|ænt|тётя
+cousin|ˈkʌzən|двоюродный брат, сестра
+neighbor|ˈneɪbər|сосед
+guest|ɡest|гость
+boss|bɔːs|начальник
+colleague|ˈkɑːliːɡ|коллега
+customer|ˈkʌstəmər|клиент, покупатель
+doctor|ˈdɑːktər|врач
+teacher|ˈtiːtʃər|учитель
+student|ˈstuːdənt|студент
+engineer|ˌendʒɪˈnɪr|инженер
+driver|ˈdraɪvər|водитель
+waiter|ˈweɪtər|официант
+name|neɪm|имя
+age|eɪdʒ|возраст
+life|laɪf|жизнь
+wedding|ˈwedɪŋ|свадьба
+married|ˈmerid|женат, замужем
+single|ˈsɪŋɡəl|холостой; одиночный`],
+ c_body: ["Тело и здоровье", `body|ˈbɑːdi|тело
+head|hed|голова
+face|feɪs|лицо
+eye|aɪ|глаз
+ear|ɪr|ухо
+nose|noʊz|нос
+mouth|maʊθ|рот
+tooth|tuːθ|зуб
+teeth|tiːθ|зубы
+hair|her|волосы
+neck|nek|шея
+hand|hænd|рука (кисть)
+arm|ɑːrm|рука
+finger|ˈfɪŋɡər|палец
+leg|leɡ|нога
+foot|fʊt|ступня
+feet|fiːt|ступни
+back|bæk|спина; назад
+heart|hɑːrt|сердце
+stomach|ˈstʌmək|живот, желудок
+skin|skɪn|кожа
+health|helθ|здоровье
+pain|peɪn|боль
+headache|ˈhedeɪk|головная боль
+fever|ˈfiːvər|жар, температура
+cough|kɔːf|кашель
+medicine|ˈmedɪsən|лекарство
+pill|pɪl|таблетка
+hospital|ˈhɑːspɪtəl|больница
+pharmacy|ˈfɑːrməsi|аптека
+dentist|ˈdentɪst|стоматолог
+appointment|əˈpɔɪntmənt|запись (к врачу), встреча
+blood|blʌd|кровь
+hurt|hɜːrt|болеть; ранить
+ill|ɪl|больной`],
+ c_home: ["Дом, вещи, одежда", `house|haʊs|дом (здание)
+apartment|əˈpɑːrtmənt|квартира
+room|ruːm|комната
+kitchen|ˈkɪtʃən|кухня
+bedroom|ˈbedruːm|спальня
+bathroom|ˈbæθruːm|ванная
+living room|ˈlɪvɪŋ ruːm|гостиная
+toilet|ˈtɔɪlət|туалет
+floor|flɔːr|пол; этаж
+wall|wɔːl|стена
+door|dɔːr|дверь
+window|ˈwɪndoʊ|окно
+roof|ruːf|крыша
+stairs|sterz|лестница
+garden|ˈɡɑːrdən|сад
+table|ˈteɪbəl|стол
+chair|tʃer|стул
+bed|bed|кровать
+sofa|ˈsoʊfə|диван
+shelf|ʃelf|полка
+lamp|læmp|лампа
+key|kiː|ключ
+phone|foʊn|телефон
+television|ˈtelɪvɪʒən|телевизор
+fridge|frɪdʒ|холодильник
+oven|ˈʌvən|духовка
+cup|kʌp|чашка
+glass|ɡlæs|стакан; стекло
+plate|pleɪt|тарелка
+knife|naɪf|нож
+fork|fɔːrk|вилка
+spoon|spuːn|ложка
+bottle|ˈbɑːtəl|бутылка
+box|bɑːks|коробка
+bag|bæɡ|сумка, пакет
+towel|ˈtaʊəl|полотенце
+soap|soʊp|мыло
+clothes|kloʊðz|одежда
+shirt|ʃɜːrt|рубашка
+T-shirt|ˈtiː ʃɜːrt|футболка
+trousers|ˈtraʊzərz|брюки
+jeans|dʒiːnz|джинсы
+dress|dres|платье
+jacket|ˈdʒækɪt|куртка, пиджак
+coat|koʊt|пальто
+shoes|ʃuːz|обувь, туфли
+hat|hæt|шляпа, шапка
+rent|rent|аренда; снимать (жильё)
+address|ˈædres|адрес`],
+ c_food: ["Еда и напитки", `food|fuːd|еда
+water|ˈwɔːtər|вода
+coffee|ˈkɔːfi|кофе
+tea|tiː|чай
+milk|mɪlk|молоко
+juice|dʒuːs|сок
+beer|bɪr|пиво
+wine|waɪn|вино
+bread|bred|хлеб
+butter|ˈbʌtər|сливочное масло
+cheese|tʃiːz|сыр
+egg|eɡ|яйцо
+meat|miːt|мясо
+chicken|ˈtʃɪkən|курица
+beef|biːf|говядина
+pork|pɔːrk|свинина
+fish|fɪʃ|рыба
+rice|raɪs|рис
+pasta|ˈpɑːstə|макароны
+soup|suːp|суп
+salad|ˈsæləd|салат
+potato|pəˈteɪtoʊ|картофель
+tomato|təˈmeɪtoʊ|помидор
+vegetables|ˈvedʒtəbəlz|овощи
+fruit|fruːt|фрукты
+apple|ˈæpəl|яблоко
+orange|ˈɔːrɪndʒ|апельсин; оранжевый
+banana|bəˈnænə|банан
+sugar|ˈʃʊɡər|сахар
+salt|sɔːlt|соль
+pepper|ˈpepər|перец
+oil|ɔɪl|растительное масло; нефть
+cake|keɪk|торт, пирожное
+chocolate|ˈtʃɔːklət|шоколад
+ice cream|ˈaɪs kriːm|мороженое
+sandwich|ˈsænwɪtʃ|бутерброд
+breakfast|ˈbrekfəst|завтрак
+lunch|lʌntʃ|обед
+dinner|ˈdɪnər|ужин
+meal|miːl|еда, приём пищи
+menu|ˈmenjuː|меню
+bill|bɪl|счёт
+tip|tɪp|чаевые; совет
+restaurant|ˈrestərɑːnt|ресторан
+cafe|kæˈfeɪ|кафе
+bar|bɑːr|бар
+dish|dɪʃ|блюдо
+dessert|dɪˈzɜːrt|десерт
+snack|snæk|перекус
+taste|teɪst|вкус; пробовать
+spicy|ˈspaɪsi|острый (о еде)
+vegetarian|ˌvedʒəˈteriən|вегетарианец`],
+ c_city: ["Город и транспорт", `city|ˈsɪti|город
+town|taʊn|городок
+village|ˈvɪlɪdʒ|деревня
+country|ˈkʌntri|страна
+street|striːt|улица
+road|roʊd|дорога
+square|skwer|площадь
+building|ˈbɪldɪŋ|здание
+shop|ʃɑːp|магазин
+market|ˈmɑːrkɪt|рынок
+bank|bæŋk|банк
+post office|ˈpoʊst ɔːfɪs|почта
+church|tʃɜːrtʃ|церковь
+museum|mjuˈziːəm|музей
+park|pɑːrk|парк
+bridge|brɪdʒ|мост
+river|ˈrɪvər|река
+center|ˈsentər|центр
+corner|ˈkɔːrnər|угол
+map|mæp|карта
+car|kɑːr|машина
+bus|bʌs|автобус
+train|treɪn|поезд
+taxi|ˈtæksi|такси
+metro|ˈmetroʊ|метро
+bike|baɪk|велосипед
+plane|pleɪn|самолёт
+ship|ʃɪp|корабль
+boat|boʊt|лодка
+station|ˈsteɪʃən|станция, вокзал
+airport|ˈerpɔːrt|аэропорт
+ticket|ˈtɪkɪt|билет
+traffic|ˈtræfɪk|движение; пробки
+traffic lights|ˈtræfɪk laɪts|светофор
+parking|ˈpɑːrkɪŋ|парковка
+police|pəˈliːs|полиция
+straight|streɪt|прямо
+north|nɔːrθ|север
+south|saʊθ|юг
+east|iːst|восток
+west|west|запад
+way|weɪ|путь; способ
+place|pleɪs|место
+area|ˈeriə|район, область`],
+ c_work: ["Работа и учёба", `job|dʒɑːb|работа (должность)
+office|ˈɔːfɪs|офис
+company|ˈkʌmpəni|компания
+business|ˈbɪznəs|бизнес, дело
+meeting|ˈmiːtɪŋ|встреча, совещание
+project|ˈprɑːdʒekt|проект
+team|tiːm|команда
+manager|ˈmænɪdʒər|менеджер
+salary|ˈsæləri|зарплата
+contract|ˈkɑːntrækt|договор
+email|ˈiːmeɪl|электронное письмо
+letter|ˈletər|письмо; буква
+report|rɪˈpɔːrt|отчёт
+document|ˈdɑːkjəmənt|документ
+idea|aɪˈdiːə|идея
+problem|ˈprɑːbləm|проблема
+question|ˈkwestʃən|вопрос
+task|tæsk|задача
+deadline|ˈdedlaɪn|срок
+factory|ˈfæktəri|завод, фабрика
+product|ˈprɑːdʌkt|продукт, изделие
+client|ˈklaɪənt|клиент
+partner|ˈpɑːrtnər|партнёр
+school|skuːl|школа
+university|ˌjuːnɪˈvɜːrsəti|университет
+lesson|ˈlesən|урок
+class|klæs|класс, занятие
+exam|ɪɡˈzæm|экзамен
+homework|ˈhoʊmwɜːrk|домашнее задание
+page|peɪdʒ|страница
+word|wɜːrd|слово
+language|ˈlæŋɡwɪdʒ|язык
+English|ˈɪŋɡlɪʃ|английский
+Russian|ˈrʌʃən|русский
+example|ɪɡˈzæmpəl|пример
+mistake|mɪˈsteɪk|ошибка
+experience|ɪkˈspɪriəns|опыт
+skill|skɪl|навык
+result|rɪˈzʌlt|результат
+success|səkˈses|успех`],
+ c_shop: ["Покупки, деньги, цвета", `money|ˈmʌni|деньги
+cash|kæʃ|наличные
+card|kɑːrd|карта (банковская)
+price|praɪs|цена
+cost|kɔːst|стоимость; стоить
+discount|ˈdɪskaʊnt|скидка
+sale|seɪl|распродажа; продажа
+receipt|rɪˈsiːt|чек
+size|saɪz|размер
+color|ˈkʌlər|цвет
+red|red|красный
+blue|bluː|синий
+green|ɡriːn|зелёный
+yellow|ˈjeloʊ|жёлтый
+black|blæk|чёрный
+white|waɪt|белый
+brown|braʊn|коричневый
+gray|ɡreɪ|серый
+pink|pɪŋk|розовый
+dollar|ˈdɑːlər|доллар
+euro|ˈjʊroʊ|евро
+ruble|ˈruːbəl|рубль
+pocket|ˈpɑːkɪt|карман
+wallet|ˈwɑːlɪt|кошелёк
+supermarket|ˈsuːpərmɑːrkɪt|супермаркет
+gift|ɡɪft|подарок
+present|ˈprezənt|подарок; настоящее`],
+ c_nature: ["Природа и погода", `weather|ˈweðər|погода
+sun|sʌn|солнце
+sunny|ˈsʌni|солнечный
+rainy|ˈreɪni|дождливый
+snow|snoʊ|снег
+wind|wɪnd|ветер
+windy|ˈwɪndi|ветреный
+cloud|klaʊd|облако
+cloudy|ˈklaʊdi|облачный
+sky|skaɪ|небо
+temperature|ˈtemprətʃər|температура
+degree|dɪˈɡriː|градус
+air|er|воздух
+sea|siː|море
+lake|leɪk|озеро
+mountain|ˈmaʊntən|гора
+forest|ˈfɔːrɪst|лес
+tree|triː|дерево
+flower|ˈflaʊər|цветок
+grass|ɡræs|трава
+animal|ˈænɪməl|животное
+dog|dɔːɡ|собака
+cat|kæt|кошка
+bird|bɜːrd|птица
+horse|hɔːrs|лошадь
+world|wɜːrld|мир (планета)
+earth|ɜːrθ|земля
+fire|ˈfaɪər|огонь; пожар
+ice|aɪs|лёд
+storm|stɔːrm|шторм, гроза`],
+ c_travel: ["Путешествия", `trip|trɪp|поездка
+journey|ˈdʒɜːrni|путешествие
+vacation|veɪˈkeɪʃən|отпуск
+hotel|hoʊˈtel|гостиница
+reservation|ˌrezərˈveɪʃən|бронь
+passport|ˈpæspɔːrt|паспорт
+visa|ˈviːzə|виза
+luggage|ˈlʌɡɪdʒ|багаж
+suitcase|ˈsuːtkeɪs|чемодан
+flight|flaɪt|рейс, полёт
+gate|ɡeɪt|выход (на посадку); ворота
+seat|siːt|место (сиденье)
+arrival|əˈraɪvəl|прибытие
+departure|dɪˈpɑːrtʃər|отправление
+delay|dɪˈleɪ|задержка
+border|ˈbɔːrdər|граница
+tourist|ˈtʊrɪst|турист
+guide|ɡaɪd|гид
+beach|biːtʃ|пляж
+view|vjuː|вид
+souvenir|ˌsuːvəˈnɪr|сувенир
+photo|ˈfoʊtoʊ|фото
+camera|ˈkæmərə|фотоаппарат, камера
+check-in|ˈtʃek ɪn|регистрация; заселение
+check-out|ˈtʃek aʊt|выезд (из отеля)
+reception|rɪˈsepʃən|стойка регистрации
+elevator|ˈelɪveɪtər|лифт`],
+ c_feel: ["Чувства, досуг, общение", `feeling|ˈfiːlɪŋ|чувство
+fun|fʌn|веселье
+news|nuːz|новости
+story|ˈstɔːri|история, рассказ
+joke|dʒoʊk|шутка
+party|ˈpɑːrti|вечеринка
+music|ˈmjuːzɪk|музыка
+song|sɔːŋ|песня
+movie|ˈmuːvi|фильм
+game|ɡeɪm|игра
+sport|spɔːrt|спорт
+hobby|ˈhɑːbi|хобби
+opinion|əˈpɪnjən|мнение
+reason|ˈriːzən|причина
+chance|tʃæns|шанс
+luck|lʌk|удача
+fear|fɪr|страх
+surprise|sərˈpraɪz|сюрприз, удивление
+excited|ɪkˈsaɪtɪd|взволнованный (радостно)
+bored|bɔːrd|скучающий
+worried|ˈwɜːrid|обеспокоенный
+nervous|ˈnɜːrvəs|нервный
+proud|praʊd|гордый
+glad|ɡlæd|рад
+upset|ʌpˈset|расстроенный
+calm|kɑːm|спокойный
+congratulations|kənˌɡrætʃəˈleɪʃənz|поздравляю
+welcome|ˈwelkəm|добро пожаловать; пожалуйста (в ответ)
+excuse me|ɪkˈskjuːz miː|извините (обращение)
+pardon|ˈpɑːrdən|простите? (переспросить)
+conversation|ˌkɑːnvərˈseɪʃən|разговор
+message|ˈmesɪdʒ|сообщение`],
+ c_misc: ["Полезные существительные", `thing|θɪŋ|вещь
+part|pɑːrt|часть
+side|saɪd|сторона
+end|end|конец
+group|ɡruːp|группа
+number|ˈnʌmbər|число, номер
+point|pɔɪnt|точка; смысл
+fact|fækt|факт
+case|keɪs|случай
+information|ˌɪnfərˈmeɪʃən|информация
+power|ˈpaʊər|сила, мощность
+line|laɪn|линия; очередь
+form|fɔːrm|форма, бланк
+level|ˈlevəl|уровень
+list|lɪst|список
+note|noʊt|заметка
+paper|ˈpeɪpər|бумага
+pen|pen|ручка
+picture|ˈpɪktʃər|картинка
+screen|skriːn|экран
+computer|kəmˈpjuːtər|компьютер
+internet|ˈɪntərnet|интернет
+website|ˈwebsaɪt|сайт
+password|ˈpæswɜːrd|пароль
+app|æp|приложение
+battery|ˈbætəri|батарея, аккумулятор
+charger|ˈtʃɑːrdʒər|зарядка
+noise|nɔɪz|шум
+sound|saʊnd|звук
+voice|vɔɪs|голос
+smell|smel|запах
+shape|ʃeɪp|форма (очертание)
+weight|weɪt|вес
+height|haɪt|рост, высота
+length|leŋθ|длина
+distance|ˈdɪstəns|расстояние
+kilometer|kɪˈlɑːmətər|километр
+meter|ˈmiːtər|метр
+kilogram|ˈkɪləɡræm|килограмм
+liter|ˈliːtər|литр
+percent|pərˈsent|процент
+war|wɔːr|война
+peace|piːs|мир (не война)
+law|lɔː|закон
+government|ˈɡʌvərnmənt|правительство
+history|ˈhɪstəri|история (наука)
+science|ˈsaɪəns|наука
+art|ɑːrt|искусство
+culture|ˈkʌltʃər|культура
+energy|ˈenərdʒi|энергия
+nature|ˈneɪtʃər|природа
+rule|ruːl|правило
+choice|tʃɔɪs|выбор
+decision|dɪˈsɪʒən|решение
+service|ˈsɜːrvɪs|обслуживание, услуга
+quality|ˈkwɑːləti|качество
+safety|ˈseɪfti|безопасность
+danger|ˈdeɪndʒər|опасность
+accident|ˈæksɪdənt|авария; случайность
+emergency|ɪˈmɜːrdʒənsi|чрезвычайная ситуация`]
+};
+// Базовые слова в том же формате, что технические: [слово, IPA, примерно-по-русски, перевод, тема, пример]
+const CW = Object.entries(CORE_TOPICS).flatMap(([k, [, text]]) => text.trim().split("\n").map(l => { const [en, ipa, ru] = l.split("|"); return [en, ipa, "", ru, k, ""]; }));
+const isCore = w => w[4].startsWith("c_");
+const wkey = w => (isCore(w) ? "c:" : "") + w[0];
+const topicName = k => (CORE_TOPICS[k] || [])[0] || TOPICS[k];
+
 const wordByEn = Object.fromEntries(W.map(w => [w[0], w]));
 function card(key) { return Store.data.cards[key]; }
-// Колоды для тренировки: разговорные фразы и технические слова
+// Колоды для тренировки: разговорные фразы, базовые слова и технические слова
 function deckItems(deck) {
+  if (deck === "core") return CW.map(w => ({ key: wkey(w), front: w[0], ipa: w[1], back: w[3], approx: "", ex: "", topic: topicName(w[4]) }));
   return deck === "words"
     ? W.map(w => ({ key: w[0], front: w[0], ipa: w[1], back: w[3], approx: w[2], ex: w[5], topic: TOPICS[w[4]] }))
     : PHRASES.map(p => ({ key: "p:" + p[0], front: p[0], ipa: "", back: p[1], approx: "", ex: "", topic: PTOPICS[p[2]] }))
@@ -622,8 +1591,9 @@ function learnedCount(deck = "words") { return deckItems(deck).filter(i => (card
 function dueList(deck = "words") { const now = Date.now(); return deckItems(deck).filter(i => { const c = card(i.key); return c && c.d <= now; }); }
 function updateChips() {
   $("#chip-phrases b").textContent = learnedCount("phrases") + " из " + deckItems("phrases").length;
+  $("#chip-core b").textContent = learnedCount("core") + " из " + CW.length;
   $("#chip-learned b").textContent = learnedCount("words") + " из " + W.length;
-  $("#chip-due b").textContent = dueList("phrases").length + dueList("words").length;
+  $("#chip-due b").textContent = dueList("phrases").length + dueList("core").length + dueList("words").length;
   $("#chip-sync").textContent = ({ cloud: "Прогресс: в облаке", server: "Прогресс: на сервере", offline: "Сервер недоступен, сохраняю в браузере" }[Store.mode] || "Прогресс: этот браузер");
 }
 
@@ -657,7 +1627,7 @@ function renderTrain() {
   const boxes = [0, 0, 0, 0, 0, 0];
   deckItems(trainDeck()).forEach(i => { const c = card(i.key); if (c) boxes[Math.min(5, c.b)]++; });
   const intro = `<p class="lead">Карточка показывает английскую фразу или слово. Вспомните перевод, послушайте, повторите вслух и откройте ответ. То, что вы знаете, возвращается всё реже: через 1, 3, 7, 16 и 35 дней.</p>
-    <div class="filters" role="group" aria-label="Колода"><button data-deck="phrases" aria-pressed="${trainDeck() === "phrases"}">Разговорные фразы</button><button data-deck="words" aria-pressed="${trainDeck() === "words"}">Технические слова</button></div>
+    <div class="filters" role="group" aria-label="Колода"><button data-deck="phrases" aria-pressed="${trainDeck() === "phrases"}">Разговорные фразы</button><button data-deck="core" aria-pressed="${trainDeck() === "core"}">Базовые слова</button><button data-deck="words" aria-pressed="${trainDeck() === "words"}">Технические слова</button></div>
     <div class="settings"><label for="set-new">Новых в день</label>
       <select id="set-new">${[5, 8, 12, 20, 30].map(n => `<option ${n == Store.data.settings.newPerDay ? "selected" : ""}>${n}</option>`).join("")}</select>
       <label for="set-rate">Скорость голоса</label>
@@ -718,35 +1688,39 @@ function renderTrain() {
 }
 
 /* ======================= СЛОВАРЬ ======================= */
-let wordTopic = "all", wordQuery = "";
+let wordTopic = "all", wordQuery = "", wordSrc = "core";
+function srcList(src) { return src === "core" ? CW : W; }
+function srcTopics(src) { return src === "core" ? Object.fromEntries(Object.entries(CORE_TOPICS).map(([k, v]) => [k, v[0]])) : TOPICS; }
 function renderWords() {
   const p = $("#p-words");
-  p.innerHTML = `<p class="lead">${W.length} слов, которые встречаются в командах, ошибках и разговорах об ИИ. Нажмите на динамик, чтобы послушать, на микрофон — чтобы проверить себя.</p>
+  p.innerHTML = `<div class="filters" role="group" aria-label="Словарь"><button data-src="core" aria-pressed="${wordSrc === "core"}">Базовые слова (${CW.length})</button><button data-src="tech" aria-pressed="${wordSrc === "tech"}">Технические (${W.length})</button></div>
+    <p class="lead">${wordSrc === "core" ? "Самые частые слова для обычного разговора, по темам. С ними и фразами из урока вы сможете объясниться в большинстве бытовых ситуаций." : "Слова, которые встречаются в командах, ошибках и разговорах об ИИ."} Нажмите на динамик, чтобы послушать, на микрофон — чтобы проверить себя.</p>
     <div class="filters" role="group" aria-label="Темы">
       <button data-t="all" aria-pressed="${wordTopic === "all"}">Все</button>
-      ${Object.entries(TOPICS).map(([k, v]) => `<button data-t="${k}" aria-pressed="${wordTopic === k}">${v}</button>`).join("")}
+      ${Object.entries(srcTopics(wordSrc)).map(([k, v]) => `<button data-t="${k}" aria-pressed="${wordTopic === k}">${v}</button>`).join("")}
     </div>
     <div class="row" style="margin-bottom:14px"><input type="search" id="w-q" placeholder="Поиск: слово или перевод" value="${esc(wordQuery)}" style="flex:1"></div>
     <div class="grid" id="w-grid"></div>`;
-  p.querySelectorAll(".filters button").forEach(b => b.onclick = () => { wordTopic = b.dataset.t; renderWords(); });
+  p.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { wordTopic = b.dataset.t; renderWords(); });
+  p.querySelectorAll("[data-src]").forEach(b => b.onclick = () => { wordSrc = b.dataset.src; wordTopic = "all"; renderWords(); });
   $("#w-q").oninput = e => { wordQuery = e.target.value; fillWords(); };
   fillWords();
 }
 function fillWords() {
   const q = wordQuery.trim().toLowerCase();
-  const list = W.filter(w => (wordTopic === "all" || w[4] === wordTopic) && (!q || w[0].includes(q) || w[3].toLowerCase().includes(q)));
+  const list = srcList(wordSrc).filter(w => (wordTopic === "all" || w[4] === wordTopic) && (!q || w[0].toLowerCase().includes(q) || w[3].toLowerCase().includes(q)));
   const g = $("#w-grid");
   g.innerHTML = list.map((w, i) => {
-    const c = card(w[0]);
+    const c = card(wkey(w));
     const lvl = !c ? "новое" : c.b >= 3 ? "выучено" : "учу";
     return `<div class="card">
       <div class="word"><span class="en">${esc(w[0])}</span><span class="chip">${lvl}</span></div>
       <div class="ipa">/${esc(w[1])}/ <span class="ru-approx">${esc(w[2])}</span></div>
       <div class="tr">${esc(w[3])}</div>
-      <div class="ex">${esc(w[5])}</div>
+      ${w[5] ? `<div class="ex">${esc(w[5])}</div>` : ""}
       <div class="row" style="margin-top:8px">
         <button class="btn small" data-say="${esc(w[0])}" aria-label="Послушать ${esc(w[0])}">${SPK} слово</button>
-        <button class="btn small" data-say="${esc(w[5].split(" — ")[0])}" aria-label="Послушать пример">${SPK} пример</button>
+        ${w[5] ? `<button class="btn small" data-say="${esc(w[5].split(" — ")[0])}" aria-label="Послушать пример">${SPK} пример</button>` : ""}
         <button class="btn small" data-mic="${i}" aria-label="Проверить произношение">${MIC}</button>
       </div>
       <div class="mic-heard" id="wh-${i}" aria-live="polite"></div>
@@ -796,10 +1770,12 @@ function renderTests() {
       <h2 class="section-title">Вид теста</h2>
       <div class="filters" role="group" aria-label="Вид теста">${Object.entries(MODES).map(([k, v]) => `<button data-m="${k}" aria-pressed="${testMode === k}">${v}</button>`).join("")}</div>
       <h2 class="section-title">Тема</h2>
-      <div class="filters" role="group" aria-label="Тема теста"><button data-t="all" aria-pressed="${testTopic === "all"}">Все слова</button><button data-t="learned" aria-pressed="${testTopic === "learned"}">Только то, что учу</button>${Object.entries(TOPICS).map(([k, v]) => `<button data-t="${k}" aria-pressed="${testTopic === k}">${v}</button>`).join("")}</div>
+      <div class="filters" role="group" aria-label="Словарь теста"><button data-src="core" aria-pressed="${wordSrc === "core"}">Базовые слова</button><button data-src="tech" aria-pressed="${wordSrc === "tech"}">Технические</button></div>
+      <div class="filters" role="group" aria-label="Тема теста"><button data-t="all" aria-pressed="${testTopic === "all"}">Все слова</button><button data-t="learned" aria-pressed="${testTopic === "learned"}">Только то, что учу</button>${Object.entries(srcTopics(wordSrc)).map(([k, v]) => `<button data-t="${k}" aria-pressed="${testTopic === k}">${v}</button>`).join("")}</div>
       <button class="btn primary" id="t-start">Начать тест</button>`;
     p.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { testMode = b.dataset.m; renderTests(); });
     p.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { testTopic = b.dataset.t; renderTests(); });
+    p.querySelectorAll("[data-src]").forEach(b => b.onclick = () => { wordSrc = b.dataset.src; testTopic = "all"; renderTests(); renderWords(); });
     $("#t-start").onclick = startTest;
     return;
   }
@@ -832,7 +1808,7 @@ function renderTests() {
     v.textContent = ok ? "Верно" : "Правильно: " + q.answerText;
     if (q.word) {
       speak(q.word[0]);
-      if (!ok) { test.wrong.push([q.word[0], q.word[3]]); const c = card(q.word[0]) || { b: 1, ok: 0, bad: 0 }; c.b = 1; c.bad = (c.bad || 0) + 1; c.d = Date.now(); Store.data.cards[q.word[0]] = c; }
+      if (!ok) { test.wrong.push([q.word[0], q.word[3]]); const k = wkey(q.word); const c = card(k) || { b: 1, ok: 0, bad: 0 }; c.b = 1; c.bad = (c.bad || 0) + 1; c.d = Date.now(); Store.data.cards[k] = c; }
     } else if (!ok) test.wrong.push([q.answerText.slice(0, 40), "ошибка"]);
     if (ok) test.right++;
     $("#q-next").hidden = false; $("#q-next").focus();
@@ -853,8 +1829,10 @@ function renderTests() {
   }
 }
 function pool() {
-  if (testTopic === "learned") { const l = W.filter(w => card(w[0])); return l.length >= 4 ? l : W; }
-  return testTopic === "all" ? W : W.filter(w => w[4] === testTopic);
+  const all = srcList(wordSrc);
+  if (testTopic === "learned") { const l = all.filter(w => card(wkey(w))); return l.length >= 4 ? l : all; }
+  const t = all.filter(w => w[4] === testTopic);
+  return testTopic === "all" || t.length < 4 ? all : t;
 }
 function startTest() {
   const mode = testMode;
@@ -1373,6 +2351,29 @@ const PLAN = [
  ["23–31 декабря", [], "talk", [0, 1, 2, 3, 4, 5, 6, 7], "Повторение и свободный разговор: рассказ о себе на 2 минуты и беседа со мной в чате."]
 ];
 const PLAN_START = new Date(2026, 9, 21);
+// Видео: проверенные каналы и поиск по теме недели (поиск не устаревает)
+const YT = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+const EN_CHANNELS = [
+ ["BBC Learning English", "https://www.youtube.com/@bbclearningenglish", "«6 Minute English» — короткие выпуски с медленной речью и разбором слов"],
+ ["VOA Learning English", "https://www.youtube.com/@VOALearningEnglish", "новости медленным понятным английским"],
+ ["Easy English", "https://www.youtube.com/@EasyEnglishVideos", "живые уличные интервью с субтитрами"],
+ ["Rachel's English", "https://www.youtube.com/@rachelsenglish", "американское произношение: как ставить рот и язык"],
+ ["English with Lucy", "https://www.youtube.com/@EnglishwithLucy", "грамматика и словарь простыми словами"],
+ ["Speak English With Vanessa", "https://www.youtube.com/@SpeakEnglishWithVanessa", "разговорный английский, фразы из жизни"],
+ ["Learn English With TV Series", "https://www.youtube.com/@LearnEnglishWithTVSeries", "разбор сцен из сериалов и фильмов"]
+];
+const PLAN_VIDEOS = [
+ [["Порядок слов в английском предложении", "English sentence word order for beginners"], ["Глагол to be", "verb to be am is are English with Lucy"], ["Звук th", "how to pronounce th Rachel's English"]],
+ [["Present Simple", "present simple tense explained English with Lucy"], ["Как рассказать о себе", "how to introduce yourself in English beginner"]],
+ [["Как задавать вопросы", "how to ask questions in English do does grammar"], ["Разговор о работе", "talking about your job in English"]],
+ [["Present Continuous и Present Simple", "present simple vs present continuous"], ["Артикли a, an, the", "articles a an the explained"]],
+ [["Past Simple и неправильные глаголы", "past simple irregular verbs English lesson"], ["Как рассказать, как прошёл день", "talk about your day in English past simple"]],
+ [["Будущее: will и going to", "will vs going to English grammar"], ["В кафе и ресторане", "ordering food in a restaurant English conversation"]],
+ [["Модальные глаголы", "modal verbs can could should must English"], ["В магазине", "shopping English conversation phrases"]],
+ [["Present Perfect", "present perfect tense explained English with Lucy"], ["В аэропорту и отеле", "English at the airport and hotel conversation"]],
+ [["Все времена на одной схеме", "English tenses overview timeline"], ["Слова-связки", "linking words because so but English speaking"]],
+ [["Практика разговора", "English conversation practice for beginners"], ["6 Minute English", "BBC 6 Minute English"]]
+];
 function currentWeek() { return Math.max(0, Math.min(PLAN.length - 1, Math.floor((Date.now() - PLAN_START) / (7 * DAY)))); }
 function renderPlan() {
   const p = $("#p-plan"), cw = currentWeek(), gp = gProg(), dp = Store.data.dialogs || {};
@@ -1383,15 +2384,19 @@ function renderPlan() {
       <li><b>15 мин — урок грамматики.</b> Читайте объяснение, слушайте примеры, делайте упражнения.</li>
       <li><b>15 мин — тренировка фраз.</b> Карточки, каждую фразу вслух.</li>
       <li><b>10 мин — диалог по ролям.</b> Отвечайте голосом.</li>
-      <li><b>10 мин — слушать живую речь.</b> Видео или сериал с английскими субтитрами.</li>
-      <li><b>10 мин — говорить.</b> Рассказывайте вслух, что делали и что планируете. Или пишите мне в чат по-английски, я поправлю ошибки.</li></ol></div>
+      <li><b>10 мин — слушать живую речь.</b> Видео недели (ниже) или один из каналов, с английскими субтитрами.</li>
+      <li><b>10 мин — говорить.</b> Рассказывайте вслух, что делали и что планируете. Или пишите мне в чат по-английски, я поправлю ошибки.</li></ol>
+      <p class="note">Плюс 10–15 минут в любое время — карточки базовых слов (колода «Базовые слова» в «Тренировке»): к Новому году цель — около 1000 слов.</p></div>
+    <div class="card teach"><h3>Где слушать английский каждый день</h3>${EN_CHANNELS.map(c => `<div class="ex-line"><div><a class="vlink" href="${c[1]}" target="_blank" rel="noopener">${esc(c[0])}</a><div class="note">${esc(c[2])}</div></div></div>`).join("")}
+      <p class="note">Как смотреть: первый раз с английскими субтитрами, второй — без них. Ставьте на паузу и повторяйте фразы вслух.</p></div>
     <h2 class="section-title">Неделя за неделей</h2>
     <div class="grid" style="grid-template-columns:1fr">${PLAN.map(([dates, gs, pt, ds, task], i) => `<div class="card week ${i === cw ? "now" : ""}">
       <div class="word"><b>Неделя ${i + 1} · ${dates}</b>${i === cw ? '<span class="chip now-chip">сейчас</span>' : ""}</div>
       <div class="row" style="margin-top:8px">${gs.map(g => `<button class="btn small" data-pg="${g}">${gp[g] ? "✓ " : ""}Урок ${g + 1}: ${esc(GRAMMAR[g].title)}</button>`).join("")}
         <button class="btn small" data-pp="${pt}">Фразы: ${esc(PTOPICS[pt])}</button>
         ${ds.slice(0, 3).map(d => `<button class="btn small" data-pd="${d}">${dp[d] ? "✓ " : ""}Диалог: ${esc(DIALOGS[d][0])}</button>`).join("")}</div>
-      <p class="note" style="margin:8px 0 0">Задание недели: ${esc(task)}</p></div>`).join("")}</div>`;
+      <p class="note" style="margin:8px 0 0">Задание недели: ${esc(task)}</p>
+      <div class="vids"><span class="note">Видео недели:</span> ${(PLAN_VIDEOS[i] || []).map(v => `<a class="vlink" href="${YT(v[1])}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</div></div>`).join("")}</div>`;
   p.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => { gOpen = +b.dataset.pg; gEx = null; renderGrammar(); openTab("tab-grammar"); });
   p.querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { phraseTopic = b.dataset.pp; renderPhrases(); openTab("tab-phrases"); });
   p.querySelectorAll("[data-pd]").forEach(b => b.onclick = () => { dOpen = +b.dataset.pd; role = null; renderDialogs(); openTab("tab-dialogs"); });

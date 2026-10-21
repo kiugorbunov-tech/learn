@@ -1,6 +1,6 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261021-1605";
+const CACHE = "learn-20261021-1742";
 const FILES = [
   "./", "index.html", "english.html", "course.html",
   "manifest-english.json", "manifest-course.json",
