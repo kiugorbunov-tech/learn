@@ -166,10 +166,10 @@ table.hist td, table.hist th { padding: 7px 8px; border-bottom: 1px solid var(--
       <button class="btn" id="speech-stop">Остановить</button>
     </div>
     <p id="speech-status" role="status" aria-live="polite">Нажмите «Проверить звук»: должна прозвучать английская фраза.</p>
-    <p class="note">Учебные слова, примеры и диалоги воспроизводятся как аудиозаписи — беззвучный режим iPhone можно оставить включённым.
+    <p class="note">Во всех разделах звучит один естественный женский голос. Учебные слова, примеры и диалоги воспроизводятся как готовые аудиозаписи — беззвучный режим iPhone можно оставить включённым.
     Увеличивайте громкость во время воспроизведения. Для первой загрузки записи нужен интернет.
-    Новые фразы переводчика тоже превращаются в аудиозаписи прямо на устройстве. Для них используется естественный женский голос. При первом использовании загрузится около 90 МБ; затем голос работает без интернета. Текст никуда не отправляется.</p>
-    <p class="note">Версия озвучивания: 29.10.2026 · естественный голос · уроки A1–A2.</p>
+    Новые фразы переводчика тоже превращаются в аудиозаписи прямо на устройстве. Для них используется тот же голос. При первом использовании загрузится около 90 МБ; затем голос работает без интернета. Текст никуда не отправляется.</p>
+    <p class="note">Версия озвучивания: 29.10.2026 · единый голос во всех разделах.</p>
   </details>
 
   <nav class="tabs" role="tablist" aria-label="Разделы">
@@ -804,7 +804,7 @@ startSpeech = function(lines, rate, done) {
   const playNext = () => {
     if (mediaJob !== job) return;
     const text = job.lines[job.index];
-    if (recorded(text)) { playSource('audio/english/'+ENGLISH_AUDIO[text]+'.mp3'); return; }
+    if (recorded(text)) { playSource('audio/english/neural-v1/'+ENGLISH_AUDIO[text]+'.mp3'); return; }
     const ready = EnglishTTS.peek(text);
     if (ready) { playBlob(ready); return; }
     speechStatus('Готовлю озвучивание на устройстве…');
