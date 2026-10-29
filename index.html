@@ -23,17 +23,28 @@ a.app span { color: var(--muted); font-size: 14px }
 ol { margin: 0; padding-left: 20px; color: var(--muted) } li { margin-bottom: 4px }
 .how { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px }
 .how b { display: block; margin-bottom: 6px }
-</style>
+button{font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);cursor:pointer}.row{display:flex;flex-wrap:wrap;gap:8px}h3{margin:0 0 12px}[data-learning-transfer] p{margin:12px 0}</style>
+<style>
+[data-learning-transfer] .row,.row{flex-wrap:wrap;gap:8px}
+[data-learning-transfer] button,button[data-book-chapter],button[data-recall-grade]{min-height:44px;white-space:normal}
+[data-learning-transfer] input[type=checkbox]{width:20px;height:20px;vertical-align:middle}
+.read{overflow-wrap:break-word} .read section{max-width:75ch}
+#p-projects textarea{box-sizing:border-box;max-width:100%}
+@media(max-width:600px){[data-learning-transfer] .row{display:flex;align-items:stretch}[data-learning-transfer] .btn{flex:1 1 170px}.read details a{display:block}}
+button{font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);cursor:pointer}.row{display:flex;flex-wrap:wrap;gap:8px}h3{margin:0 0 12px}[data-learning-transfer] p{margin:12px 0}</style>
 </head>
 <body>
 <div class="wrap">
-  <div><h1>Обучение</h1><p>Три приложения. Работают без интернета после первого открытия, прогресс хранится в телефоне.</p></div>
-  <a class="app" href="english.html"><img src="icon-english-180.png" alt=""><div><b>Английский</b><span>Разговорный к Новому году: уроки-объяснения, фразы, диалоги, переводчик. Плюс технический словарь</span></div></a>
-  <a class="app" href="course.html"><img src="icon-course-180.png" alt=""><div><b>Курс: техника и ИИ</b><span>Уроки, тесты и тренажёр ввода команд</span></div></a>
-  <a class="app" href="books.html"><img src="icon-books-180.png" alt=""><div><b>Книга дня</b><span>Каждый день разбор книги для управленца, предпринимателя, политика</span></div></a>
+  <div><h1>Обучение</h1><p>Три приложения для самостоятельной учёбы. Прогресс хранится на устройстве. Уроки доступны после загрузки; для новых аудио и первого запуска Python нужен интернет.</p></div>
+  <a class="app" href="english.html"><img src="icon-english-180.png" alt=""><div><b>Английский</b><span>А1–А2: подробные уроки, ежедневное повторение, разговорная практика и переводчик</span></div></a>
+  <a class="app" href="course.html"><img src="icon-course-180.png" alt=""><div><b>Курс: техника и ИИ</b><span>16 уроков, проверка кода на разных данных и три практических проекта</span></div></a>
+  <a class="app" href="books.html"><img src="icon-books-180.png" alt=""><div><b>Книга дня</b><span>30 книг, пять подробных аудиоразборов, задачи и дневник применения</span></div></a>
+  <div id="learning-transfer" class="how"></div>
   <div class="how"><b>Как поставить на iPhone</b>
     <ol><li>Откройте нужное приложение в Safari.</li><li>Нажмите «Поделиться» (квадрат со стрелкой вверх).</li><li>Выберите «На экран Домой» и нажмите «Добавить».</li></ol>
     <p style="margin-top:6px">Повторите для остальных приложений: у каждого своя иконка.</p></div>
 </div>
+
+<script src="learning-transfer.js?v=study2"></script>
 </body>
 </html>

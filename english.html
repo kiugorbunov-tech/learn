@@ -9,6 +9,14 @@
 <meta name="theme-color" content="#0f6e63">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+<style>
+[data-learning-transfer] .row,.row{flex-wrap:wrap;gap:8px}
+[data-learning-transfer] button,button[data-book-chapter],button[data-recall-grade]{min-height:44px;white-space:normal}
+[data-learning-transfer] input[type=checkbox]{width:20px;height:20px;vertical-align:middle}
+.read{overflow-wrap:break-word} .read section{max-width:75ch}
+#p-projects textarea{box-sizing:border-box;max-width:100%}
+@media(max-width:600px){[data-learning-transfer] .row{display:flex;align-items:stretch}[data-learning-transfer] .btn{flex:1 1 170px}.read details a{display:block}}
+</style>
 </head><body><title>Английский</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2989,4 +2997,7 @@ try {
 } catch (e) {}
 Store.initServer().then(ok => { if (!ok) Store.initCloud(); });
 </script>
+
+<script src="daily-study.js?v=study2"></script>
+<script src="learning-transfer.js?v=study2"></script>
 </body></html>

@@ -9,6 +9,14 @@
 <meta name="theme-color" content="#3446d6">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+<style>
+[data-learning-transfer] .row,.row{flex-wrap:wrap;gap:8px}
+[data-learning-transfer] button,button[data-book-chapter],button[data-recall-grade]{min-height:44px;white-space:normal}
+[data-learning-transfer] input[type=checkbox]{width:20px;height:20px;vertical-align:middle}
+.read{overflow-wrap:break-word} .read section{max-width:75ch}
+#p-projects textarea{box-sizing:border-box;max-width:100%}
+@media(max-width:600px){[data-learning-transfer] .row{display:flex;align-items:stretch}[data-learning-transfer] .btn{flex:1 1 170px}.read details a{display:block}}
+</style>
 </head><body><title>Курс: техника и ИИ</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,12 +131,14 @@ pre.code.out { background: var(--surface2); color: var(--fg); white-space: pre-w
     <button role="tab" id="tab-course" aria-controls="p-course" aria-selected="true">Уроки</button>
     <button role="tab" id="tab-lesson" aria-controls="p-lesson" aria-selected="false">Текущий урок</button>
     <button role="tab" id="tab-code" aria-controls="p-code" aria-selected="false">Код</button>
+    <button role="tab" id="tab-projects" aria-controls="p-projects" aria-selected="false">Проекты</button>
     <button role="tab" id="tab-ref" aria-controls="p-ref" aria-selected="false">Справочник команд</button>
     <button role="tab" id="tab-stats" aria-controls="p-stats" aria-selected="false">Прогресс</button>
   </nav>
   <section class="panel" id="p-course" role="tabpanel" aria-labelledby="tab-course"></section>
   <section class="panel" id="p-lesson" role="tabpanel" aria-labelledby="tab-lesson" hidden></section>
   <section class="panel" id="p-code" role="tabpanel" aria-labelledby="tab-code" hidden></section>
+  <section class="panel" id="p-projects" role="tabpanel" aria-labelledby="tab-projects" hidden></section>
   <section class="panel" id="p-ref" role="tabpanel" aria-labelledby="tab-ref" hidden></section>
   <section class="panel" id="p-stats" role="tabpanel" aria-labelledby="tab-stats" hidden></section>
 </div>
@@ -594,7 +604,7 @@ print(db.execute("SELECT COUNT(*) FROM events").fetchone()[0])</pre>
 <ul><li><b>HTML</b> — структура: заголовки, абзацы, кнопки. <code>&lt;h1&gt;Заголовок&lt;/h1&gt;</code></li>
 <li><b>CSS</b> — внешний вид: цвета, шрифты, расположение. <code>h1 { color: green }</code></li>
 <li><b>JavaScript</b> — поведение: что происходит при нажатии, загрузка данных, проверки.</li></ul>
-<p>Наши приложения ровно такие: каждое — один HTML-файл со стилями CSS и кодом JavaScript внутри. Карточки, тесты и тренажёр, в котором вы сейчас, написаны на JavaScript.</p>
+<p>В наших приложениях HTML задаёт структуру, CSS оформляет её, а JavaScript управляет поведением. Код может находиться в HTML или в отдельных файлах. Карточки, тесты и тренажёр, в котором вы сейчас, написаны на JavaScript.</p>
 <h3>Клиент и сервер, HTTP</h3>
 <p>Браузер (<b>клиент</b>) отправляет <b>запрос</b> серверу, сервер присылает <b>ответ</b>. Язык этих запросов — HTTP.</p>
 <div class="tbl"><table><thead><tr><th>Понятие</th><th>Пример</th></tr></thead><tbody>
@@ -1357,7 +1367,7 @@ function attachRunners(root) {
 function outputMatches(got, want) { const n = s => s.replace(/\r/g, "").split("\n").map(l => l.trimEnd()).join("\n").trim(); return n(got) === n(want); }
 function renderCodeTasks(n, lv) {
   const c = LESSONS[n], s = L(n);
-  lv.innerHTML = `<p class="lead">Пишите код прямо здесь и нажимайте «Запустить». Код выполняется в самом телефоне или компьютере. «Проверить» запускает его и сравнивает результат с нужным. Подсказки открываются по одной.</p>` +
+  lv.innerHTML = `<p class="lead">Пишите код прямо здесь и нажимайте «Запустить». Код выполняется в самом телефоне или компьютере. «Проверить» проверяет исходный пример, дополнительные входные данные и нужные конструкции. Сохраняйте входные переменные из заготовки. Подсказки открываются по одной.</p>` +
     c.code.map((t, i) => `<div class="task card"><div class="goal">${s.code.includes(i) ? '<span class="done-mark">✓</span> ' : ""}Задание ${i + 1}. ${esc(t.goal)}</div>
       <textarea class="editor" id="ed-${i}" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Код задания ${i + 1}">${esc(t.starter)}</textarea>
       <div class="row" style="margin-top:8px"><button class="btn" data-run="${i}">▶ Запустить</button><button class="btn primary" data-check="${i}">Проверить</button><button class="btn" data-hint="${i}">Подсказка</button><button class="btn" data-ans="${i}">Показать решение</button></div>
@@ -1478,4 +1488,10 @@ Store.loadLocal();
 renderAll();
 Store.initServer().then(ok => { if (!ok) Store.initCloud(); });
 </script>
+
+<script src="vendor/acorn/acorn.js?v=study2"></script>
+<script src="tech-checks.js?v=study2"></script>
+<script src="projects.js?v=study2"></script>
+<script src="tech-recall.js?v=study2"></script>
+<script src="learning-transfer.js?v=study2"></script>
 </body></html>

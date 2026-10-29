@@ -1,7 +1,8 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261029-onevoice1";
+const CACHE = "learn-20261029-study2";
 const FILES = [
+  "learning-transfer.js", "daily-study.js", "tech-checks.js", "projects.js", "tech-recall.js", "books-practice.js", "check-specs.json", "code-checks.py", "book-learning-data.js", "vendor/acorn/acorn.js",
   "english-voice-worker.js?v=natural1", "audio/english/silence.wav",
   "./", "index.html", "english.html", "course.html", "books.html", "manifest-books.json", "icon-books-180.png", "icon-books-192.png", "icon-books-512.png",
   "manifest-english.json", "manifest-course.json",

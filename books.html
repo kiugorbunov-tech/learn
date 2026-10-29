@@ -9,6 +9,14 @@
 <meta name="theme-color" content="#1d5c8f">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");</script>
+<style>
+[data-learning-transfer] .row,.row{flex-wrap:wrap;gap:8px}
+[data-learning-transfer] button,button[data-book-chapter],button[data-recall-grade]{min-height:44px;white-space:normal}
+[data-learning-transfer] input[type=checkbox]{width:20px;height:20px;vertical-align:middle}
+.read{overflow-wrap:break-word} .read section{max-width:75ch}
+#p-projects textarea{box-sizing:border-box;max-width:100%}
+@media(max-width:600px){[data-learning-transfer] .row{display:flex;align-items:stretch}[data-learning-transfer] .btn{flex:1 1 170px}.read details a{display:block}}
+</style>
 </head><body><title>Книга дня</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,6 +117,7 @@ textarea.notes { width: 100%; min-height: 120px; resize: vertical; font: 16px/1.
   <section class="panel" id="p-stats" role="tabpanel" aria-labelledby="tab-stats" hidden></section>
 </div>
 
+<script src="book-learning-data.js?v=study2"></script>
 <script>
 /* ======================= КНИГИ =======================
    Разборы написаны своими словами. Поля: t — название, a — автор, y — год, cat — тема, min — минут чтения,
@@ -970,7 +979,7 @@ const DAY = 86400000;
 const START = new Date(2026, 9, 21);
 const todayKey = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 const bookWords = b => [b.about, ...(b.context || []), b.why, ...b.ideas.flat(), ...(b.quotes || []).map(q => q[0]), ...(b.cases || []).flat(), ...b.apply, b.limits, ...(b.three || []), b.keep].join(" ").split(/\s+/).length;
-const readMin = b => Math.max(2, Math.round(bookWords(b) / 120));
+const readMin = b => LONG_BOOKS[BOOKS.indexOf(b)] ? Math.round(LONG_BOOKS[BOOKS.indexOf(b)].duration/60) : Math.max(2, Math.round(bookWords(b) / 120));
 const yearText = y => y < 0 ? "около " + Math.abs(y) + " г. до н. э." : y + " г.";
 function todayIndex() { return ((Math.floor((Date.now() - START) / DAY) % BOOKS.length) + BOOKS.length) % BOOKS.length; }
 function readCount() { return Object.keys(Store.data.read).length; }
@@ -986,6 +995,7 @@ let ruVoice = null, speaking = false;
 function pickVoice() { const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || []; const ru = vs.filter(v => /^ru/i.test(v.lang)); ruVoice = ru.find(v => /natural|online|milena|svetlana|dmitry/i.test(v.name)) || ru[0] || null; }
 if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 function bookText(b) {
+  const extended=LONG_BOOKS[BOOKS.indexOf(b)]; if(extended)return extended.chapters.map(c=>c.title+".\n"+c.paragraphs.join("\n")).join("\n");
   return [b.t + ". " + b.a + ".", b.about, ...(b.context || []), b.why, ...b.ideas.map(i => i[0] + ". " + i[1]),
     ...(b.quotes || []).map(q => "Цитата. " + q[0]), ...(b.cases || []).map(c => c[0] + ". " + c[1]),
     "Что сделать сегодня. " + b.apply.join(" "), "Ограничения. " + b.limits, ...(b.three ? ["Три вещи, которые стоит запомнить. " + b.three.join(" ")] : []), "Главная мысль. " + b.keep].join("\n");
@@ -1013,10 +1023,11 @@ audio.preload = "none";
 let audioIdx = null, posTimer = 0;
 const RATES = [1, 1.25, 1.5];
 const fmtTime = s => !isFinite(s) ? "--:--" : Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
-function audioSrc(idx) { return "audio/book-" + String(idx + 1).padStart(2, "0") + ".mp3"; }
+function playbackPositions(idx) { const field=LONG_BOOKS[idx]?"longPosV1":"pos"; return Store.data[field]||(Store.data[field]={}); }
+function audioSrc(idx) { if(LONG_BOOKS[idx])return LONG_BOOKS[idx].audio; return "audio/book-" + String(idx + 1).padStart(2, "0") + ".mp3"; }
 function setupPlayer(b, idx) {
   const play = $("#p-play"), seek = $("#p-seek"), time = $("#p-time"), rateBtn = $("#p-rate");
-  const pos = (Store.data.pos || {})[idx] || 0;
+  const pos = playbackPositions(idx)[idx] || 0;
   const rate = Store.data.rate || 1;
   rateBtn.textContent = rate + "×";
   const refresh = () => {
@@ -1027,10 +1038,10 @@ function setupPlayer(b, idx) {
   };
   audio.ontimeupdate = () => {
     refresh();
-    if (Date.now() - posTimer > 5000 && audioIdx != null) { posTimer = Date.now(); (Store.data.pos || (Store.data.pos = {}))[audioIdx] = Math.floor(audio.currentTime); Store.save(); }
+    if (Date.now() - posTimer > 5000 && audioIdx != null) { posTimer = Date.now(); playbackPositions(audioIdx)[audioIdx] = Math.floor(audio.currentTime); Store.save(); }
   };
   audio.onplay = audio.onpause = audio.onloadedmetadata = refresh;
-  audio.onended = () => { (Store.data.pos || {})[audioIdx] = 0; Store.save(); refresh(); };
+  audio.onended = () => { playbackPositions(audioIdx)[audioIdx] = 0; Store.save(); refresh(); };
   audio.onerror = () => { if (audioIdx === idx) { time.textContent = "аудиофайл недоступен (нет интернета?) — читаю голосом браузера, при блокировке экрана чтение остановится"; audioIdx = null; speakBook(b, play); } };
   play.onclick = () => {
     if (speaking) { speechSynthesis.cancel(); speaking = false; refresh(); return; }
@@ -1077,7 +1088,7 @@ function renderToday() {
       <div class="book-meta">${esc(b.a)} · ${yearText(b.y)} · ${readMin(b)} мин чтения</div>
       <div class="player" id="player">
         <div class="row"><button class="btn primary" id="p-play">▶ Слушать</button><button class="btn" id="p-back" aria-label="Назад на 15 секунд">−15 с</button><button class="btn" id="p-fwd" aria-label="Вперёд на 30 секунд">+30 с</button><button class="btn" id="p-rate" aria-label="Скорость">1×</button>${done ? '<span class="done">✓ Прочитано</span>' : ""}</div>
-        <div class="p-line"><input type="range" id="p-seek" min="0" max="1000" value="0" aria-label="Позиция"><span class="note" id="p-time">аудиокнига · играет и при заблокированном экране</span></div>
+        <div class="p-line"><input type="range" id="p-seek" min="0" max="1000" value="0" aria-label="Позиция"><span class="note" id="p-time">аудиоразбор · играет и при заблокированном экране</span></div>
       </div></div>
     <div class="read">
       <p>${esc(b.about)}</p>
@@ -1147,4 +1158,7 @@ Store.loadLocal();
 renderAll();
 Store.initServer();
 </script>
+
+<script src="books-practice.js?v=study2"></script>
+<script src="learning-transfer.js?v=study2"></script>
 </body></html>
