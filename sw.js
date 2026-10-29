@@ -1,6 +1,6 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261023-1627";
+const CACHE = "learn-20261029-audio2";
 const FILES = [
   "./", "index.html", "english.html", "course.html", "books.html", "manifest-books.json", "icon-books-180.png", "icon-books-192.png", "icon-books-512.png",
   "manifest-english.json", "manifest-course.json",
@@ -27,6 +27,31 @@ self.addEventListener("fetch", event => {
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" || url.hostname === "cdn.jsdelivr.net";
   if (url.origin !== location.origin && !isFont) return;
   if (url.pathname.includes("/models/")) return;   // модели перевода кэширует сама библиотека
+  if (url.origin === location.origin && url.pathname.includes('/audio/english/')) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE);
+      let res = await cache.match(url.href);
+      if (!res) {
+        res = await fetch(new Request(url.href, { credentials: 'same-origin' }));
+        if (!res.ok) return res;
+        await cache.put(url.href, res.clone());
+      }
+      const range = req.headers.get('Range');
+      if (!range) return res;
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) return res;
+      const bytes = await res.arrayBuffer(), size = bytes.byteLength;
+      const start = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2]));
+      const end = match[1] ? (match[2] ? Math.min(Number(match[2]), size - 1) : size - 1) : size - 1;
+      if (start >= size || start > end) return new Response(null, { status: 416, headers: { 'Content-Range': 'bytes */' + size } });
+      return new Response(bytes.slice(start, end + 1), { status: 206, headers: {
+        'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes',
+        'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
+        'Content-Length': String(end - start + 1)
+      } });
+    })());
+    return;
+  }
   if (url.pathname.includes("/audio/")) return;    // аудиокниги: Safari сам запрашивает файл кусками
   event.respondWith(
     caches.open(CACHE).then(async cache => {
