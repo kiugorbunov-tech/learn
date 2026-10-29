@@ -1,0 +1,7 @@
+meSpeak.js 2.0.7 by Norbert Landsteiner, 2011-2020, mass:werk.
+Based on speak.js and eSpeak. Distributed under GNU GPL version 3.
+The upstream JavaScript engine, core and en-US voice files are unmodified.
+Project, documentation and source downloads: https://www.masswerk.at/mespeak/
+speak.js source: https://github.com/kripken/speak.js
+eSpeak source: https://espeak.sourceforge.net/source.html
+See COPYING.txt for the license text.

@@ -1,7 +1,8 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261029-audio2";
+const CACHE = "learn-20261029-translator3";
 const FILES = [
+  "vendor/mespeak/mespeak.js", "vendor/mespeak/mespeak-core.js", "vendor/mespeak/voices/en/en-us.json", "audio/english/silence.wav",
   "./", "index.html", "english.html", "course.html", "books.html", "manifest-books.json", "icon-books-180.png", "icon-books-192.png", "icon-books-512.png",
   "manifest-english.json", "manifest-course.json",
   "icon-english-180.png", "icon-english-192.png", "icon-english-512.png",
@@ -45,7 +46,7 @@ self.addEventListener("fetch", event => {
       const end = match[1] ? (match[2] ? Math.min(Number(match[2]), size - 1) : size - 1) : size - 1;
       if (start >= size || start > end) return new Response(null, { status: 416, headers: { 'Content-Range': 'bytes */' + size } });
       return new Response(bytes.slice(start, end + 1), { status: 206, headers: {
-        'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes',
+        'Content-Type': res.headers.get('Content-Type') || 'audio/mpeg', 'Accept-Ranges': 'bytes',
         'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
         'Content-Length': String(end - start + 1)
       } });
