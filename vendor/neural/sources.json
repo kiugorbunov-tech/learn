@@ -1,0 +1,44 @@
+[
+  {
+    "file": "ort.wasm.min.js",
+    "url": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.wasm.min.js",
+    "bytes": 142930,
+    "sha256": "90533a3fd7006df7f897c0d63c468996da5c8e430e39964d92ebe586c4996614"
+  },
+  {
+    "file": "ort-wasm-simd.wasm",
+    "url": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort-wasm-simd.wasm",
+    "bytes": 10595041,
+    "sha256": "f533b5f21790563d7556c611c3835ac65848ee326da2689aac54ed7d9cc8c6a4"
+  },
+  {
+    "file": "piper_phonemize.wasm",
+    "url": "https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.wasm",
+    "bytes": 635212,
+    "sha256": "b777cd107a91d2bcc6a1ea46f2c26a662a7407394fe84589198aeaa83dd7a9d6"
+  },
+  {
+    "file": "piper_phonemize.data",
+    "url": "https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.data",
+    "bytes": 18077249,
+    "sha256": "29f1025eb23a5b5c192cd14a6efbce4509402ff265405072ee6f7d1a09b78f8c"
+  },
+  {
+    "file": "voice.onnx",
+    "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ljspeech/medium/en_US-ljspeech-medium.onnx",
+    "bytes": 63531379,
+    "sha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22"
+  },
+  {
+    "file": "ORT-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.18.0/LICENSE",
+    "bytes": 1073,
+    "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+  },
+  {
+    "file": "PIPER-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/rhasspy/piper/master/LICENSE.md",
+    "bytes": 1071,
+    "sha256": "4cd71dece7037f1d6d93cce7570c57ab75ea9ac566fd4990be2f3ab08d15b47f"
+  }
+]

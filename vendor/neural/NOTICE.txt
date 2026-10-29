@@ -1,0 +1,8 @@
+Local neural English voice
+Piper en_US-ljspeech-medium: https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/medium
+Model MIT; LJ Speech recordings public domain. See MODEL_CARD.txt and PIPER-LICENSE.txt.
+ONNX Runtime Web 1.18.0: Microsoft, MIT; see ORT-LICENSE.txt.
+Phonemizer JS from diffusionstudio/vits-web (MIT); modified only to remove the ES-module export for classic workers.
+Phonemizer WASM/data from @diffusionstudio/piper-wasm 1.0.0, based on rhasspy/piper-phonemize and eSpeak NG (GPLv3).
+Corresponding source and build scripts: https://github.com/rhasspy/piper-phonemize and https://github.com/espeak-ng/espeak-ng and https://github.com/diffusionstudio/vits-web
+Exact binary download URLs and SHA-256 hashes: sources.json. GPL text: GPL-3.0.txt.

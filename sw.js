@@ -1,8 +1,8 @@
 // Работа без интернета: после первого открытия все файлы приложений лежат в телефоне.
 // При каждом открытии показываем сохранённую версию сразу и тихо проверяем обновление.
-const CACHE = "learn-20261029-translator3";
+const CACHE = "learn-20261029-natural1";
 const FILES = [
-  "vendor/mespeak/mespeak.js", "vendor/mespeak/mespeak-core.js", "vendor/mespeak/voices/en/en-us.json", "audio/english/silence.wav",
+  "english-voice-worker.js?v=natural1", "audio/english/silence.wav",
   "./", "index.html", "english.html", "course.html", "books.html", "manifest-books.json", "icon-books-180.png", "icon-books-192.png", "icon-books-512.png",
   "manifest-english.json", "manifest-course.json",
   "icon-english-180.png", "icon-english-192.png", "icon-english-512.png",
@@ -16,7 +16,7 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => /^learn-\d/.test(k) && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -27,6 +27,17 @@ self.addEventListener("fetch", event => {
   const url = new URL(req.url);
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" || url.hostname === "cdn.jsdelivr.net";
   if (url.origin !== location.origin && !isFont) return;
+  if (url.origin === location.origin && url.pathname.includes('/vendor/neural/')) {
+    event.respondWith((async () => {
+      const cache = await caches.open('english-voice-piper-v1');
+      const saved = await cache.match(req);
+      if (saved) return saved;
+      const response = await fetch(req);
+      if (response.ok) event.waitUntil(cache.put(req, response.clone()).catch(() => {}));
+      return response;
+    })());
+    return;
+  }
   if (url.pathname.includes("/models/")) return;   // модели перевода кэширует сама библиотека
   if (url.origin === location.origin && url.pathname.includes('/audio/english/')) {
     event.respondWith((async () => {
