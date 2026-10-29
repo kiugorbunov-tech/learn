@@ -722,6 +722,7 @@ stopSpeech = function() {
   if (old?.blobURL) URL.revokeObjectURL(old.blobURL);
   englishAudio.removeAttribute('src');
   englishAudio.hidden = true; englishAudio.controls = false;
+  try { if (navigator.audioSession) navigator.audioSession.type = 'auto'; } catch (e) {}
   stopNativeSpeech();
 };
 startSpeech = function(lines, rate, done) {
@@ -757,7 +758,11 @@ startSpeech = function(lines, rate, done) {
       if (mediaJob !== job) return;
       if (job.blobURL) { URL.revokeObjectURL(job.blobURL); job.blobURL = null; }
       if (++job.index < job.lines.length) playNext();
-      else { mediaJob = null; speechStatus('Запись воспроизведена.'); if (job.done) job.done(); }
+      else {
+        mediaJob = null;
+        try { if (navigator.audioSession) navigator.audioSession.type = 'auto'; } catch (e) {}
+        speechStatus('Запись воспроизведена.'); if (job.done) job.done();
+      }
     };
     try { const p=englishAudio.play(); if(p)p.catch(e=>fail(e.name)); } catch(e) { fail(e.name); }
   };
