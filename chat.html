@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#141413">
+<title>Наша сеть</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1b;--mute:#6b6a65;--me:#e8eefc;--line:#e3e1db;--acc:#2d5bd7;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#ecebe6;--mute:#9a9891;--me:#23304f;--line:#33322f;--acc:#7da0ff;--bad:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:0 auto;padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;height:100dvh}
+header{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+h1{font-size:18px;margin:0}.st{font-size:13px;color:var(--mute)}.st.bad{color:var(--bad)}
+#log{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px 0}
+.m{padding:10px 14px;border-radius:12px;max-width:88%;white-space:pre-wrap;background:var(--card);border:1px solid var(--line);overflow-wrap:anywhere}
+.me{align-self:flex-end;background:var(--me)}
+.t{font-size:12px;color:var(--mute);margin-top:6px;font-family:ui-monospace,Consolas,monospace}
+.t a{color:var(--acc);text-decoration:none;margin-right:12px}
+form{display:flex;gap:8px}
+input{flex:1;min-width:0;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+button{padding:0 18px;border-radius:10px;border:0;background:var(--acc);color:#fff;font-size:16px}
+#setup{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;display:none}
+#setup label{display:block;font-size:13px;color:var(--mute);margin:8px 0 4px}
+#setup input{width:100%}
+.row{display:flex;gap:8px;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Наша сеть</h1><span id="st" class="st">подключаюсь…</span><a href="#" id="cfg" class="st" style="margin-left:auto">настройки</a></header>
+  <div id="setup">
+    <label for="pw">Пароль чата (файл D:\memlab\chat_password.txt на компьютере)</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <label for="url">Адрес (обычно подставляется сам)</label>
+    <input id="url" placeholder="https://….trycloudflare.com" autocomplete="off">
+    <div class="row"><button id="save" type="button">Сохранить</button></div>
+  </div>
+  <div id="log"></div>
+  <form id="f"><input id="q" autocomplete="off" placeholder="Напишите сообщение"><button aria-label="Отправить">➤</button></form>
+</main>
+<script>
+const $=id=>document.getElementById(id),log=$('log'),q=$('q'),st=$('st');
+const get=k=>{try{return localStorage.getItem(k)||''}catch(e){return''}},put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let base=get('chat_url_manual'),hist=[];
+function status(t,bad){st.textContent=t;st.className='st'+(bad?' bad':'')}
+function auth(){return{'Authorization':'Basic '+btoa(unescape(encodeURIComponent('я:'+get('chat_pw'))))}}
+async function locate(){
+  if(get('chat_url_manual'))return base=get('chat_url_manual');
+  try{const r=await fetch('chat_url.json?ts='+Date.now(),{cache:'no-store'});const j=await r.json();base=j.url;status('адрес от '+j.time)}catch(e){status('адрес сети не найден',true)}
+  return base}
+async function ping(){
+  if(!get('chat_pw')){$('setup').style.display='block';status('нужен пароль',true);return}
+  await locate();if(!base)return;
+  try{const r=await fetch(base+'/api',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({message:'',history:[],ping:true})});
+    if(r.status==401){status('неверный пароль',true);$('setup').style.display='block';return}
+    status('сеть на связи')}catch(e){status('сеть сейчас недоступна (компьютер спит или чат не запущен)',true)}}
+function add(text,me,trace,meta){const d=document.createElement('div');d.className='m'+(me?' me':'');d.textContent=text;
+  if(trace&&trace.length){const t=document.createElement('div');t.className='t';t.textContent=trace.map(x=>'['+x[0]+'] '+x[1]).join('\n')+(meta?'\n'+meta.text:'');d.appendChild(t)}
+  if(meta&&meta.id){const b=document.createElement('div');b.className='t';
+    const ok=document.createElement('a');ok.href='#';ok.textContent='👍 хорошо';ok.onclick=ev=>{ev.preventDefault();fb(meta.id,true,null);ok.textContent='✓ записано'};
+    const fx=document.createElement('a');fx.href='#';fx.textContent='✎ поправить';fx.onclick=ev=>{ev.preventDefault();const t=prompt('Как правильно ответить?');if(t){fb(meta.id,false,t);fx.textContent='✓ поправка записана'}};
+    b.appendChild(ok);b.appendChild(fx);d.appendChild(b)}
+  log.appendChild(d);log.scrollTop=log.scrollHeight}
+function fb(id,good,fix){fetch(base+'/fb',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({id,good,fix})})}
+$('f').onsubmit=async e=>{e.preventDefault();const m=q.value.trim();if(!m)return;q.value='';add(m,true);
+  if(!base)await locate();
+  try{const r=await fetch(base+'/api',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({message:m,history:hist})});
+    if(r.status==401){add('неверный пароль — откройте «настройки»',false);return}
+    const j=await r.json();add(j.reply,false,j.trace&&j.trace.length?j.trace:[['режим',j.mode]],{text:j.mode+' · '+j.ms+' мс',id:j.id});
+    hist.push({who:'я',text:m},{who:'сеть',text:j.reply})}
+  catch(err){add('сеть сейчас недоступна: компьютер спит или чат не запущен',false);base=get('chat_url_manual');}}
+$('cfg').onclick=e=>{e.preventDefault();const s=$('setup');s.style.display=s.style.display=='block'?'none':'block';$('url').value=get('chat_url_manual')}
+$('save').onclick=()=>{put('chat_pw',$('pw').value);put('chat_url_manual',$('url').value.trim());base=get('chat_url_manual');$('setup').style.display='none';ping()}
+ping();
+</script>
+</body>
+</html>
