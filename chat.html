@@ -66,11 +66,12 @@ function add(text,me,trace,meta){const d=document.createElement('div');d.classNa
 function fb(id,good,fix){fetch(base+'/fb',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({id,good,fix})})}
 $('f').onsubmit=async e=>{e.preventDefault();const m=q.value.trim();if(!m)return;q.value='';add(m,true);
   if(!base)await locate();
+  const wait=document.createElement('div');wait.className='m';wait.textContent='сеть думает… (поиск в памяти и интернете — до 30 с)';log.appendChild(wait);log.scrollTop=log.scrollHeight;
   try{const r=await fetch(base+'/api',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({message:m,history:hist})});
-    if(r.status==401){add('неверный пароль — откройте «настройки»',false);return}
+    wait.remove();if(r.status==401){add('неверный пароль — откройте «настройки»',false);return}
     const j=await r.json();add(j.reply,false,j.trace&&j.trace.length?j.trace:[['режим',j.mode]],{text:j.mode+' · '+j.ms+' мс',id:j.id});
     hist.push({who:'я',text:m},{who:'сеть',text:j.reply})}
-  catch(err){add('сеть сейчас недоступна: компьютер спит или чат не запущен',false);base=get('chat_url_manual');}}
+  catch(err){wait.remove();add('сеть сейчас недоступна: компьютер спит или чат не запущен',false);base=get('chat_url_manual');}}
 $('cfg').onclick=e=>{e.preventDefault();const s=$('setup');s.style.display=s.style.display=='block'?'none':'block';$('url').value=get('chat_url_manual')}
 $('save').onclick=()=>{put('chat_pw',$('pw').value);put('chat_url_manual',$('url').value.trim());base=get('chat_url_manual');$('setup').style.display='none';ping()}
 ping();
