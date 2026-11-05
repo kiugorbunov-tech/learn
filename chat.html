@@ -32,7 +32,7 @@ button{padding:0 18px;border-radius:10px;border:0;background:var(--acc);color:#f
 <main>
   <header><h1>Наша сеть</h1><span id="st" class="st">подключаюсь…</span><a href="#" id="cfg" class="st" style="margin-left:auto">настройки</a></header>
   <div id="setup">
-    <label for="pw">Пароль чата (файл D:\memlab\chat_password.txt на компьютере)</label>
+    <label for="pw">Пароль (нужен, только если его включили на компьютере)</label>
     <input id="pw" type="password" autocomplete="current-password">
     <label for="url">Адрес (обычно подставляется сам)</label>
     <input id="url" placeholder="https://….trycloudflare.com" autocomplete="off">
@@ -52,7 +52,6 @@ async function locate(){
   try{const r=await fetch('chat_url.json?ts='+Date.now(),{cache:'no-store'});const j=await r.json();base=j.url;status('адрес от '+j.time)}catch(e){status('адрес сети не найден',true)}
   return base}
 async function ping(){
-  if(!get('chat_pw')){$('setup').style.display='block';status('нужен пароль',true);return}
   await locate();if(!base)return;
   try{const r=await fetch(base+'/api',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({message:'',history:[],ping:true})});
     if(r.status==401){status('неверный пароль',true);$('setup').style.display='block';return}
