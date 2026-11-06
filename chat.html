@@ -62,7 +62,10 @@ textarea:focus{border-color:var(--acc)}
 .send{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:19px;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .15s}
 .send:disabled{opacity:.45}
 .send:active{transform:scale(.92)}
-#mic{background:var(--soft);color:var(--acc)}
+#mic,#clip{background:var(--soft);color:var(--acc)}
+#att{display:flex;gap:8px;padding:4px 12px 0}
+#att span{display:inline-flex;align-items:center;gap:6px;max-width:100%;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:5px 6px 5px 11px;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#att button{border:0;background:transparent;color:var(--mute);font-size:15px;cursor:pointer;padding:0 4px}
 #mic.rec{background:var(--bad);color:#fff;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 8px #c0392b33}}
 .sheet{position:fixed;inset:0;z-index:20;background:#0006;display:none;align-items:flex-end;justify-content:center}
@@ -99,7 +102,10 @@ textarea:focus{border-color:var(--acc)}
     <button class="ib" id="cfgBtn" title="Настройки" aria-label="Настройки">⚙</button>
   </header>
   <div id="log" aria-live="polite"></div>
+  <div id="att" hidden></div>
     <form id="f">
+    <button type="button" class="send" id="clip" title="Прикрепить файл (txt, docx, pdf, xlsx, csv — до 20 МБ)" aria-label="Прикрепить файл">📎</button>
+    <input type="file" id="fileIn" accept=".txt,.md,.csv,.tsv,.docx,.pdf,.xlsx,.xlsm" hidden>
     <button type="button" class="send" id="mic" title="Сказать голосом" aria-label="Голосовой ввод" hidden>🎤</button>
     <textarea id="q" rows="1" placeholder="Напишите Нике…" autocomplete="off"></textarea>
     <button class="send" id="sendBtn" aria-label="Отправить">➤</button>
@@ -109,7 +115,7 @@ textarea:focus{border-color:var(--acc)}
 <div class="sheet" id="welcome"><div class="panel">
   <svg class="av" aria-hidden="true"><use href="#nika"/></svg>
   <h3>Привет! Я Ника</h3>
-  <div class="hint" style="margin-top:0">Русская нейросеть, которую учат на домашнем компьютере. Считаю, ищу в памяти Википедии и в интернете, прикидываю финмодели.</div>
+  <div class="hint" style="margin-top:0">Русская нейросеть, которую учат на домашнем компьютере. Считаю, ищу в памяти Википедии и в интернете, прикидываю финмодели. Читаю ссылки и файлы (📎), составляю план по шагам и отдаю ответ файлом Word или Excel.</div>
   <label for="nm" style="text-align:left">Как вас зовут?</label>
   <input id="nm" maxlength="24" autocomplete="given-name" placeholder="Имя">
   <button class="btn" id="go">Начать</button>
@@ -157,7 +163,8 @@ function body(extra){return JSON.stringify(Object.assign({uid,name,owner:get('ni
 
 // ---------- Markdown: жирный, курсив, код, списки, ссылки ----------
 function inline(s){
-  return s.replace(/`([^`\n]+)`/g,'<code>$1</code>')
+  return s.replace(/\[([^\]\n]+)\]\((\/files\/[\w-]+)\)/g,(m,t,u)=>'<a href="'+(base||'')+u+'" download target="_blank" rel="noopener">'+t+'</a>')
+    .replace(/`([^`\n]+)`/g,'<code>$1</code>')
     .replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/__([^_\n]+)__/g,'<b>$1</b>')
     .replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g,'$1<i>$2</i>')
     .replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
@@ -225,9 +232,9 @@ async function ping(){
 function history(){return items.slice(-16).map(x=>({who:x.me?'я':'сеть',text:x.text}))}
 async function send(text,regenFlag){
   if(busy){toast('Ника ещё отвечает на прошлое сообщение');return}
-  text=text.trim();if(!text)return;
+  text=text.trim();const file=regenFlag?null:pending;if(file&&!file.id){toast('Файл ещё загружается');return}if(!text&&file)text='О чём этот файл? Перескажи коротко.';if(!text)return;
   log.querySelectorAll('.sys').forEach(e=>e.remove());
-  if(!regenFlag){const it={me:1,text};items.push(it);save();renderMe(it)}
+  if(!regenFlag){const it={me:1,text:(file?'📎 '+file.name+'\n':'')+text};items.push(it);save();renderMe(it);setPending(null)}
   busy=true;sendBtn.disabled=true;markLast();
   const row=nikaRow(),b=row.querySelector('.b');
   b.innerHTML='<div class="typing"><span class="dots"><i></i><i></i><i></i></span><span class="tx" hidden></span></div>';
@@ -235,7 +242,7 @@ async function send(text,regenFlag){
   let acc='',final=null,started=false;
   try{
     if(!base)await locate();
-    const r=await fetch(base+'/api/stream',{method:'POST',headers:headers(),body:body({message:text,history:history().slice(0,-1),regen:!!regenFlag})});
+    const r=await fetch(base+'/api/stream',{method:'POST',headers:headers(),body:body({message:text,history:history().slice(0,-1),regen:!!regenFlag,opts:file?{file_id:file.id}:{}})});
     if(r.status==401)throw {msg:'нужен пароль — откройте ⚙ настройки'};
     const ct=r.headers.get('content-type')||'';
     const onEv=e=>{
@@ -273,7 +280,25 @@ function regen(it){
 function grow(){q.style.height='auto';q.style.height=Math.min(q.scrollHeight,140)+'px'}
 q.addEventListener('input',grow);
 q.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Android|iPhone|iPad/i.test(navigator.userAgent)){e.preventDefault();$('f').requestSubmit()}});
-$('f').onsubmit=e=>{e.preventDefault();const t=q.value;if(!t.trim())return;if(busy){toast('Ника ещё отвечает на прошлое сообщение');return}q.value='';grow();send(t)};
+$('f').onsubmit=e=>{e.preventDefault();const t=q.value;if(!t.trim()&&!pending)return;if(busy){toast('Ника ещё отвечает на прошлое сообщение');return}q.value='';grow();send(t)};
+
+// ---------- файл: скрепка → /upload, текст файла читает Ника; вопрос уходит вместе с id файла ----------
+let pending=null;
+function setPending(f){pending=f;const a=$('att');a.hidden=!f;a.innerHTML='';if(!f)return;
+  const s=document.createElement('span');s.textContent='📎 '+f.name+(f.chars?' · '+f.chars+' знаков':'');
+  const x=document.createElement('button');x.type='button';x.textContent='✕';x.title='Убрать файл';x.onclick=()=>setPending(null);s.appendChild(x);a.appendChild(s)}
+$('clip').onclick=()=>{if(busy){toast('Ника ещё отвечает на прошлое сообщение');return}$('fileIn').click()};
+$('fileIn').onchange=async()=>{const f=$('fileIn').files[0];$('fileIn').value='';if(!f)return;
+  if(f.size>20*1024*1024){toast('Файл больше 20 МБ');return}
+  if(!/\.(txt|md|csv|tsv|docx|pdf|xlsx|xlsm)$/i.test(f.name)){toast('Читаю txt, docx, pdf, xlsx и csv');return}
+  if(!base)await locate();if(!base){toast('Ника сейчас недоступна');return}
+  setPending({id:'',name:f.name+' — загружаю…'});
+  try{const h=headers();h['Content-Type']='application/octet-stream';
+    const r=await fetch(base+'/upload?uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(f.name),{method:'POST',headers:h,body:f});
+    if(r.status==401)throw {msg:'нужен пароль — откройте ⚙ настройки'};
+    const j=await r.json();if(j.error)throw {msg:j.error};
+    setPending({id:j.id,name:j.name,chars:j.chars});toast('Файл прочитан — спросите о нём или просто отправьте');q.focus()}
+  catch(err){setPending(null);toast(err&&err.msg?err.msg:'Не загрузилось — нет связи')}};
 
 // ---------- голос ----------
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
