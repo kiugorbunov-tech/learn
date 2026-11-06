@@ -9,14 +9,14 @@
 <title>Ника — чат с нашей сетью</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff9a62'/%3E%3Cstop offset='1' stop-color='%236c5ce7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='32' fill='url(%23g)'/%3E%3Cpath d='M21 44V20h5v9.5h12V20h5v24h-5v-10H26v10z' fill='%23fff'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#f7f5f0;--panel:#ffffffcc;--card:#fff;--ink:#1c1b19;--mute:#76736b;--line:#e6e2d9;--me:#2f5bd8;--meink:#fff;--acc:#2f5bd8;--soft:#eef2fd;--bad:#c0392b;--good:#2e8b57;--code:#f2efe8;--shadow:0 1px 2px #0000000d,0 4px 14px #0000000a}
-html[data-theme=dark]{--bg:#151514;--panel:#1d1d1bcc;--card:#22221f;--ink:#ecebe5;--mute:#9b988f;--line:#34332f;--me:#3d63d9;--meink:#fff;--acc:#8aa6ff;--soft:#262c3d;--bad:#ff8a7a;--good:#6fcf97;--code:#2b2a27;--shadow:0 1px 2px #0000004d}
-@media (prefers-color-scheme:dark){html[data-theme=auto]{--bg:#151514;--panel:#1d1d1bcc;--card:#22221f;--ink:#ecebe5;--mute:#9b988f;--line:#34332f;--me:#3d63d9;--meink:#fff;--acc:#8aa6ff;--soft:#262c3d;--bad:#ff8a7a;--good:#6fcf97;--code:#2b2a27;--shadow:0 1px 2px #0000004d}}
+:root{--bg:#f7f5f0;--panel:#ffffffcc;--card:#fff;--ink:#1c1b19;--mute:#76736b;--line:#e6e2d9;--me:#2f5bd8;--meink:#fff;--acc:#2f5bd8;--soft:#eef2fd;--bad:#c0392b;--good:#2e8b57;--code:#f2efe8;--soft2:#ece9e1;--shadow:0 1px 2px #0000000d,0 4px 14px #0000000a}
+html[data-theme=dark]{--bg:#151514;--panel:#1d1d1bcc;--card:#22221f;--ink:#ecebe5;--mute:#9b988f;--line:#34332f;--me:#3d63d9;--meink:#fff;--acc:#8aa6ff;--soft:#262c3d;--bad:#ff8a7a;--good:#6fcf97;--code:#2b2a27;--soft2:#2e2d2a;--shadow:0 1px 2px #0000004d}
+@media (prefers-color-scheme:dark){html[data-theme=auto]{--bg:#151514;--panel:#1d1d1bcc;--card:#22221f;--ink:#ecebe5;--mute:#9b988f;--line:#34332f;--me:#3d63d9;--meink:#fff;--acc:#8aa6ff;--soft:#262c3d;--bad:#ff8a7a;--good:#6fcf97;--code:#2b2a27;--soft2:#2e2d2a;--shadow:0 1px 2px #0000004d}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:780px;margin:0 auto;display:flex;flex-direction:column;height:100dvh}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--panel);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;background:var(--bg)}
 .av{flex:none;width:38px;height:38px;border-radius:50%;display:block}
 .av.sm{width:28px;height:28px;margin-top:2px}
 .who{min-width:0;flex:1}
@@ -27,13 +27,13 @@ header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
 .badge{font-size:11px;padding:1px 7px;border-radius:9px;background:var(--soft);color:var(--acc)}
 .ib{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:var(--ink);font-size:19px;display:grid;place-items:center;cursor:pointer}
 .ib:active{background:var(--soft)}
-#log{flex:1;overflow-y:auto;padding:14px 12px 8px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}
+#log{flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:22px;overscroll-behavior:contain}
 .row{display:flex;gap:8px;align-items:flex-start;animation:pop .28s ease-out both}
 .row.me{justify-content:flex-end}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
-.b{max-width:86%;padding:9px 13px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);overflow-wrap:anywhere}
-.me .b{background:var(--me);color:var(--meink);border-color:transparent;border-bottom-right-radius:6px;white-space:pre-wrap}
-.nika .b{border-top-left-radius:6px}
+.b{max-width:100%;padding:2px 2px;overflow-wrap:anywhere;font-size:16.5px;line-height:1.6}
+.me .b{max-width:82%;background:var(--soft2);color:var(--ink);padding:9px 15px;border-radius:20px;white-space:pre-wrap}
+.nika .b{width:100%}
 .b p{margin:0 0 .5em}.b p:last-child{margin:0}
 .b ul,.b ol{margin:.2em 0 .5em;padding-left:1.3em}
 .b code{font:14px ui-monospace,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:5px}
@@ -41,7 +41,7 @@ header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
 .b pre code{background:none;padding:0;white-space:pre}
 .b a{color:var(--acc)}
 .b h4{margin:.3em 0;font-size:16px}
-.meta{font-size:12px;color:var(--mute);margin-top:6px;display:flex;flex-wrap:wrap;gap:2px 4px;align-items:center}
+.meta{font-size:12px;color:var(--mute);margin-top:4px;opacity:.75;display:flex;flex-wrap:wrap;gap:2px 4px;align-items:center}
 .meta button{border:0;background:transparent;color:var(--mute);font-size:13px;padding:4px 7px;border-radius:8px;cursor:pointer}
 .meta button:active,.meta button.on{background:var(--soft);color:var(--acc)}
 .tr{margin-top:6px;font:12px/1.45 ui-monospace,Consolas,monospace;color:var(--mute);white-space:pre-wrap;border-top:1px dashed var(--line);padding-top:6px;display:none}
@@ -57,7 +57,7 @@ header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
 .chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 13px;border-radius:18px;font-size:14px;cursor:pointer}
 .chip:active{background:var(--soft)}
 form{display:flex;gap:8px;align-items:flex-end;padding:8px 12px calc(10px + env(safe-area-inset-bottom))}
-textarea{flex:1;min-width:0;resize:none;max-height:140px;padding:11px 14px;border-radius:22px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;outline:none}
+textarea{flex:1;min-width:0;resize:none;max-height:160px;padding:13px 16px;border-radius:24px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;outline:none}
 textarea:focus{border-color:var(--acc)}
 .send{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:19px;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .15s}
 .send:disabled{opacity:.45}
@@ -95,16 +95,13 @@ textarea:focus{border-color:var(--acc)}
 </defs></svg>
 <main>
   <header>
-    <svg class="av" aria-hidden="true"><use href="#nika"/></svg>
-    <div class="who"><b>Ника</b><div class="st"><span id="dot" class="dot"></span><span id="st">подключаюсь…</span><span id="own" class="badge" hidden>владелец</span></div></div>
-    <button class="ib" id="themeBtn" title="Тема" aria-label="Сменить тему">◐</button>
+    <div class="who"><b>Ника</b><div class="st"><span id="dot" class="dot"></span><span id="st">подключаюсь…</span><span id="own" hidden></span></div></div>
     <button class="ib" id="cfgBtn" title="Настройки" aria-label="Настройки">⚙</button>
   </header>
   <div id="log" aria-live="polite"></div>
-  <div id="chips"></div>
-  <form id="f">
+    <form id="f">
     <button type="button" class="send" id="mic" title="Сказать голосом" aria-label="Голосовой ввод" hidden>🎤</button>
-    <textarea id="q" rows="1" placeholder="Сообщение Нике" autocomplete="off"></textarea>
+    <textarea id="q" rows="1" placeholder="Напишите Нике…" autocomplete="off"></textarea>
     <button class="send" id="sendBtn" aria-label="Отправить">➤</button>
   </form>
 </main>
@@ -124,16 +121,14 @@ textarea:focus{border-color:var(--acc)}
   <label for="sName">Ваше имя</label><input id="sName" maxlength="24">
   <label>Тема</label><div class="seg" id="seg"><button data-t="auto">Как в системе</button><button data-t="light">Светлая</button><button data-t="dark">Тёмная</button></div>
   <div class="sw"><span>Озвучивать ответы</span><input type="checkbox" id="sTts"></div>
-  <div class="sw"><span>Показывать, как Ника думала</span><input type="checkbox" id="sTrace"></div>
+  <input type="checkbox" id="sTrace" hidden>
   <div class="sw"><span>Отправлять сразу после голосового ввода</span><input type="checkbox" id="sAuto"></div>
   <label for="sOwner">Слово владельца (только для владельца — меняет правила)</label><input id="sOwner" type="password" autocomplete="off">
   <label for="sPw">Пароль (если его включили на компьютере)</label><input id="sPw" type="password" autocomplete="current-password">
   <label for="sUrl">Адрес сервера (обычно подставляется сам)</label><input id="sUrl" placeholder="https://….trycloudflare.com" autocomplete="off">
   <button class="btn" id="save">Сохранить</button>
   <button class="btn ghost" id="clear">Очистить историю на телефоне</button>
-  <div class="hint"><b>Подсказки.</b> «меня зовут…», «я люблю…», «запомни …» — Ника запомнит о вас; «что ты обо мне знаешь», «забудь обо мне».
-  /задача … или /разговор … — выбрать режим. /правила — посмотреть правила; менять их (/правило, /запретить, /разрешить) может только владелец.
-  👍/👎 и «✎ надо» — оценки идут в учёбу Ники.</div>
+  <div class="hint">👍/👎 и ✎ под ответом — оценки идут в учёбу Ники.</div>
 </div></div>
 <div id="toast"></div>
 
@@ -149,12 +144,12 @@ try{items=JSON.parse(get(LOGKEY,'[]'))}catch(e){items=[]}
 // ---------- тема ----------
 function theme(t){document.documentElement.dataset.theme=t;put('nika_theme',t);document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
 theme(get('nika_theme','auto'));
-$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme,dark=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);theme(dark?'light':'dark')};
+if($('themeBtn'))$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme,dark=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);theme(dark?'light':'dark')};
 document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>theme(b.dataset.t));
 
 // ---------- мелочи ----------
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('show'),2200)}
-function status(t,kind){$('st').textContent=t;$('dot').className='dot'+(kind?' '+kind:'')}
+function status(t,kind){const quiet=kind==='on'&&/^на связи/.test(t);$('st').textContent=quiet?'':t;$('dot').className='dot'+(kind?' '+kind:'');$('dot').hidden=quiet}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function scroll(){requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight})}
 function headers(){const h={'Content-Type':'application/json'};const pw=get('chat_pw');if(pw)h.Authorization='Basic '+btoa(unescape(encodeURIComponent('я:'+pw)));return h}
@@ -187,23 +182,21 @@ function plain(t){return String(t||'').replace(/```[\s\S]*?```/g,' код ').rep
 
 // ---------- сообщения ----------
 function save(){put(LOGKEY,JSON.stringify(items.slice(-120)))}
-function nikaRow(){const r=document.createElement('div');r.className='row nika';r.innerHTML='<svg class="av sm" aria-hidden="true"><use href="#nika"/></svg><div class="b"></div>';log.appendChild(r);scroll();return r}
+function nikaRow(){const r=document.createElement('div');r.className='row nika';r.innerHTML='<div class="b"></div>';log.appendChild(r);scroll();return r}
 function renderMe(it){const r=document.createElement('div');r.className='row me';const b=document.createElement('div');b.className='b';b.textContent=it.text;r.appendChild(b);log.appendChild(r);scroll();return r}
 function renderNika(it,row){
   row=row||nikaRow();const b=row.querySelector('.b');b.classList.remove('cursor');
   b.innerHTML=md(it.text);
-  if(it.trace&&it.trace.length){const t=document.createElement('div');t.className='tr'+(get('nika_trace')==='1'?' open':'');
+  if(false){const t=document.createElement('div');t.className='tr'+(get('nika_trace')==='1'?' open':'');
     t.textContent=it.trace.map(x=>'['+x[0]+'] '+x[1]).join('\n')+(it.mode?'\n'+it.mode+(it.ms?' · '+(it.ms/1000).toFixed(1)+' с':''):'');b.appendChild(t)}
   const m=document.createElement('div');m.className='meta';b.appendChild(m);
   const btn=(label,title,fn)=>{const x=document.createElement('button');x.type='button';x.textContent=label;x.title=title;x.setAttribute('aria-label',title);x.onclick=()=>fn(x);m.appendChild(x);return x};
-  if(it.trace&&it.trace.length)btn('💭','Как Ника думала',()=>b.querySelector('.tr').classList.toggle('open'));
   btn('⧉','Копировать',()=>copy(it.text));
-  if('speechSynthesis' in window)btn('🔊','Прочитать вслух',()=>speak(it.text,true));
   if(it.id){
     const up=btn('👍','Хороший ответ',x=>{fb(it.id,true,null);x.classList.add('on');down.classList.remove('on');it.fb='+';save();toast('Спасибо! Записала')});
     const down=btn('👎','Плохой ответ',x=>{fb(it.id,false,null);x.classList.add('on');up.classList.remove('on');it.fb='-';save();toast('Записала — буду учиться')});
     if(it.fb==='+')up.classList.add('on');if(it.fb==='-')down.classList.add('on');
-    btn('✎ надо','Как надо было ответить',x=>{const t=prompt('Как надо было ответить?');if(t&&t.trim()){fb(it.id,false,t.trim());x.classList.add('on');toast('Поправка записана — пойдёт в учёбу')}});
+    btn('✎','Как надо было ответить',x=>{const t=prompt('Как надо было ответить?');if(t&&t.trim()){fb(it.id,false,t.trim());x.classList.add('on');toast('Поправка записана — пойдёт в учёбу')}});
     btn('↻','Ещё раз',()=>regen(it)).className='regen'}
   markLast();scroll();return row}
 function markLast(){const all=log.querySelectorAll('.regen');all.forEach((x,i)=>x.hidden=i!==all.length-1||busy)}
@@ -212,7 +205,7 @@ function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.r
 function fb(id,good,fix){if(!base)return;fetch(base+'/fb',{method:'POST',headers:headers(),body:body({id,good,fix})}).catch(()=>toast('Не отправилось — нет связи'))}
 function speak(t,force){if(!('speechSynthesis' in window)||(!force&&get('nika_tts')!=='1'))return;speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(plain(t).slice(0,1200));u.lang='ru-RU';const v=speechSynthesis.getVoices().find(v=>/^ru/i.test(v.lang));if(v)u.voice=v;u.rate=1.05;speechSynthesis.speak(u)}
-function renderAll(){log.innerHTML='';if(!items.length)sys(name?name+', напишите что-нибудь — например, «Привет!» или нажмите подсказку внизу':'');items.forEach(it=>it.me?renderMe(it):renderNika(it))}
+function renderAll(){log.innerHTML='';if(!items.length)sys('');items.forEach(it=>it.me?renderMe(it):renderNika(it))}
 
 // ---------- адрес сервера ----------
 async function locate(){
@@ -237,7 +230,7 @@ async function send(text,regenFlag){
   if(!regenFlag){const it={me:1,text};items.push(it);save();renderMe(it)}
   busy=true;sendBtn.disabled=true;markLast();
   const row=nikaRow(),b=row.querySelector('.b');
-  b.innerHTML='<div class="typing"><span class="dots"><i></i><i></i><i></i></span><span class="tx">думаю…</span></div>';
+  b.innerHTML='<div class="typing"><span class="dots"><i></i><i></i><i></i></span><span class="tx" hidden></span></div>';
   const tx=t=>{const e=b.querySelector('.tx');if(e)e.textContent=t},steps=[];
   let acc='',final=null,started=false;
   try{
@@ -246,9 +239,9 @@ async function send(text,regenFlag){
     if(r.status==401)throw {msg:'нужен пароль — откройте ⚙ настройки'};
     const ct=r.headers.get('content-type')||'';
     const onEv=e=>{
-      if(e.t==='queue'){tx(e.text);status('в очереди: '+e.n,'wait')}
-      else if(e.t==='think'){tx(e.text);status('Ника думает…','on')}
-      else if(e.t==='step'){steps.push([e.k,e.v]);tx(e.text)}
+      if(e.t==='queue'){status('Ника отвечает другому собеседнику, вы '+e.n+'-й','wait')}
+      else if(e.t==='think'){status('печатает…','on')}
+      else if(e.t==='step'){steps.push([e.k,e.v])}
       else if(e.t==='hi'){$('own').hidden=!e.owner}
       else if(e.t==='busy'){final={reply:e.text,busy:1}}
       else if(e.t==='w'){if(!started){started=true;b.innerHTML='';b.classList.add('cursor')}acc+=e.s;b.innerHTML=md(acc);scroll()}
@@ -281,14 +274,6 @@ function grow(){q.style.height='auto';q.style.height=Math.min(q.scrollHeight,140
 q.addEventListener('input',grow);
 q.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Android|iPhone|iPad/i.test(navigator.userAgent)){e.preventDefault();$('f').requestSubmit()}});
 $('f').onsubmit=e=>{e.preventDefault();const t=q.value;if(!t.trim())return;if(busy){toast('Ника ещё отвечает на прошлое сообщение');return}q.value='';grow();send(t)};
-const CHIPS=[['🧮 Задача','Реши задачу: в магазине было 120 яблок, утром продали 45, вечером ещё 30. Сколько осталось?',1],
- ['📊 Финмодель','Финмодель: кофейня, вложения 1 500 000 ₽, средний чек 350 ₽, 120 гостей в день',1],
- ['💡 Бизнес-идея','Что думаешь насчёт идеи открыть шиномонтаж в Казани?',0],
- ['🌐 Найди в интернете','Найди в интернете ',0],
- ['📝 Напиши ТЗ','Напиши ТЗ на ',0],
- ['💬 Поболтать','/разговор Привет! Как настроение?',0]];
-CHIPS.forEach(([l,t,sel])=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=l;
-  c.onclick=()=>{q.value=t;grow();q.focus();if(sel)q.setSelectionRange(t.indexOf(':')+2,t.length);else q.setSelectionRange(t.length,t.length)};$('chips').appendChild(c)});
 
 // ---------- голос ----------
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -317,7 +302,6 @@ $('clear').onclick=()=>{if(confirm('Стереть историю на этом 
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!busy)ping()});
 
 renderAll();
-if(!name)openSheet('welcome',true);
 ping();
 </script>
 </body>
